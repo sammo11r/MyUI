@@ -34,3 +34,9 @@ The Postgres database runs on port 5432.
 This runs the React app for production and hosts it on an NGINX server.\
 Open [http://localhost:8000](http://localhost:8000) to view the React frontend (production mode) in the browser.\
 Your app is ready to be deployed!
+
+## Common Errors
+### `'make' is not recognized as an internal or external command, operable program or batch file.`
+1. Download Make for Windows: http://gnuwin32.sourceforge.net/packages/make.htm
+2. Add the path (i.e. C:\Program Files (x86)\GnuWin32\bin) to your Path variable
+3. Restart your pc
