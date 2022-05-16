@@ -38,6 +38,7 @@ Your app is ready to be deployed!
 ### `npm run lint`
 
 This checks the code quality for the entire project and gives a detailed list of errors.
+In order to disable linting for a particular line, the comment `// eslint-disable-next-line` can be used.
 
 ## Common Errors
 ### `'make' is not recognized as an internal or external command, operable program or batch file.`
