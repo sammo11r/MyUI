@@ -40,6 +40,10 @@ Your app is ready to be deployed!
 This checks the code quality for the entire project and gives a detailed list of errors.
 In order to disable linting for a particular line, the comment `// eslint-disable-next-line` can be used.
 
+### `yarn jest --passWithNoTests`
+
+This will run all available tests.
+
 ## Common Errors
 ### `'make' is not recognized as an internal or external command, operable program or batch file.`
 1. Download Make for Windows: http://gnuwin32.sourceforge.net/packages/make.htm
