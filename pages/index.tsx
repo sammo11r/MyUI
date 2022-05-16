@@ -1,7 +1,7 @@
 /* eslint-disable require-jsdoc */
-import React from "react";
-import logo from "../public/logo.svg";
-import Image from "next/image";
+import React from 'react';
+import logo from '../public/logo.svg';
+import Image from 'next/image';
 
 function App() {
   return (
