@@ -1,14 +1,20 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import logo from '../public/logo.svg';
+import Image from 'next/image'
 
 function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
+        <Image
+          src={logo}
+          alt="logo"
+          className="App-logo"
+          width={500}
+          height={500}
+        />
         <p>
-          Edit <code>src/App.tsx</code> and save to reload.
+          Edit <code>pages/index.tsx</code> and save to reload.
         </p>
         <a
           className="App-link"
