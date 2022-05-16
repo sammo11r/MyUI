@@ -40,7 +40,7 @@ Your app is ready to be deployed!
 This checks the code quality for the entire project and gives a detailed list of errors.
 In order to disable linting for a particular line, the comment `// eslint-disable-next-line` can be used.
 
-### `yarn jest --passWithNoTests`
+### `make test`
 
 This will run all available tests.
 
