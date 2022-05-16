@@ -35,6 +35,10 @@ This runs the React app for production and hosts it on an NGINX server.\
 Open [http://localhost:8000](http://localhost:8000) to view the React frontend (production mode) in the browser.\
 Your app is ready to be deployed!
 
+### `npm run lint`
+
+This checks the code quality for the entire project and gives a detailed list of errors.
+
 ## Common Errors
 ### `'make' is not recognized as an internal or external command, operable program or batch file.`
 1. Download Make for Windows: http://gnuwin32.sourceforge.net/packages/make.htm
