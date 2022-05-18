@@ -11,6 +11,7 @@ import {
 import { AuthEnabledComponentConfig } from '../utils/auth.utils'
 import '../styles/App.css';
 import '../styles/globals.css';
+import '../styles/index.css';
 
 type AppAuthProps = AppProps & {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
