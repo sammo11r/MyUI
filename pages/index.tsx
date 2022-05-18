@@ -90,4 +90,7 @@ function App() {
   );
 }
 
+// Make sure this page is protected
+App.auth = true
+
 export default App;
