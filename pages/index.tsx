@@ -6,6 +6,11 @@ import { Breadcrumb, Layout, Menu } from 'antd';
 import 'antd/dist/antd.css';
 // import './styles/index.css';
 import { UserOutlined, LaptopOutlined, NotificationOutlined } from '@ant-design/icons';
+import {
+  signIn,
+  signOut,
+  useSession
+} from 'next-auth/react';
 
 // import { Content, Footer, Header } from 'antd/lib/layout/layout';
 // import Sider from 'antd/lib/layout/Sider';
@@ -33,6 +38,9 @@ const items2 = [UserOutlined, LaptopOutlined, NotificationOutlined].map((icon, i
 });
 
 function App() {
+
+  const { data: session, status } = useSession()
+
   return (
     <Layout>
     <Header className="header">

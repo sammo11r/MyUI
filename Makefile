@@ -49,4 +49,4 @@ down: ## Stop and remove running containers
 
 test: ## Stop and remove running containers
 	@echo "Running all unit tests ..."
-	yarn jest --passWithNoTests
+	yarn jest --passWithNoTests --silent
