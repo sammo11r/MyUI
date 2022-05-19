@@ -13,7 +13,7 @@ import {
 /**
  * @return {*}
  */
-export function AppHeader() {
+function AppHeader() {
   return (
     <Header className='header'>
       <Content className='header-logo'>
@@ -40,3 +40,5 @@ export function AppHeader() {
     </Header>
   );
 }
+
+export default AppHeader;

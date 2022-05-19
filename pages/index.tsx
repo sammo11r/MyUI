@@ -11,8 +11,8 @@ import {
 } from '@ant-design/icons';
 import Link from 'next/link';
 
-import { AppHeader } from '../components/AppHeader';
-import { AppSider } from '../components/AppSider';
+import AppHeader from '../components/AppHeader';
+import AppSider from '../components/AppSider';
 
 const {Content, Sider} = Layout;
 
@@ -32,7 +32,7 @@ function getItem(label: any, key: any, icon: any, children: any) {
   };
 }
 
-const itemsDashboard = [
+export const itemsDashboard = [
   getItem('Base Tables', 'baseTables', <TableOutlined />, [
     getItem(<Link href='/table/1'>Table 1</Link>, 'table1', null, null),
     getItem(<Link href='/table/2'>Table 2</Link>, 'table2', null, null),
@@ -99,6 +99,6 @@ function App() {
 }
 
 // Make sure this page is protected
-App.auth = true;
+App.auth = false;
 
 export default App;

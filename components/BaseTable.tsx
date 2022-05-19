@@ -24,7 +24,7 @@ const mockdata: { [key: string]: any } = {
       {
         "id": 3,
         "created_at": "2022-05-19T09:38:01.858341+00:00",
-        "email": "demoemail3@domain.com",
+        "email": "yemoemail3@domain.com",
         "name": "Demo user 3",
         "updated_at": "2022-05-19T09:38:01.858341+00:00",
         "manager": "Daan"

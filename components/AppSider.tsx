@@ -7,13 +7,13 @@ import {
 } from 'antd';
 const {Sider} = Layout;
 
-export function AppSider({itemsDashboard}: any) {
+function AppSider({itemsDashboard, selectedKeys, openKeys}: any) {
   return (
     <Sider width={200} className='site-layout-background'>
       <Menu
         mode='inline'
-        defaultSelectedKeys={['1']}
-        defaultOpenKeys={['sub1']}
+        defaultSelectedKeys={selectedKeys}
+        defaultOpenKeys={openKeys}
         style={{
           height: '100%',
           borderRight: 0,
@@ -23,3 +23,5 @@ export function AppSider({itemsDashboard}: any) {
     </Sider>
   );
 }
+
+export default AppSider;
