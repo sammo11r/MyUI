@@ -1,20 +1,32 @@
 /* eslint-disable require-jsdoc */
 import React from 'react';
-import logo from '../public/logo.svg';
-import Image from 'next/image';
-import { Breadcrumb, Layout, Menu } from 'antd';
-import 'antd/dist/antd.css';
-// import './styles/index.css';
-import { UserOutlined, TableOutlined, NotificationOutlined, SettingFilled, PicCenterOutlined } from '@ant-design/icons';
+import {
+  Breadcrumb,
+  Layout,
+  Menu 
+} from 'antd';
+import { 
+  UserOutlined,
+  TableOutlined,
+  NotificationOutlined,
+  SettingFilled,
+  PicCenterOutlined 
+} from '@ant-design/icons';
+import { icons } from 'antd/lib/image/PreviewGroup';
 import {
   signIn,
   signOut,
   useSession
 } from 'next-auth/react';
+import Image from 'next/image';
+
+import logo from '../public/logo.svg';
+import 'antd/dist/antd.css';
+// import './styles/index.css';
+
 
 // import { Header, Content } from 'antd/lib/layout/layout';
 // import Sider from 'antd/lib/layout/Sider';
-import { icons } from 'antd/lib/image/PreviewGroup';
 
 const { Header, Content, Sider } = Layout;
 
@@ -69,7 +81,9 @@ function App() {
   const { data: session, status } = useSession()
 
   return (
-    <Layout>
+    <Layout style={{
+      height: '100vh'
+    }}>
       <Header className="header">
         <Content className="header-logo">
           MyUI
