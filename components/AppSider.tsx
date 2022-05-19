@@ -1,8 +1,11 @@
 import React from 'react';
 
 import 'antd/dist/antd.css';
-import { Layout, Menu } from 'antd';
-const { Sider } = Layout;
+import {
+  Layout, 
+  Menu 
+} from 'antd';
+const {Sider} = Layout;
 
 export function AppSider({itemsDashboard}: any) {
   return (
