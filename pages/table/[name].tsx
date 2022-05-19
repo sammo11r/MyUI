@@ -24,7 +24,7 @@ const Post = (): any => {
       <Layout>
         <AppSider 
         itemsDashboard={itemsDashboard} 
-        selectedKeys={[name]} // fix pls
+        selectedKeys={['table' + name]}
         openKeys={['baseTables']} />
         <Layout
           style={{
