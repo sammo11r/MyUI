@@ -1,10 +1,13 @@
-import { useRouter } from 'next/router';
+import {useRouter} from 'next/router';
 
-const Post = () => {
+/**
+ * @return {*}
+ */
+const Post = (): any => {
   const router = useRouter();
-  const { name } = router.query;
+  const {name} = router.query;
 
-  return <p>{name}</p>
-}
+  return <p>{name}</p>;
+};
 
 export default Post;

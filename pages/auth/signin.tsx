@@ -1,13 +1,21 @@
-import { signIn, getSession, getCsrfToken } from "next-auth/react";
-import { Form, Input, Button, Row } from "antd";
-import { Typography } from "antd";
-import { serverSideTranslations } from "next-i18next/serverSideTranslations";
-import { useTranslation } from "next-i18next";
+import {
+  signIn,
+  getSession,
+  getCsrfToken,
+} from 'next-auth/react';
+import {
+  Form,
+  Input, Button,
+  Row,
+} from 'antd';
+import {Typography} from 'antd';
+import {serverSideTranslations} from 'next-i18next/serverSideTranslations';
+import {useTranslation} from 'next-i18next';
 
-import "antd/dist/antd.css";
-import React from "react";
+import 'antd/dist/antd.css';
+import React from 'react';
 
-const { Title } = Typography;
+const {Title} = Typography;
 
 /**
  * Export sign in
@@ -16,7 +24,7 @@ const { Title } = Typography;
  * @return {*}
  */
 export default function SignIn() {
-  const { t } = useTranslation();
+  const {t} = useTranslation();
 
   interface values {
     username: string;
@@ -25,7 +33,7 @@ export default function SignIn() {
   }
 
   const onFinish = (values: values) => {
-    signIn("credentials", {
+    signIn('credentials', {
       username: values.username,
       password: values.password,
     });
@@ -33,14 +41,14 @@ export default function SignIn() {
 
   return (
     <Row
-      data-testid="row-element"
-      justify="center"
-      align="middle"
-      style={{ minHeight: "100vh" }}
+      data-testid='row-element'
+      justify='center'
+      align='middle'
+      style={{minHeight: '100vh'}}
     >
       <Form
-        data-testid="form-element"
-        name="basic"
+        data-testid='form-element'
+        name='basic'
         labelCol={{
           span: 16,
         }}
@@ -48,10 +56,10 @@ export default function SignIn() {
           span: 24,
         }}
         onFinish={onFinish}
-        autoComplete="off"
+        autoComplete='off'
       >
         <Form.Item
-          data-testid="form-title"
+          data-testid='form-title'
           wrapperCol={{
             offset: 10,
             span: 24,
@@ -61,13 +69,13 @@ export default function SignIn() {
         </Form.Item>
 
         <Form.Item
-          label={t("login.username")}
-          name="username"
-          data-testid="username-input"
+          label={t('login.username')}
+          name='username'
+          data-testid='username-input'
           rules={[
             {
               required: true,
-              message: t("login.username_message"),
+              message: t('login.username_message'),
             },
           ]}
         >
@@ -75,13 +83,13 @@ export default function SignIn() {
         </Form.Item>
 
         <Form.Item
-          label={t("login.password")}
-          name="password"
-          data-testid="password-input"
+          label={t('login.password')}
+          name='password'
+          data-testid='password-input'
           rules={[
             {
               required: true,
-              message: t("login.password_message"),
+              message: t('login.password_message'),
             },
           ]}
         >
@@ -89,14 +97,14 @@ export default function SignIn() {
         </Form.Item>
 
         <Form.Item
-          data-testid="submit-form"
+          data-testid='submit-form'
           wrapperCol={{
             offset: 10,
             span: 16,
           }}
         >
-          <Button type="primary" htmlType="submit" data-testid="submit-button">
-            {t("login.submit")}
+          <Button type='primary' htmlType='submit' data-testid='submit-button'>
+            {t('login.submit')}
           </Button>
         </Form.Item>
       </Form>
@@ -108,20 +116,20 @@ export default function SignIn() {
  * @param {*} context
  * @return {*}
  */
-export async function getServerSideProps(context) {
-  const { req } = context;
-  const session = await getSession({ req });
+export async function getServerSideProps(context: any) {
+  const {req} = context;
+  const session = await getSession({req});
 
   if (session) {
     return {
-      redirect: { destination: "/" },
+      redirect: {destination: '/'},
     };
   }
 
   return {
     props: {
       csrfToken: await getCsrfToken(context),
-      ...(await serverSideTranslations(context.locale, ["common"])),
+      ...(await serverSideTranslations(context.locale, ['common'])),
     },
   };
 }

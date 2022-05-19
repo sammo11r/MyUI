@@ -1,9 +1,18 @@
 import React from 'react';
 
 import 'antd/dist/antd.css';
-import { UserOutlined, SettingFilled } from '@ant-design/icons';
-import { Content, Header } from 'antd/lib/layout/layout';
+import {
+  UserOutlined,
+  SettingFilled,
+} from '@ant-design/icons';
+import {
+  Content,
+  Header,
+} from 'antd/lib/layout/layout';
 
+/**
+ * @return {*}
+ */
 export function AppHeader() {
   return (
     <Header className='header'>
@@ -16,8 +25,8 @@ export function AppHeader() {
           top: 16,
           float: 'right',
           right: 20,
-          fontSize: "30px",
-          color: "white"
+          fontSize: '30px',
+          color: 'white',
         }} />
       <UserOutlined id='header-user-profile'
         style={{
@@ -25,8 +34,8 @@ export function AppHeader() {
           top: 16,
           float: 'right',
           left: 50,
-          fontSize: "30px",
-          color: "white"
+          fontSize: '30px',
+          color: 'white',
         }} />
     </Header>
   );
