@@ -9,6 +9,7 @@ import {
 import Link from 'next/link';
 
 import { AppHeader } from '../components/AppHeader';
+import { AppSider } from '../components/AppSider';
 
 const { Content, Sider } = Layout;
 
@@ -75,18 +76,7 @@ function App() {
     }}>
       <AppHeader />
       <Layout>
-        <Sider width={200} className='site-layout-background'>
-          <Menu
-            mode='inline'
-            defaultSelectedKeys={['1']}
-            defaultOpenKeys={['sub1']}
-            style={{
-              height: '100%',
-              borderRight: 0,
-            }}
-            items={itemsDashboard}
-          />
-        </Sider>
+        <AppSider itemsDashboard={itemsDashboard} />
         <Layout
           style={{
             padding: '0 24px 24px',
