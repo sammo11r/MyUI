@@ -1,22 +1,23 @@
-import { 
-  signIn,
-  getSession,
-  getCsrfToken 
-} from "next-auth/react";
-import { 
-  Form,
-  Input,
-  Button,
-  Row
-} from 'antd';
-import { Typography } from 'antd';
+import { signIn, getSession, getCsrfToken } from "next-auth/react";
+import { Form, Input, Button, Row } from "antd";
+import { Typography } from "antd";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+import { useTranslation } from "next-i18next";
 
-import 'antd/dist/antd.css';
+import "antd/dist/antd.css";
 import React from "react";
 
 const { Title } = Typography;
 
+/**
+ * Export sign in
+ *
+ * @export
+ * @return {*}
+ */
 export default function SignIn() {
+  const { t } = useTranslation();
+
   interface values {
     username: string;
     password: number;
@@ -24,16 +25,24 @@ export default function SignIn() {
   }
 
   const onFinish = (values: values) => {
-    signIn("credentials", { username: values.username, password: values.password })
+    signIn("credentials", {
+      username: values.username,
+      password: values.password,
+    });
   };
 
   return (
-    <Row data-testid="row-element" justify="center" align="middle" style={{minHeight: '100vh'}}>
+    <Row
+      data-testid="row-element"
+      justify="center"
+      align="middle"
+      style={{ minHeight: "100vh" }}
+    >
       <Form
         data-testid="form-element"
         name="basic"
         labelCol={{
-          span: 8,
+          span: 16,
         }}
         wrapperCol={{
           span: 24,
@@ -44,7 +53,7 @@ export default function SignIn() {
         <Form.Item
           data-testid="form-title"
           wrapperCol={{
-            offset: 8,
+            offset: 10,
             span: 24,
           }}
         >
@@ -52,13 +61,13 @@ export default function SignIn() {
         </Form.Item>
 
         <Form.Item
-          label="Username"
+          label={t("login.username")}
           name="username"
           data-testid="username-input"
           rules={[
             {
               required: true,
-              message: 'Please input your username!',
+              message: t("login.username_message"),
             },
           ]}
         >
@@ -66,13 +75,13 @@ export default function SignIn() {
         </Form.Item>
 
         <Form.Item
-          label="Password"
+          label={t("login.password")}
           name="password"
           data-testid="password-input"
           rules={[
             {
               required: true,
-              message: 'Please input your password!',
+              message: t("login.password_message"),
             },
           ]}
         >
@@ -82,12 +91,12 @@ export default function SignIn() {
         <Form.Item
           data-testid="submit-form"
           wrapperCol={{
-            offset: 8,
+            offset: 10,
             span: 16,
           }}
         >
           <Button type="primary" htmlType="submit" data-testid="submit-button">
-            Submit
+            {t("login.submit")}
           </Button>
         </Form.Item>
       </Form>
@@ -95,7 +104,11 @@ export default function SignIn() {
   );
 }
 
-export async function getServerSideProps(context: any) {
+/**
+ * @param {*} context
+ * @return {*}
+ */
+export async function getServerSideProps(context) {
   const { req } = context;
   const session = await getSession({ req });
 
@@ -108,6 +121,7 @@ export async function getServerSideProps(context: any) {
   return {
     props: {
       csrfToken: await getCsrfToken(context),
+      ...(await serverSideTranslations(context.locale, ["common"])),
     },
-  }
+  };
 }
