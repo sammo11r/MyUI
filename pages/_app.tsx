@@ -7,17 +7,27 @@ import {
   SessionProvider,
   useSession
 } from 'next-auth/react';
-
+import { appWithTranslation } from "next-i18next";
 import { AuthEnabledComponentConfig } from '../utils/auth.utils'
+
 import '../styles/App.css';
 import '../styles/globals.css';
 import '../styles/index.css';
 
 type AppAuthProps = AppProps & {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  Component: NextComponentType<NextPageContext, any, {}> & Partial<AuthEnabledComponentConfig>;
+  // eslint-disable-next-line max-len
+  Component: NextComponentType<NextPageContext, any, {}> &
+    Partial<AuthEnabledComponentConfig>;
 };
 
+/**
+ * @param {AppAuthProps} {
+ *   Component,
+ *   pageProps: { session, ...pageProps },
+ * }
+ * @return {*}
+ */
 function MyApp({
   Component,
   pageProps: { session, ...pageProps },
@@ -32,22 +42,25 @@ function MyApp({
         <Component {...pageProps} />
       )}
     </SessionProvider>
-  )
+  );
 }
 
 type Props = {
   children: JSX.Element;
 };
 
+/**
+ * @param {Props} { children }
+ * @return {*}  {JSX.Element}
+ */
 function Auth({ children }: Props): JSX.Element {
-  // if `{ required: true }` is supplied, `status` can only be "loading" or "authenticated"
-  const { status } = useSession({ required: true })
+  const { status } = useSession({ required: true });
 
-  if (status === 'loading') {
-    return <div>Loading...</div>
+  if (status === "loading") {
+    return <div>Loading...</div>;
   }
-  
+
   return children;
 }
 
-export default MyApp
+export default appWithTranslation(MyApp);
