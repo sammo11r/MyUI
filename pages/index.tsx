@@ -1,56 +1,17 @@
-/* eslint-disable require-jsdoc */
 import React from 'react';
-import {
-  Breadcrumb,
-  Layout,
-  Menu 
-} from 'antd';
-import { 
-  UserOutlined,
-  TableOutlined,
-  NotificationOutlined,
-  SettingFilled,
-  PicCenterOutlined 
-} from '@ant-design/icons';
-import { icons } from 'antd/lib/image/PreviewGroup';
+
+import { Layout, Menu } from 'antd';
+import 'antd/dist/antd.css';
+import { TableOutlined, PicCenterOutlined } from '@ant-design/icons';
 import {
   signIn,
   signOut,
   useSession
 } from 'next-auth/react';
-import Image from 'next/image';
 
-import logo from '../public/logo.svg';
-import 'antd/dist/antd.css';
-// import './styles/index.css';
+import { AppHeader } from '../components/AppHeader'
 
-
-// import { Header, Content } from 'antd/lib/layout/layout';
-// import Sider from 'antd/lib/layout/Sider';
-
-const { Header, Content, Sider } = Layout;
-
-// Commented lines are from online template
-
-// const items1 = ['1', '2', '3'].map((key) => ({
-//   key,
-//   label: `nav ${key}`,
-// }));
-// const items2 = [TableOutlined, PicCenterOutlined].map((icon, index) => {
-//   const key = String(index + 1);
-//   return {
-//     key: `sub${key}`,
-//     icon: React.createElement(icon),
-//     label: `Dashboard ${key}`,
-//     children: new Array(4).fill(null).map((_, j) => {
-//       const subKey = index * 4 + j + 1;
-//       return {
-//         key: subKey,
-//         label: `option${subKey}`,
-//       };
-//     }),
-//   };
-// });
+const { Content, Sider } = Layout;
 
 function getItem(label: any, key: any, icon: any, children: any) {
   return {
@@ -58,21 +19,21 @@ function getItem(label: any, key: any, icon: any, children: any) {
     icon,
     children,
     label,
-    };
+  };
 }
 
-const itemsDashboard= [
+const itemsDashboard = [
   getItem('Base Tables', 'baseTables', <TableOutlined />, [
     getItem('Table 1', 'table1', null, null),
     getItem('Table 2', 'table2', null, null),
     getItem('Table 3', 'table3', null, null),
-    getItem('Table 4', 'table4', null, null), 
+    getItem('Table 4', 'table4', null, null),
   ]),
   getItem('Dashboards', 'dashboards', <PicCenterOutlined />, [
     getItem('Dashboard 1', 'dashboard1', null, null),
     getItem('Dashboard 2', 'dashboard2', null, null),
     getItem('Dashboard 3', 'dashboard3', null, null),
-    getItem('Dashboard 4', 'dashboard4', null, null), 
+    getItem('Dashboard 4', 'dashboard4', null, null),
   ]),
 ];
 
@@ -84,36 +45,11 @@ function App() {
     <Layout style={{
       height: '100vh'
     }}>
-      <Header className="header">
-        <Content className="header-logo">
-          MyUI
-        </Content>
-        {/* <Menu theme="dark" mode="horizontal" defaultSelectedKeys={['2']} items={items1}/> */}
-        <SettingFilled id='dashboard-settings'
-          style={{ 
-            position: 'relative',
-            top: 16,
-            float: 'right',
-            right: 20,
-            fontSize: "30px", 
-            color: "white" 
-            }}/>
-            <UserOutlined id='dashboard-user-profile'
-          style={{ 
-            position: 'relative',
-            top: 16,
-            float: 'right',
-            left: 50,
-            fontSize: "30px",
-            color: "white" 
-            }}/>
-          
-      </Header>
-
+      <AppHeader />
       <Layout>
-        <Sider width={200} className="site-layout-background">
+        <Sider width={200} className='site-layout-background'>
           <Menu
-            mode="inline"
+            mode='inline'
             defaultSelectedKeys={['1']}
             defaultOpenKeys={['sub1']}
             style={{
@@ -128,17 +64,8 @@ function App() {
             padding: '0 24px 24px',
           }}
         >
-          {/* <Breadcrumb
-            style={{
-              margin: '16px 0',
-            }}
-          >
-            <Breadcrumb.Item>Home</Breadcrumb.Item>
-            <Breadcrumb.Item>List</Breadcrumb.Item>
-            <Breadcrumb.Item>App</Breadcrumb.Item>
-          </Breadcrumb> */}
           <Content
-            className="site-layout-background"
+            className='site-layout-background'
             style={{
               padding: 24,
               margin: 0,

@@ -11,6 +11,7 @@ import { appWithTranslation } from "next-i18next";
 import { AuthEnabledComponentConfig } from '../utils/auth.utils'
 
 import '../styles/App.css';
+import '../styles/AppHeader.css';
 import '../styles/globals.css';
 import '../styles/index.css';
 

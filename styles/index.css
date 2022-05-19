@@ -1,13 +1,3 @@
-.header-logo {
-  float: left;
-  width: 10%;
-  min-height: 10px;
-  font-size: calc(10px + 2vmin);
-  font-style: italic;
-  font-family: cursive;
-  color: white;
-}
-
 .ant-row-rtl .logo {
   float: right;
   margin: 16px 0 16px 24px;
