@@ -1,0 +1,27 @@
+.header-logo {
+  float: left;
+  width: 10%;
+  min-height: 10px;
+  font-size: calc(10px + 2vmin);
+  font-style: italic;
+  font-family: cursive;
+  color: white;
+}
+
+.header-settings {
+  position: relative;
+  top: 16;
+  float: right;
+  right: 20;
+  font-size: 30px;
+  color: white;
+}
+
+.header-user-profile {
+  position: relative;
+  top: 16;
+  float: right;
+  left: 50;
+  font-size: 30px;
+  color: white;
+}
