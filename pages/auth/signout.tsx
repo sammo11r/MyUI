@@ -2,6 +2,8 @@
 import React from "react";
 import { signOut } from "next-auth/react";
 import { Form, Button, Row } from "antd";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+import { useTranslation } from "next-i18next";
 
 import "antd/dist/antd.css";
 
@@ -10,6 +12,8 @@ import "antd/dist/antd.css";
  * @return {*}
  */
 export default function SignOut() {
+  const { t } = useTranslation();
+
   return (
     <Row
       data-testid="row-element"
@@ -34,9 +38,21 @@ export default function SignOut() {
           htmlType="submit"
           onClick={() => signOut({ callbackUrl: "/" })}
         >
-          Sign out
+          {t("logout.button")}
         </Button>
       </Form>
     </Row>
   );
+}
+
+/**
+ * @param {*} context
+ * @return {*}
+ */
+export async function getServerSideProps(context) {
+  return {
+    props: {
+      ...(await serverSideTranslations(context.locale, ["common"])),
+    },
+  };
 }
