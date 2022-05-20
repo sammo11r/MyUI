@@ -1,18 +1,14 @@
 /* eslint-disable require-jsdoc */
-import React from 'react';
-import {
-  signIn,
-  signOut,
-  useSession
-} from 'next-auth/react';
-import Image from 'next/image';
+import React from "react";
+import { useSession } from "next-auth/react";
+import Image from "next/image";
 
-import logo from '../public/logo.svg';
+import logo from "../public/logo.svg";
 
 function App() {
-  const { data: session, status } = useSession()
-
-  // console.log({session, status});
+  // TODO: Persist user data after succesful signin.
+  // eslint-disable-next-line no-unused-vars
+  const { data: session, status } = useSession();
 
   return (
     <div className="App">
@@ -41,6 +37,6 @@ function App() {
 }
 
 // Make sure this page is protected
-App.auth = true
+App.auth = true;
 
 export default App;

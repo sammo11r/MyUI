@@ -2,6 +2,7 @@ import React from "react";
 import { NextComponentType, NextPageContext } from "next";
 import type { AppProps } from "next/app";
 import { SessionProvider, useSession } from "next-auth/react";
+import { QueryClient, QueryClientProvider } from "react-query";
 import { appWithTranslation } from "next-i18next";
 
 import { AuthEnabledComponentConfig } from "../utils/auth.utils";
@@ -15,6 +16,8 @@ type AppAuthProps = AppProps & {
     Partial<AuthEnabledComponentConfig>;
 };
 
+const queryClient = new QueryClient();
+
 /**
  * @param {AppAuthProps} {
  *   Component,
@@ -27,15 +30,17 @@ function MyApp({
   pageProps: { session, ...pageProps },
 }: AppAuthProps) {
   return (
-    <SessionProvider session={session}>
-      {Component.auth ? (
-        <Auth>
+    <QueryClientProvider client={queryClient}>
+      <SessionProvider session={session}>
+        {Component.auth ? (
+          <Auth>
+            <Component {...pageProps} />
+          </Auth>
+        ) : (
           <Component {...pageProps} />
-        </Auth>
-      ) : (
-        <Component {...pageProps} />
-      )}
-    </SessionProvider>
+        )}
+      </SessionProvider>
+    </QueryClientProvider>
   );
 }
 

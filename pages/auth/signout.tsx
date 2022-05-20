@@ -49,7 +49,7 @@ export default function SignOut() {
  * @param {*} context
  * @return {*}
  */
-export async function getServerSideProps(context) {
+export async function getServerSideProps(context: any) {
   return {
     props: {
       ...(await serverSideTranslations(context.locale, ["common"])),
