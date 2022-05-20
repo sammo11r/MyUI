@@ -4,7 +4,7 @@ import AppSider from '../components/AppSider';
 import { render, screen, waitFor } from "@testing-library/react";
 import '@testing-library/jest-dom';
 
-describe("renderDashboard", () => {
+describe("renderHeader", () => {
     it('renders AppHeader correctly', () => {
         render(<AppHeader></AppHeader>);
 
