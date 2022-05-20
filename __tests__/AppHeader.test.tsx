@@ -14,14 +14,4 @@ describe("renderHeader", () => {
         expect(settingsIcon).toBeInTheDocument();
         expect(userIcon).toBeInTheDocument();
     });
-    it('renders AppSider correctly', () => {
-        render(<AppSider></AppSider>);
-
-        const siderMenu = screen.getByTestId("sider-menu");
-
-        expect(siderMenu).toBeInTheDocument();
-    });
-    // it('loads a table on clicking option in Tables Menu', () => {
-        
-    // });
   });
