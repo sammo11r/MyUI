@@ -19,24 +19,10 @@ function AppHeader() {
       <Content className='header-logo'>
         MyUI
       </Content>
-      <SettingFilled id='header-settings'
-        style={{
-          position: 'relative',
-          top: 16,
-          float: 'right',
-          right: 20,
-          fontSize: '30px',
-          color: 'white',
-        }} />
+      <SettingFilled id='header-settings' 
+      data-testid='header-settings-element'/>
       <UserOutlined id='header-user-profile'
-        style={{
-          position: 'relative',
-          top: 16,
-          float: 'right',
-          left: 50,
-          fontSize: '30px',
-          color: 'white',
-        }} />
+      data-testid='header-profile-element' />
     </Header>
   );
 }

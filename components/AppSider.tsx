@@ -11,6 +11,7 @@ function AppSider({itemsDashboard, selectedKeys, openKeys}: any) {
   return (
     <Sider width={200} className='site-layout-background'>
       <Menu
+        data-testid='sider-menu'
         mode='inline'
         defaultSelectedKeys={selectedKeys}
         defaultOpenKeys={openKeys}
