@@ -54,8 +54,6 @@ down: ## Stop and remove running containers
 test: ## Stop and remove running containers
 	@echo "Running all unit tests ..."
 	yarn jest --passWithNoTests --silent
-<<<<<<< HEAD
-=======
 
 console:
 	@echo "Starting hasura console..." 
@@ -68,4 +66,3 @@ run-migrations:
 squash-migrations:
 	@echo "Squashing migrations..."
 	cd hasura && npx hasura-cli migrate squash --admin-secret myadminsecretkey --name "$(name)" --from $(from) --database-name Hasura-test
->>>>>>> master
