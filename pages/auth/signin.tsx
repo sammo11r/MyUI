@@ -117,8 +117,8 @@ export default function SignIn() {
  * @return {*}
  */
 export async function getServerSideProps(context: any) {
-  const {req} = context;
-  const session = await getSession({req});
+  const { req } = context;
+  const session = await getSession({ req });
 
   if (session) {
     return {

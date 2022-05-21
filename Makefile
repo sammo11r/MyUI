@@ -39,6 +39,10 @@ build-prod: ## Run container in development mode
 	@echo "Creating production environment ..."
 	docker-compose -f docker-compose.yml -f docker-compose-prod.yml up -d --build
 
+restart: 
+	@echo "Restarting environment ..."
+	docker-compose restart
+
 stop: ## Stop running containers
 	@echo "Stopping containers ..."
 	docker-compose stop
@@ -50,3 +54,18 @@ down: ## Stop and remove running containers
 test: ## Stop and remove running containers
 	@echo "Running all unit tests ..."
 	yarn jest --passWithNoTests --silent
+<<<<<<< HEAD
+=======
+
+console:
+	@echo "Starting hasura console..." 
+	cd hasura && npx hasura-cli console --admin-secret "myadminsecretkey"
+
+run-migrations:
+	@echo "Running all database migrations..."
+	cd hasura && hasura migrate apply --up
+	
+squash-migrations:
+	@echo "Squashing migrations..."
+	cd hasura && npx hasura-cli migrate squash --admin-secret myadminsecretkey --name "$(name)" --from $(from) --database-name Hasura-test
+>>>>>>> master
