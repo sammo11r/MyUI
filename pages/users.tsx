@@ -3,14 +3,15 @@ import React from "react";
 import { Table } from "antd";
 import { useQuery } from "react-query";
 
-export default function Users({ hasuraProps }: any) {
+export default function Users({ hasuraProps } : any) {
+ // const hasuraProps: { hasuraSecret:string, hasuraEndpoint:RequestInfo | URL } = getServerSideProps("none");
   const hasuraHeaders = {
     "Content-Type": "application/json",
     "x-hasura-admin-secret": hasuraProps.hasuraSecret,
   } as HeadersInit;
 
   const { isSuccess, data } = useQuery("userQuery", () =>
-    fetch(hasuraProps.hasuraEndpoint, {
+    fetch(hasuraProps.hasuraEndpoint as RequestInfo, {
       method: "POST",
       headers: hasuraHeaders,
       body: JSON.stringify({
@@ -68,16 +69,12 @@ export default function Users({ hasuraProps }: any) {
   }
 }
 
-export function getServerSideProps(context: any) {
-  const hasuraProps = {
-    hasuraSecret: process.env.NEXT_PUBLIC_HASURA_GRAPHQL_ADMIN_SECRET as String,
+function getServerSideProps(context: any) {
+  return {
+    hasuraSecret: process.env.NEXT_PUBLIC_HASURA_GRAPHQL_ADMIN_SECRET as string,
     hasuraEndpoint: process.env.NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT as
       | RequestInfo
       | URL,
-  };
-  return {
-    props: {
-      hasuraProps,
-    },
-  };
+  }
 }
+
