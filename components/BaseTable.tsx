@@ -3,6 +3,7 @@ import React from 'react';
 
 
 function BaseTable({ data }: any){
+  console.log(data, "This is what I got");
   if(data){
     return (
       <Table dataSource={ data } 

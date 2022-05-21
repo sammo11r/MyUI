@@ -34,10 +34,10 @@ function getItem(label: any, key: any, icon: any, children: any) {
 
 export const itemsDashboard = [
   getItem('Base Tables', 'baseTables', <TableOutlined />, [
-    getItem(<Link href='/table/1'>Table 1</Link>, 'table1', null, null),
-    getItem(<Link href='/table/2'>Table 2</Link>, 'table2', null, null),
-    getItem(<Link href='/table/3'>Table 3</Link>, 'table3', null, null),
-    getItem(<Link href='/table/4'>Table 4</Link>, 'table4', null, null),
+    getItem(<Link href='/table/users'>Table 1</Link>, 'table1', null, null),
+    getItem(<Link href='/table/Inventory'>Table 2</Link>, 'table2', null, null),
+    getItem(<Link href='/table/Product'>Table 3</Link>, 'table3', null, null),
+    getItem(<Link href='/table/Purchase'>Table 4</Link>, 'table4', null, null),
   ]),
   getItem('Dashboards', 'dashboards', <PicCenterOutlined />, [
     getItem(
