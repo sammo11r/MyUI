@@ -1,4 +1,4 @@
-import { Layout } from 'antd';
+import { Layout, Spin } from 'antd';
 import { Content } from 'antd/lib/layout/layout';
 import { useQuery } from "react-query";
 import { useRouter } from 'next/router';
@@ -7,10 +7,7 @@ import { itemsDashboard } from '..';
 import AppHeader from '../../components/AppHeader';
 import AppSider from '../../components/AppSider';
 import BaseTable from '../../components/BaseTable';
-
-
-
-let urls = ['http://mockURL/getUsers', 'http://mockURL/getManagers'];
+import { resolve } from 'path';
 
 
 /**
@@ -18,58 +15,81 @@ let urls = ['http://mockURL/getUsers', 'http://mockURL/getManagers'];
  */
 const Post = (): any => {
   const router = useRouter();
-  const {name}: any = router.query;
+  const { name }: any = router.query;
+
   enum dataState { LOADING, READY }
   //Add state deciding whether to show loader or table
-  const [ loading, setLoading ] = React.useState(dataState.LOADING);
+  const [tableState, setTableState] = React.useState({ data: {}, dataState: dataState.LOADING});
 
- const hasuraProps: { hasuraSecret:string, hasuraEndpoint:RequestInfo | URL } = getServerSideProps("none");
- const hasuraHeaders = {
-  "Content-Type": "application/json",
-  "x-hasura-admin-secret": hasuraProps.hasuraSecret,
-} as HeadersInit;
+  const hasuraProps: { hasuraSecret: string, hasuraEndpoint: RequestInfo | URL } = getServerSideProps("none");
+  const hasuraHeaders = {
+    'Content-Type': 'application/json',
+    'x-hasura-admin-secret': hasuraProps.hasuraSecret,
+  } as HeadersInit;
 
-const { isSuccess, data } = useQuery("userQuery", () =>
-  fetch(hasuraProps.hasuraEndpoint as RequestInfo, {
-    method: "POST",
-    headers: hasuraHeaders,
-    body: JSON.stringify({
-      query: `
-    {
-      users {
-        id
-        created_at
-        email
-        name
-        updated_at
-      }
-    }
-    `,
-    }),
-  })
-    .then((res) => res.json())
-    .then((res) => {
-      return res.data.users
-    }).finally(() => { setLoading(dataState.READY)})
-);
+  let tableName = name;
+    const { data: columns, error } = useQuery('columnQuery', () =>
+    fetch(hasuraProps.hasuraEndpoint as RequestInfo, {
+      method: 'POST',
+      headers: hasuraHeaders,
+      body: JSON.stringify({
+        query: `
+query Columns {
+__type(name: "${tableName}") {
+  fields {
+    name
+  }
+}
+}
+`,
+      }),
+    })
+      .then((names) => names.json())
+      .then((names) => {
+        //GraphQL column names are returned under key "__type"
+        return Object.values(names.data.__type.fields)
+          .map((value: any) => value.name)
+      })
+  );
+
+  const { data: tables } = useQuery('tableQuery', () => {
+    fetch(hasuraProps.hasuraEndpoint as RequestInfo, {
+      method: 'POST',
+      headers: hasuraHeaders,
+      body: JSON.stringify({
+        query: `
+            {
+              ${tableName} {
+                ${columns}
+              }
+            }
+            `,
+      }),
+    })
+      .then((res) => res.json())
+      .then((res) => res.data[tableName])
+      .then((res) => {setTableState({ data: res, dataState: dataState.READY })});
+  }, { enabled: !!columns });
+  
 
 
-return (
+
+  return (
     <Layout style={{
       height: '100vh',
     }}>
       <AppHeader />
       <Layout>
-        <AppSider 
-        itemsDashboard={itemsDashboard} 
-        selectedKeys={['table' + name]}
-        openKeys={['baseTables']} />
+        <AppSider
+          itemsDashboard={itemsDashboard}
+          selectedKeys={['table' + name]}
+          openKeys={['baseTables']} />
         <Layout
           style={{
             padding: '0 24px 24px',
           }}
         >
-          { loading == dataState.READY? <BaseTable data= { data }/>: <p>No</p> }         
+          {tableState.dataState == dataState.READY ? <BaseTable data={ tableState.data } /> : <Spin size="large"/>}
         </Layout>
       </Layout>
     </Layout>
@@ -87,3 +107,5 @@ function getServerSideProps(context: any) {
       | URL,
   }
 }
+
+
