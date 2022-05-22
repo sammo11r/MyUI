@@ -1,4 +1,5 @@
 import React from 'react';
+import { useQuery } from "react-query";
 
 import {
   Layout,
@@ -10,6 +11,7 @@ import {
   PicCenterOutlined,
 } from '@ant-design/icons';
 import Link from 'next/link';
+
 
 import AppHeader from '../components/AppHeader';
 import AppSider from '../components/AppSider';
@@ -32,13 +34,45 @@ function getItem(label: any, key: any, icon: any, children: any) {
   };
 }
 
+
+// const { isSuccess : isSuccessTable, data : tableNames } = useQuery("tableQuery", () =>
+// fetch(hasuraProps.hasuraEndpoint as RequestInfo, {
+//   method: "POST",
+//   headers: hasuraHeaders,
+//   body: JSON.stringify({
+//     query: `
+//     query LearnAboutSchema {
+//       __schema {
+//         queryType {
+//           fields {
+//             name
+//           }
+//         }
+//       }
+//     }
+//   `,
+//   }),
+// })
+//   .then((res) => res.json())
+//   .then((res) => {
+//     const data = res.data.__schema.queryType.fields;
+//     console.log(data)
+//     let instances =  data.map((instance: any) => instance.name);
+//     // For every table hasura has query types for aggregate functions and functions on the primary key.
+//     // We are not intrested in those tables, only the base table, so we filter them. 
+//     instances = instances.filter((name: string) => {
+//       return !name.endsWith('_aggregate') && !name.endsWith('_by_pk')
+//     })
+//     return instances
+//   })
+// );
+
+const tableNames = ['Purchase', 'Inventory', 'users'];
+
 export const itemsDashboard = [
-  getItem('Base Tables', 'baseTables', <TableOutlined />, [
-    getItem(<Link href='/table/users'>Table 1</Link>, 'table1', null, null),
-    getItem(<Link href='/table/Inventory'>Table 2</Link>, 'table2', null, null),
-    getItem(<Link href='/table/Product'>Table 3</Link>, 'table3', null, null),
-    getItem(<Link href='/table/Purchase'>Table 4</Link>, 'table4', null, null),
-  ]),
+  getItem('Base Tables', 'baseTables', <TableOutlined />, 
+    tableNames.map( (name: string) => getItem(<Link href={`/table/${name}`}>{name}</Link>, `table${name}`, null, null))
+  ),
   getItem('Dashboards', 'dashboards', <PicCenterOutlined />, [
     getItem(
         <Link href='/dashboard/1'>Dashboard 1</Link>,
