@@ -1,48 +1,44 @@
 /* eslint-disable max-len */
-import React from 'react';
-import {signOut} from 'next-auth/react';
-import {
-  Form,
-  Button,
-  Row,
-} from 'antd';
-import {serverSideTranslations} from 'next-i18next/serverSideTranslations';
-import {useTranslation} from 'next-i18next';
+import React from "react";
+import { signOut } from "next-auth/react";
+import { Form, Button, Row } from "antd";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+import { useTranslation } from "next-i18next";
 
-import 'antd/dist/antd.css';
+import "antd/dist/antd.css";
 
 /**
  *
  * @return {*}
  */
 export default function SignOut() {
-  const {t} = useTranslation();
+  const { t } = useTranslation();
 
   return (
     <Row
-      data-testid='row-element'
-      justify='center'
-      align='middle'
-      style={{minHeight: '100vh'}}
+      data-testid="row-element"
+      justify="center"
+      align="middle"
+      style={{ minHeight: "100vh" }}
     >
       <Form
-        data-testid='form-element'
-        name='basic'
+        data-testid="form-element"
+        name="basic"
         labelCol={{
           span: 8,
         }}
         wrapperCol={{
           span: 24,
         }}
-        autoComplete='off'
+        autoComplete="off"
       >
         <Button
-          data-testid='submit-button'
-          type='primary'
-          htmlType='submit'
-          onClick={() => signOut({callbackUrl: '/'})}
+          data-testid="submit-button"
+          type="primary"
+          htmlType="submit"
+          onClick={() => signOut({ callbackUrl: "/" })}
         >
-          {t('logout.button')}
+          {t("logout.button")}
         </Button>
       </Form>
     </Row>
@@ -56,7 +52,7 @@ export default function SignOut() {
 export async function getServerSideProps(context: any) {
   return {
     props: {
-      ...(await serverSideTranslations(context.locale, ['common'])),
+      ...(await serverSideTranslations(context.locale, ["common"])),
     },
   };
 }

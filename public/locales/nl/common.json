@@ -1,12 +1,12 @@
 {
-    "login": {
-        "username": "Gebruikersnaam",
-        "username_message": "Voer uw gebruikersnaam in!",
-        "password": "Wachtwoord",
-        "password_message": "Voer uw wachtwoord in!",
-        "submit": "Verzend"
-    },
-    "logout": {
-        "button": "Log uit"
-    }
+  "login": {
+    "username": "Gebruikersnaam",
+    "username_message": "Voer uw gebruikersnaam in!",
+    "password": "Wachtwoord",
+    "password_message": "Voer uw wachtwoord in!",
+    "submit": "Verzend"
+  },
+  "logout": {
+    "button": "Log uit"
+  }
 }

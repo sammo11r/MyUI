@@ -1,10 +1,10 @@
 version: "3"
-services: 
+services:
   react-app:
-    build: 
+    build:
       context: .
       dockerfile: Dockerfile.prod
-    ports: 
+    ports:
       - "8000:80"
     # env_file:
     #   - ./.env

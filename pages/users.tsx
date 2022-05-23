@@ -3,7 +3,7 @@ import React from "react";
 import { Table } from "antd";
 import { useQuery } from "react-query";
 
-export default function Users({ hasuraProps } : any) {
+export default function Users({ hasuraProps }: any) {
   const hasuraHeaders = {
     "Content-Type": "application/json",
     "x-hasura-admin-secret": hasuraProps.hasuraSecret,
@@ -81,4 +81,3 @@ export function getServerSideProps(context: any) {
     },
   };
 }
-

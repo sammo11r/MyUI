@@ -4,8 +4,7 @@
 export interface AuthEnabledComponentConfig {
   auth: boolean;
 }
-  
-  
+
 /**
  * A component with authentication configuration
  */

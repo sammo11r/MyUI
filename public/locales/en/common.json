@@ -1,12 +1,12 @@
 {
-    "login": {
-        "username": "Username",
-        "username_message": "Please input your username!",
-        "password": "Password",
-        "password_message": "Please input your password!",
-        "submit": "Submit"
-    },
-    "logout": {
-        "button": "Sign out"
-    }
+  "login": {
+    "username": "Username",
+    "username_message": "Please input your username!",
+    "password": "Password",
+    "password_message": "Please input your password!",
+    "submit": "Submit"
+  },
+  "logout": {
+    "button": "Sign out"
+  }
 }

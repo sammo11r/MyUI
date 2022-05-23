@@ -15,6 +15,7 @@ Boilerplate author: Nishad Guha (n.guha1@student.tue.nl)
 7. Check Hasura console for an existing database schema. If there are none, create a database schema under the `Data` tab called `Hasura-test`.
 8. Close Hasura console with `Ctrl + C` and run all database migrations: `make run-migrations`
 9. Open [http://localhost:3000](http://localhost:3000) to view the React frontend in the browser.
+
 ## Available Scripts
 
 In the project directory, you can run:
@@ -26,6 +27,7 @@ Open [http://localhost:3000](http://localhost:3000) to view the React frontend i
 The page will reload if you make edits.
 
 The Postgres database runs on port 5432.
+
 ### `make build-prod`
 
 Builds the React app for production to the `build` folder and hosts it on an NGINX server.\
@@ -71,7 +73,9 @@ In order to disable linting for a particular line, the comment `// eslint-disabl
 This will run all available tests.
 
 ## Common Errors
+
 ### `'make' is not recognized as an internal or external command, operable program or batch file.`
+
 1. Download Make for Windows: http://gnuwin32.sourceforge.net/packages/make.htm
 2. Add the path (i.e. C:\Program Files (x86)\GnuWin32\bin) to your Path variable
 3. Restart your pc
