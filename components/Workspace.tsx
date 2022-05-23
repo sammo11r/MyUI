@@ -12,7 +12,7 @@ function Workspace({ workspaceState, hasuraProps }: any) {
       return <p>Coming Soon!</p>;
     case workspaceStates.EMPTY:
       console.log("workspace empty");
-      return <p>Hi! I'm empty, but full of potential!</p>;
+      return <p>Welcome to MyUI</p>;
     default:
       return <p>Something!</p>;
   }

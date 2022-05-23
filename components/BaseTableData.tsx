@@ -1,16 +1,18 @@
 import { Table } from "antd";
 import React from "react";
 import { useQuery } from "react-query";
-
 import Loader from "../components/Loader";
 
+/**
+ * @param {*} { hasuraProps, columns, tableName }
+ * @return {*}
+ */
 function BaseTableData({ hasuraProps, columns, tableName }: any) {
-  console.log(`rendering base table data ${tableName}!`);
   enum dataState {
     LOADING,
     READY,
   }
-  //Add state deciding whether to show loader or table
+  // Add state deciding whether to show loader or table
   const [tableState, setTableState] = React.useState({
     data: undefined,
     columns: [{}],
@@ -22,9 +24,7 @@ function BaseTableData({ hasuraProps, columns, tableName }: any) {
     "x-hasura-admin-secret": hasuraProps.hasuraSecret,
   } as HeadersInit;
 
-  const { data: table } = useQuery("tableQuery", async () => {
-    console.log("started query 2");
-    console.log(tableName, columns);
+  const { data: table } = useQuery(["tableQuery", tableName], async () => {
     let result = await fetch(hasuraProps.hasuraEndpoint as RequestInfo, {
       method: "POST",
       headers: hasuraHeaders,
@@ -61,21 +61,21 @@ function BaseTableData({ hasuraProps, columns, tableName }: any) {
           });
         }
       });
-  });
+  }, { enabled: !!tableName });
 
   return (
     <>
       {tableState.dataState == dataState.READY ? (
-        //If data is ready, show the user
+        // If data is ready, show the user
         tableState.data && columns ? (
-          //If there is data, display table
+          // If there is data, display table
           <Table
             key={`tableData-${tableName}`}
             dataSource={tableState.data}
             columns={tableState.columns}
           />
         ) : (
-          //If table is empty, tell the user
+          // If table is empty, tell the user
           <p>No data</p>
         )
       ) : (
@@ -88,6 +88,11 @@ function BaseTableData({ hasuraProps, columns, tableName }: any) {
 
 export default BaseTableData;
 
+/**
+ * @export
+ * @param {*} context
+ * @return {*} 
+ */
 export function getServerSideProps(context: any) {
   const hasuraProps = {
     hasuraSecret: process.env.NEXT_PUBLIC_HASURA_GRAPHQL_ADMIN_SECRET as String,
