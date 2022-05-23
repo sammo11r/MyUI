@@ -8,5 +8,6 @@ services:
       - "3000:3000"
     volumes:
       - ./pages:/app/pages:ro
+      - ./components:/app/components:ro
     # env_file:
     #   - ./.env
