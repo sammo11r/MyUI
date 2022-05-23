@@ -42,13 +42,8 @@ name
       .then((names) => {
         //GraphQL column names are returned under key "__type"
         return Object.values(names.data.__type.fields).map(
-          (value: any) => {
-            return {
-              title: value.name,
-              dataIndex: value.name,
-              key: value.name,
-            };
-          });
+          (value: any) => value.name
+        );
       });
 
     setColumnState({ columns: result, columnState: columnStates.READY });
