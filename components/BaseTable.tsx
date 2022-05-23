@@ -13,10 +13,10 @@ function BaseTable({ hasuraProps, name }: any) {
     'x-hasura-admin-secret': hasuraProps.hasuraSecret,
   } as HeadersInit;
 
-
   let tableName = name;
 
-  let { data: columns, error } = useQuery('columnQuery', async () => {
+  useQuery('columnQuery', async () => {
+    setColumnState({ columns: [{}], columnState: columnStates.LOADING })
     let result = await fetch(hasuraProps.hasuraEndpoint as RequestInfo, {
       method: 'POST',
       headers: hasuraHeaders,

@@ -16,6 +16,7 @@ function BaseTableData({ hasuraProps, columns, tableName }: any) {
 
   const { data: table } = useQuery('tableQuery', async () => {
     console.log('started query 2')
+    console.log(tableName, columns);
     let result = await fetch(hasuraProps.hasuraEndpoint as RequestInfo, {
       method: 'POST',
       headers: hasuraHeaders,
