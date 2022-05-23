@@ -47,7 +47,6 @@ function BaseTableData({ hasuraProps, columns, tableName }: any) {
           })
         columns = undefined;
         setTableState({ data: res, columns: extractedColumns, columnsReady: true, dataState: dataState.READY });
-        console.log('finished query 2', res)
         }
       })
   });

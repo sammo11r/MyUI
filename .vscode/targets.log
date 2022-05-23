@@ -317,4 +317,8 @@ down:
 # strcache size: total = 4096 / max = 4096 / min = 4096 / avg = 4096
 # strcache free: total = 4087 / max = 4087 / min = 4087 / avg = 4087
 
+<<<<<<< HEAD
 # Finished Make data base on Tue May 17 16:37:39 2022
+=======
+# Finished Make data base on Fri May 20 19:20:06 2022
+>>>>>>> 996f586c89c88c17918bf01439a67a321a61babc
