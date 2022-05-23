@@ -10,6 +10,7 @@ import "../styles/App.css";
 import "../styles/AppHeader.css";
 import "../styles/globals.css";
 import "../styles/index.css";
+import Loader from "../components/Loader";
 
 type AppAuthProps = AppProps & {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -58,7 +59,11 @@ function Auth({ children }: Props): JSX.Element {
   const { status } = useSession({ required: true });
 
   if (status === "loading") {
-    return <div>Loading...</div>;
+    return (
+      <div style={{width: '100vw', height: '100vh'}}>
+        <Loader />
+      </div>
+    );
   }
 
   return children;

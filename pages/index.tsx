@@ -8,8 +8,7 @@ import Link from "next/link";
 
 import AppHeader from "../components/AppHeader";
 import AppSider from "../components/AppSider";
-import BaseTable from "../components/BaseTable";
-import { readSync } from "fs";
+import Loader from "../components/Loader";
 import Workspace from "../components/Workspace";
 
 const { Content, Sider } = Layout;
@@ -162,7 +161,7 @@ function App({ hasuraProps }: any) {
       <AppHeader />
       <Layout>
         {siderState.tableNamesState == siderMenuState.LOADING ? (
-          <Spin />
+          <Loader />
         ) : (
           <AppSider
             key={"sideBar "}

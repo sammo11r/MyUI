@@ -3,6 +3,8 @@ import React from "react";
 import { useQuery } from "react-query";
 import BaseTableData from "./BaseTableData";
 
+import Loader from "../components/Loader"
+
 function BaseTable({ hasuraProps, name }: any) {
   console.log(`rendering base table header ${name}!`);
   enum columnStates {
@@ -51,7 +53,7 @@ name
   });
 
   return (
-    <div>
+    <>
       {columnState.columnState == columnStates.READY ? (
         //If there is data, display table
         <BaseTableData
@@ -62,9 +64,9 @@ name
         />
       ) : (
         //If data is still loading, display throbber
-        <p>Loading</p>
+        <Loader />
       )}
-    </div>
+    </>
   );
 }
 
