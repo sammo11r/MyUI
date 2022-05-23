@@ -1,19 +1,11 @@
-<<<<<<< HEAD
 import { Layout, Spin } from 'antd';
 import { Content } from 'antd/lib/layout/layout';
 import { useQuery } from "react-query";
 import { useRouter } from 'next/router';
-=======
-import { Layout } from 'antd';
-import { Content } from 'antd/lib/layout/layout';
-import {useRouter} from 'next/router';
->>>>>>> 996f586c89c88c17918bf01439a67a321a61babc
 import React from 'react';
-import { itemsDashboard } from '..';
 import AppHeader from '../../components/AppHeader';
 import AppSider from '../../components/AppSider';
 import BaseTable from '../../components/BaseTable';
-<<<<<<< HEAD
 import { resolve } from 'path';
 
 
@@ -83,52 +75,28 @@ fetch(hasuraProps.hasuraEndpoint as RequestInfo, {
 
 
 
-=======
-
-
-let urls = ['http://mockURL/getUsers', 'http://mockURL/getManagers'];
-
-/**
- * @return {*}
- */
-const Post = (): any => {
-  const router = useRouter();
-  const {name}: any = router.query;
->>>>>>> 996f586c89c88c17918bf01439a67a321a61babc
   return (
     <Layout style={{
       height: '100vh',
     }}>
       <AppHeader />
       <Layout>
-<<<<<<< HEAD
         <AppSider
-          itemsDashboard={itemsDashboard}
+          itemsDashboard={ null }
           selectedKeys={['table' + name]}
           openKeys={['baseTables']} />
-=======
-        <AppSider 
-        itemsDashboard={itemsDashboard} 
-        selectedKeys={['table' + name]}
-        openKeys={['baseTables']} />
->>>>>>> 996f586c89c88c17918bf01439a67a321a61babc
         <Layout
           style={{
             padding: '0 24px 24px',
           }}
         >
-<<<<<<< HEAD
           {tableState.dataState == dataState.READY ? <BaseTable data={ tableState.data } hasuraProps = { hasuraProps }/> : <Spin size='large' style={{ margin: 'auto'}} />}
-=======
-          <BaseTable url = { urls[(name-1)] }/>
->>>>>>> 996f586c89c88c17918bf01439a67a321a61babc
         </Layout>
       </Layout>
     </Layout>
   );
 };
 
-<<<<<<< HEAD
 
 
 export function getServerSideProps(context: any) {
@@ -146,6 +114,3 @@ export function getServerSideProps(context: any) {
 }
 
 
-=======
-export default Post;
->>>>>>> 996f586c89c88c17918bf01439a67a321a61babc

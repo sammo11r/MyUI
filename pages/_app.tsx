@@ -8,18 +8,9 @@ import {
   SessionProvider,
   useSession,
 } from 'next-auth/react';
-<<<<<<< HEAD
 import { QueryClient, QueryClientProvider } from "react-query";
 import {appWithTranslation} from 'next-i18next';
 import {AuthEnabledComponentConfig} from '../utils/auth.utils';
-=======
-import {appWithTranslation} from 'next-i18next';
-import {AuthEnabledComponentConfig} from '../utils/auth.utils';
-import { 
-  QueryClient, 
-  QueryClientProvider 
-} from "react-query";
->>>>>>> 996f586c89c88c17918bf01439a67a321a61babc
 
 import '../styles/App.css';
 import '../styles/AppHeader.css';
