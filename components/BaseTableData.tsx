@@ -2,6 +2,8 @@ import { Table } from "antd";
 import React from "react";
 import { useQuery } from "react-query";
 
+import Loader from "../components/Loader";
+
 function BaseTableData({ hasuraProps, columns, tableName }: any) {
   console.log(`rendering base table data ${tableName}!`);
   enum dataState {
@@ -62,7 +64,7 @@ function BaseTableData({ hasuraProps, columns, tableName }: any) {
   });
 
   return (
-    <div>
+    <>
       {tableState.dataState == dataState.READY ? (
         //If data is ready, show the user
         tableState.data && columns ? (
@@ -78,9 +80,9 @@ function BaseTableData({ hasuraProps, columns, tableName }: any) {
         )
       ) : (
         //If data is still loading, display throbber
-        <p>Loading</p>
+        <Loader/>
       )}
-    </div>
+    </>
   );
 }
 
