@@ -3,14 +3,14 @@ import React from "react";
 import { Table } from "antd";
 import { useQuery } from "react-query";
 
-export default function Users({ hasuraProps }: any) {
+export default function Users({ hasuraProps } : any) {
   const hasuraHeaders = {
     "Content-Type": "application/json",
     "x-hasura-admin-secret": hasuraProps.hasuraSecret,
   } as HeadersInit;
 
   const { isSuccess, data } = useQuery("userQuery", () =>
-    fetch(hasuraProps.hasuraEndpoint, {
+    fetch(hasuraProps.hasuraEndpoint as RequestInfo, {
       method: "POST",
       headers: hasuraHeaders,
       body: JSON.stringify({
@@ -81,3 +81,4 @@ export function getServerSideProps(context: any) {
     },
   };
 }
+
