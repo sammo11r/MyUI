@@ -2,10 +2,6 @@ import React from 'react';
 
 import 'antd/dist/antd.css';
 import {
-<<<<<<< HEAD
-  UserOutlined,
-  SettingFilled,
-=======
   Menu,
   Dropdown,
   Space,
@@ -14,14 +10,11 @@ import {
   UserOutlined,
   SettingFilled,
   ArrowRightOutlined,
->>>>>>> 996f586c89c88c17918bf01439a67a321a61babc
 } from '@ant-design/icons';
 import {
   Content,
   Header,
 } from 'antd/lib/layout/layout';
-<<<<<<< HEAD
-=======
 import {signOut} from 'next-auth/react';
 
 const userMenu = (
@@ -39,7 +32,6 @@ const userMenu = (
     ]}
   />
 );
->>>>>>> 996f586c89c88c17918bf01439a67a321a61babc
 
 /**
  * @return {*}
@@ -50,12 +42,6 @@ function AppHeader() {
       <Content className='header-logo'>
         MyUI
       </Content>
-<<<<<<< HEAD
-      <SettingFilled id='header-settings' 
-      data-testid='header-settings-element'/>
-      <UserOutlined id='header-user-profile'
-      data-testid='header-profile-element' />
-=======
       <SettingFilled
         className='header-settings'
         data-testid='header-settings-element'
@@ -92,7 +78,6 @@ function AppHeader() {
           />
         </a>
       </Dropdown>
->>>>>>> 996f586c89c88c17918bf01439a67a321a61babc
     </Header>
   );
 }

@@ -1,23 +1,16 @@
 import React from 'react';
-<<<<<<< HEAD
 import { useQuery } from "react-query";
-=======
->>>>>>> 996f586c89c88c17918bf01439a67a321a61babc
 
 import {
   Layout,
   Menu,
-<<<<<<< HEAD
   Spin
-=======
->>>>>>> 996f586c89c88c17918bf01439a67a321a61babc
 } from 'antd';
 import 'antd/dist/antd.css';
 import {
   TableOutlined,
   PicCenterOutlined,
 } from '@ant-design/icons';
-<<<<<<< HEAD
 import Link from 'next/link';
 
 
@@ -28,15 +21,6 @@ import { readSync } from 'fs';
 import Workspace from '../components/Workspace';
 
 const { Content, Sider } = Layout;
-=======
-import {useSession} from 'next-auth/react';
-import Link from 'next/link';
-
-import AppHeader from '../components/AppHeader';
-import AppSider from '../components/AppSider';
-
-const {Content, Sider} = Layout;
->>>>>>> 996f586c89c88c17918bf01439a67a321a61babc
 
 /**
  * @param {*} label
@@ -54,7 +38,6 @@ function getItem(label: any, key: any, icon: any, children: any) {
   };
 }
 
-<<<<<<< HEAD
 
 
 
@@ -70,55 +53,28 @@ function getDashboardItems(tableNames: string[]) {
     ),
     getItem('Dashboards', 'dashboards', <PicCenterOutlined />, [
       getItem(
-=======
-export const itemsDashboard = [
-  getItem('Base Tables', 'baseTables', <TableOutlined />, [
-    getItem(<Link href='/table/1'>Table 1</Link>, 'table1', null, null),
-    getItem(<Link href='/table/2'>Table 2</Link>, 'table2', null, null),
-    getItem(<Link href='/table/3'>Table 3</Link>, 'table3', null, null),
-    getItem(<Link href='/table/4'>Table 4</Link>, 'table4', null, null),
-  ]),
-  getItem('Dashboards', 'dashboards', <PicCenterOutlined />, [
-    getItem(
->>>>>>> 996f586c89c88c17918bf01439a67a321a61babc
         <Link href='/dashboard/1'>Dashboard 1</Link>,
         'dashboard1',
         null,
         null,
-<<<<<<< HEAD
       ),
       getItem(
-=======
-    ),
-    getItem(
->>>>>>> 996f586c89c88c17918bf01439a67a321a61babc
         <Link href='/dashboard/2'>Dashboard 2</Link>,
         'dashboard2',
         null,
         null,
-<<<<<<< HEAD
       ),
       getItem(
-=======
-    ),
-    getItem(
->>>>>>> 996f586c89c88c17918bf01439a67a321a61babc
         <Link href='/dashboard/3'>Dashboard 3</Link>,
         'dashboard3',
         null,
         null,
-<<<<<<< HEAD
       ),
       getItem(
-=======
-    ),
-    getItem(
->>>>>>> 996f586c89c88c17918bf01439a67a321a61babc
         <Link href='/dashboard/4'>Dashboard 4</Link>,
         'dashboard4',
         null,
         null,
-<<<<<<< HEAD
       ),
     ]),
   ]
@@ -129,16 +85,10 @@ export const itemsDashboard = [
 
 
 export enum workspaceStates { EMPTY, BASE_TABLE, DASHBOARD }
-=======
-    ),
-  ]),
-];
->>>>>>> 996f586c89c88c17918bf01439a67a321a61babc
 
 /**
  * @return {*}
  */
-<<<<<<< HEAD
 function App({ hasuraProps }: any) {
 
   enum siderMenuState { READY, LOADING };
@@ -190,12 +140,6 @@ function App({ hasuraProps }: any) {
   const displayBaseTable = (name: string) => { setWorkspaceState({ displaying: workspaceStates.BASE_TABLE, name: name }) }
   const displayEmptyWorkspace = () => { setWorkspaceState({ displaying: workspaceStates.EMPTY, name: "" }) }
   const refresh = (name: string) => { displayEmptyWorkspace(); displayBaseTable(name)}
-=======
-function App() {
-  // TODO: Persist user data after succesful signin.
-  // eslint-disable-next-line no-unused-vars
-  const { data: session, status } = useSession();
->>>>>>> 996f586c89c88c17918bf01439a67a321a61babc
 
   return (
     <Layout style={{
@@ -203,7 +147,6 @@ function App() {
     }}>
       <AppHeader />
       <Layout>
-<<<<<<< HEAD
         {siderState.tableNamesState == siderMenuState.LOADING ?
           <Spin /> :
           <AppSider 
@@ -215,9 +158,6 @@ function App() {
               }
             } />
         }
-=======
-        <AppSider itemsDashboard={itemsDashboard} />
->>>>>>> 996f586c89c88c17918bf01439a67a321a61babc
         <Layout
           style={{
             padding: '0 24px 24px',
@@ -231,14 +171,11 @@ function App() {
               minHeight: 280,
             }}
           >
-<<<<<<< HEAD
             <Workspace
               key = { 'workspace' }
               workspaceState={ workspaceState } 
               hasuraProps={ hasuraProps }
             />
-=======
->>>>>>> 996f586c89c88c17918bf01439a67a321a61babc
           </Content>
         </Layout>
       </Layout>
