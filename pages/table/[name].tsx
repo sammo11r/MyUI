@@ -51,7 +51,7 @@ name
   })
 );
 
-const { data: tables } = useQuery('tableQuery', () => 
+const { data: table } = useQuery('tableQuery', () => 
 fetch(hasuraProps.hasuraEndpoint as RequestInfo, {
   method: 'POST',
   headers: hasuraHeaders,
@@ -91,7 +91,7 @@ fetch(hasuraProps.hasuraEndpoint as RequestInfo, {
             padding: '0 24px 24px',
           }}
         >
-          {tableState.dataState == dataState.READY ? <BaseTable data={tableState.data} /> : <Spin size='large' style={{ margin: 'auto'}} />}
+          {tableState.dataState == dataState.READY ? <BaseTable data={ tableState.data } hasuraProps = { hasuraProps }/> : <Spin size='large' style={{ margin: 'auto'}} />}
         </Layout>
       </Layout>
     </Layout>

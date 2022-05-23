@@ -7,8 +7,9 @@ import {
 } from 'antd';
 const {Sider} = Layout;
 
-function AppSider({itemsDashboard, selectedKeys, openKeys}: any) {
+function AppSider({itemsDashboard, selectedKeys, openKeys, baseTableOnclick}: any) {
   return (
+
     <Sider width={200} className='site-layout-background'>
       <Menu
         data-testid='sider-menu'
@@ -20,6 +21,7 @@ function AppSider({itemsDashboard, selectedKeys, openKeys}: any) {
           borderRight: 0,
         }}
         items={itemsDashboard}
+        onClick = { (item) => {baseTableOnclick(item.key)}}
       />
     </Sider>
   );
