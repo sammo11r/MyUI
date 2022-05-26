@@ -1,1 +1,0 @@
-{"buildTargets":["build-dev","build-prod","console","down","help","make","restart","run-dev","run-migrations","run-prod","squash-migrations","stop","test"],"launchTargets":[],"customConfigurationProvider":{"workspaceBrowse":{"browsePath":[],"compilerArgs":[]},"fileIndex":[]}}
