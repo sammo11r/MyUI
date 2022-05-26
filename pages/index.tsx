@@ -10,6 +10,7 @@ import AppHeader from "../components/AppHeader";
 import AppSider from "../components/AppSider";
 import Loader from "../components/Loader";
 import Workspace from "../components/Workspace";
+import QueryInput from "../components/QueryInput";
 
 const { Content, Sider } = Layout;
 
@@ -82,7 +83,7 @@ export enum workspaceStates {
 /**
  * @return {*}
  */
-function App({ hasuraProps }: any) {
+export default function App({ hasuraProps }: any) {
   enum siderMenuState {
     READY,
     LOADING,
@@ -189,6 +190,7 @@ function App({ hasuraProps }: any) {
               workspaceState={workspaceState}
               hasuraProps={hasuraProps}
             />
+            <QueryInput hasuraProps={hasuraProps}/>
           </Content>
         </Layout>
       </Layout>
@@ -197,9 +199,7 @@ function App({ hasuraProps }: any) {
 }
 
 // Make sure this page is protected
-App.auth = true;
-
-export default App;
+App.auth = false;
 
 export function getServerSideProps(context: any) {
   const hasuraProps = {
