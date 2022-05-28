@@ -3,6 +3,13 @@
   margin: 16px 0 16px 24px;
 }
 
+/* Workspace */
 .site-layout-background {
   background: #fff;
+  overflow-y: scroll;
+}
+
+/* Sidebar */
+.ant-layout-sider {
+  overflow-y: scroll;
 }

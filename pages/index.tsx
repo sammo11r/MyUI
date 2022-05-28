@@ -30,7 +30,8 @@ export enum workspaceStates {
 export default function App({ hasuraProps, systemProps }: any) {
   const { t } = useTranslation();
   const [manageDashboardsModalState, setManageDashboardsModalState] = useState({visible: false, type: modalTypes.ADD});
-  const [dashboardNames, setDashboardNames] = useState(['Voetbalschool TIC', 'ESSC Football Club']); //Hardcoded
+  const [userConfig, setUserConfig] = useState();
+  const [dashboardNames, setDashboardNames] = useState<string[]>([]);
 
   const showModal = (type: modalTypes) => {
     setManageDashboardsModalState({ visible: true, type: type});
@@ -51,13 +52,72 @@ export default function App({ hasuraProps, systemProps }: any) {
     name: "none",
   });
 
+  // Define the default UI configuration
+  const defaultConfiguration = {
+    "dashboards": [],
+    "uiPreferences": {
+      "language": "nl"
+    },
+    "baseTables": [
+      {
+        "name": "table1",
+        "columnNames": {
+          "key0": "someTitle",
+          "key1": "someTitle"
+        },
+        "ordering": {
+          "by": "someKey",
+          "ascending": false,
+          "ordered": false
+        }
+      }
+    ]
+  }
 
   const hasuraHeaders = {
     "Content-Type": "application/json",
     "x-hasura-admin-secret": hasuraProps.hasuraSecret,
   } as HeadersInit;
 
-  //Get the all base tables from hasura
+
+  let userId = 1; // @TODO: Get ID of currently logged in user
+  // Get the configuration file of the currently loggged in user
+  useQuery(["configurationQuery", userId], async () => {
+    let result = await fetch(hasuraProps.hasuraEndpoint as RequestInfo, {
+      method: "POST",
+      headers: hasuraHeaders,
+      body: JSON.stringify({
+        query: `
+          query getConfigurationFromUser {
+            user_versioned_config(where: {user_id: {_eq: ${userId}}}, order_by: {date: desc}, limit: 1) {
+              config
+            }
+          }
+          `,
+      }),
+    })
+      .then((userConfig) => userConfig.json())
+      .then((userConfig) => {
+        if (userConfig.data.user_versioned_config.length == 0) {
+          // Set the default empty user's configuration
+          userConfig = defaultConfiguration;
+        } else {
+          // Get the user's configuration        
+          userConfig = userConfig.data.user_versioned_config[0].config;
+          // Undo escaping of double quotes
+          userConfig = JSON.parse(userConfig.replace('\"', '"'));
+        }
+        // Get the dashboard names to display on the sidebar
+        const dashboards = userConfig.dashboards;
+        let dashboardNames = dashboards.map((dashboard: any) => dashboard.name);
+        setDashboardNames(dashboardNames);
+        setUserConfig(userConfig); 
+      });
+
+    return result;
+  });
+
+  // Get the all base tables from hasura
   const { isSuccess: isSuccessTable, data: tableNames }: any = useQuery(
     "tableQuery",
     () =>
@@ -100,7 +160,6 @@ export default function App({ hasuraProps, systemProps }: any) {
     setWorkspaceState({ displaying: workspaceStates.BASE_TABLE, name: name });
   };
 
-  
   const displayDashboard = (name: string) => {
     if (name == dashboardAddKey) {
       showModal(modalTypes.ADD);
@@ -133,8 +192,11 @@ export default function App({ hasuraProps, systemProps }: any) {
         dashboardAddKey={dashboardAddKey}
         dashboardRemoveKey={dashboardRemoveKey}
         setDashboardNames={setDashboardNames} 
-        tableNames= {tableNames}
-        modalType = {manageDashboardsModalState.type}
+        tableNames={tableNames}
+        modalType={manageDashboardsModalState.type}
+        hasuraProps={hasuraProps}
+        userConfig={userConfig}
+        setUserConfig={setUserConfig}
       />
       <Layout>
         {siderState.tableNamesState == siderMenuState.LOADING ? (
