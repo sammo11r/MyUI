@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useQuery } from "react-query";
 import {
   Form,
   Input,
@@ -38,6 +39,7 @@ const isValidDashboardName = (
 /**
  * @param {string} name
  * @param {*} dashboardNames
+ * @return {*} 
  */
 function addDashboard(name: string, dashboardNames: any) {
   dashboardNames.push(name);
@@ -73,10 +75,43 @@ export default function ManageDashboardsModal({
   setDashboardNames,
   dashboardAddKey,
   dashboardRemoveKey,
+  hasuraProps,
+  userConfig,
+  setUserConfig
 }: any): JSX.Element {
   const { t } = useTranslation();
   const [hasError, setError] = useState(false);
   const [form] = Form.useForm();
+
+  const hasuraHeaders = {
+    "Content-Type": "application/json",
+    "x-hasura-admin-secret": hasuraProps.hasuraSecret,
+  } as HeadersInit;
+
+  const [userConfigQueryInput, setUserConfigQueryInput] = useState();
+  let userId = 1; // @TODO: Get ID of currently logged in user
+  
+  // Update the user configuration versioning table on modifications of dashboards 
+  useQuery(["insertDashboardQuery", userId, userConfigQueryInput], async () => {
+    if (userConfigQueryInput != undefined) {
+      let result = await fetch(hasuraProps.hasuraEndpoint as RequestInfo, {
+        method: "POST",
+        headers: hasuraHeaders,
+        body: JSON.stringify({
+          query: `
+            mutation insertUserConfig {
+              insert_user_versioned_config_one(object: {config: "${userConfigQueryInput}", user_id: ${userId}}) {
+                config
+              }
+            }
+            `,
+        }),
+      })
+      // Clear the query input state variable
+      setUserConfigQueryInput(undefined);
+    }
+  });
+
 
   const hideModal = () => {
     // Reset the text field and hide the modal
@@ -88,7 +123,7 @@ export default function ManageDashboardsModal({
   /**
    * @param {string} newDashboardNames
    */
-  const showDeleteConfirm = (newDashboardNames: string) => {
+  const showDeleteConfirm = (newDashboardNames: string, userConfig: any, name: string) => {
     confirm({
       title: t("dashboard.modal.removewarning.title"),
       icon: <ExclamationCircleOutlined />,
@@ -98,10 +133,23 @@ export default function ManageDashboardsModal({
       cancelText: t("dashboard.modal.removewarning.cancelText"),
       onOk() {
         setDashboardNames(newDashboardNames);
+        // Remove the dashboard from the user configuration
+        userConfig.dashboards = userConfig.dashboards.filter((dashboard: any) => dashboard.name !== name)
+        updateConfig(userConfig);
         hideModal();
       },
     });
   };
+    
+  /**
+   * @param {*} userConfig
+   */
+  const updateConfig = (userConfig: any) => {
+    // Escape double quotes
+    userConfig = JSON.stringify(userConfig).replace(/"/g, "\\\"");
+    // Update the config query input to version the changes
+    setUserConfigQueryInput(userConfig);
+  }
 
   /**
    * @param {object} values
@@ -116,19 +164,26 @@ export default function ManageDashboardsModal({
       switch (modalType) {
         case (modalTypes.ADD):
           newDashboardNames = addDashboard(name, dashboardNames);
+
+          // Push the new dashboard to the user configuration
+          userConfig.dashboards.push(
+            {
+              "name": name,
+              "dashboardElements": []
+            }
+          );
+
+          setDashboardNames(newDashboardNames);
+          updateConfig(userConfig);
+          hideModal();
           break;
         case (modalTypes.REMOVE):
           newDashboardNames = removeDashboard(name, dashboardNames);
+          // Show confirmation modal
+          showDeleteConfirm(newDashboardNames, userConfig, name)
           break;
         default:
           newDashboardNames = []
-      }
-      if(modalType == modalTypes.REMOVE){
-        //For removing, first ask and only execute on yes
-        showDeleteConfirm(newDashboardNames)
-      } else {
-        setDashboardNames(newDashboardNames);
-        hideModal();
       }
     } else {
       // Name is invalid, show error message on input
