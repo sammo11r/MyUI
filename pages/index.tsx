@@ -1,78 +1,21 @@
-import React from "react";
+import React, { useState } from "react";
 import { useQuery } from "react-query";
-
-import { Layout, Menu, Spin } from "antd";
+import { Layout } from "antd";
 import "antd/dist/antd.css";
-import { TableOutlined, PicCenterOutlined } from "@ant-design/icons";
-import Link from "next/link";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+import { useTranslation } from "next-i18next";
 
 import AppHeader from "../components/AppHeader";
-import AppSider from "../components/AppSider";
+import AppSider, {dashboardAddKey, dashboardRemoveKey} from "../components/AppSider";
+import Dashboard from "../components/Dashboard";
+import ManageDashboardsModal, { modalTypes } from "../components/ManageDashboardsModal";
 import Loader from "../components/Loader";
 import Workspace from "../components/Workspace";
 import QueryInput from "../components/QueryInput";
 
 const { Content, Sider } = Layout;
 
-/**
- * @param {*} label
- * @param {*} key
- * @param {*} icon
- * @param {*} children
- * @return {*}
- */
-function getItem(label: any, key: any, icon: any, children: any) {
-  return {
-    key,
-    icon,
-    children,
-    label,
-  };
-}
-
-let storedDashboardItems: any;
-function getDashboardItems(tableNames: string[]) {
-  //Due to queries doing wonky stuff and executing 4 times,
-  //later calls to this function might end up with undefined names, hence save copy
-  if (!tableNames) return storedDashboardItems;
-
-  let dashboardItems = [
-    getItem(
-      "Base Tables",
-      "baseTables",
-      <TableOutlined />,
-      tableNames.map((name: string) => getItem(name, `${name}`, null, null))
-    ),
-    getItem("Dashboards", "dashboards", <PicCenterOutlined />, [
-      getItem(
-        <Link href="/dashboard/1">Dashboard 1</Link>,
-        "dashboard1",
-        null,
-        null
-      ),
-      getItem(
-        <Link href="/dashboard/2">Dashboard 2</Link>,
-        "dashboard2",
-        null,
-        null
-      ),
-      getItem(
-        <Link href="/dashboard/3">Dashboard 3</Link>,
-        "dashboard3",
-        null,
-        null
-      ),
-      getItem(
-        <Link href="/dashboard/4">Dashboard 4</Link>,
-        "dashboard4",
-        null,
-        null
-      ),
-    ]),
-  ];
-  storedDashboardItems = dashboardItems;
-  return dashboardItems;
-}
+export enum sideBarItemTypes { BASE_TABLE, DASHBOARD }
 
 export enum workspaceStates {
   EMPTY,
@@ -81,13 +24,23 @@ export enum workspaceStates {
 }
 
 /**
- * @return {*}
+ * @param {*} { hasuraProps, systemProps }
+ * @return {*} 
  */
-export default function App({ hasuraProps }: any) {
+export default function App({ hasuraProps, systemProps }: any) {
+  const { t } = useTranslation();
+  const [manageDashboardsModalState, setManageDashboardsModalState] = useState({visible: false, type: modalTypes.ADD});
+  const [dashboardNames, setDashboardNames] = useState(['Voetbalschool TIC', 'ESSC Football Club']); //Hardcoded
+
+  const showModal = (type: modalTypes) => {
+    setManageDashboardsModalState({ visible: true, type: type});
+  };
+  
   enum siderMenuState {
     READY,
     LOADING,
   }
+  
   const [siderState, setSiderState] = React.useState({
     tableNames: [],
     tableNamesState: siderMenuState.LOADING,
@@ -97,6 +50,7 @@ export default function App({ hasuraProps }: any) {
     displaying: workspaceStates.EMPTY,
     name: "none",
   });
+
 
   const hasuraHeaders = {
     "Content-Type": "application/json",
@@ -145,12 +99,20 @@ export default function App({ hasuraProps }: any) {
   const displayBaseTable = (name: string) => {
     setWorkspaceState({ displaying: workspaceStates.BASE_TABLE, name: name });
   };
+
+  
+  const displayDashboard = (name: string) => {
+    if (name == dashboardAddKey) {
+      showModal(modalTypes.ADD);
+    } else if (name == dashboardRemoveKey){
+      showModal(modalTypes.REMOVE);
+    } else {
+      setWorkspaceState({ displaying: workspaceStates.DASHBOARD, name: name });
+    }
+  };
+
   const displayEmptyWorkspace = () => {
     setWorkspaceState({ displaying: workspaceStates.EMPTY, name: "" });
-  };
-  const refresh = (name: string) => {
-    displayEmptyWorkspace();
-    displayBaseTable(name);
   };
 
   return (
@@ -160,15 +122,33 @@ export default function App({ hasuraProps }: any) {
       }}
     >
       <AppHeader />
+      <ManageDashboardsModal
+        isVisible={manageDashboardsModalState.visible}
+        setVisible={ 
+          (visible:boolean) => setManageDashboardsModalState(
+            { visible: visible, type: manageDashboardsModalState.type }
+          )
+        }
+        dashboardNames={dashboardNames} 
+        dashboardAddKey={dashboardAddKey}
+        dashboardRemoveKey={dashboardRemoveKey}
+        setDashboardNames={setDashboardNames} 
+        tableNames= {tableNames}
+        modalType = {manageDashboardsModalState.type}
+      />
       <Layout>
         {siderState.tableNamesState == siderMenuState.LOADING ? (
           <Loader />
         ) : (
           <AppSider
-            key={"sideBar "}
-            itemsDashboard={getDashboardItems(tableNames)}
-            baseTableOnclick={(name: string) => {
-              refresh(name);
+            key={"sideBar"}
+            baseTableNames = { tableNames }
+            dashboardNames = { dashboardNames }
+            baseTableOnClick={(name: string) => {
+              displayBaseTable(name);
+            }}
+            dashboardOnClick={(name: string) => {
+              displayDashboard(name);
             }}
           />
         )}
@@ -189,8 +169,10 @@ export default function App({ hasuraProps }: any) {
               key={"workspace"}
               workspaceState={workspaceState}
               hasuraProps={hasuraProps}
+              systemProps={systemProps}
             />
-            <QueryInput hasuraProps={hasuraProps}/>
+            <Dashboard/>
+            {/* <QueryInput hasuraProps={hasuraProps}/> */}
           </Content>
         </Layout>
       </Layout>
@@ -199,18 +181,23 @@ export default function App({ hasuraProps }: any) {
 }
 
 // Make sure this page is protected
-App.auth = false;
+App.auth = true;
 
-export function getServerSideProps(context: any) {
+export async function getServerSideProps(context: any) {
   const hasuraProps = {
     hasuraSecret: process.env.NEXT_PUBLIC_HASURA_GRAPHQL_ADMIN_SECRET as String,
     hasuraEndpoint: process.env.NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT as
       | RequestInfo
       | URL,
   };
+  const systemProps = {
+    mediaDisplaySetting: process.env.URL_DISPLAY_SETTING as String
+  };
   return {
     props: {
       hasuraProps,
+      systemProps,
+      ...(await serverSideTranslations(context.locale, ["common"])),
     },
   };
 }

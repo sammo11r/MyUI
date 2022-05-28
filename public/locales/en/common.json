@@ -8,5 +8,37 @@
   },
   "logout": {
     "button": "Sign out"
+  },
+  "workspace": {
+    "welcome": "Welcome to MyUI!"
+  },
+  "dashboard": {
+    "sidebar": "Dashboard",
+    "new": "Add",
+    "delete": "Delete",
+    "modal": {
+      "add": {
+        "title": "Add a new dashboard",
+        "name": "Name",
+        "tooltip": "The name of the dashboard should be unique",
+        "error": "Sorry, you cannot use this name"
+      },
+      "remove": {
+        "title": "Remove a dashboard",
+        "name": "Please enter the name of the dashboard you'd like to remove.",
+        "tooltip": "Enter the name of the dashboard to remove here",
+        "error": "This is not a valid dashboard"
+      },
+      "removewarning":{
+        "title": "Are you sure delete this dashboard?",
+        "description": "If you remove a dashboard, it will be deleted and it will no longer be accessible. This action cannot be undone!",
+        "confirmText": "Yes",
+        "cancelText": "No"
+      }
+    }
+  },
+  "basetable": {
+    "sidebar": "Base tables",
+    "warning": "There is no data available"
   }
 }

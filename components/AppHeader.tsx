@@ -1,5 +1,4 @@
 import React from "react";
-
 import "antd/dist/antd.css";
 import { Menu, Dropdown, Space } from "antd";
 import {
@@ -9,28 +8,30 @@ import {
 } from "@ant-design/icons";
 import { Content, Header } from "antd/lib/layout/layout";
 import { signOut } from "next-auth/react";
-
-const userMenu = (
-  <Menu
-    items={[
-      {
-        label: (
-          <Space>
-            Sign out
-            <ArrowRightOutlined />
-          </Space>
-        ),
-        onClick: () => signOut({ callbackUrl: "/" }),
-        key: 0,
-      },
-    ]}
-  />
-);
+import { useTranslation } from "next-i18next";
 
 /**
  * @return {*}
  */
 function AppHeader() {
+  const { t } = useTranslation();
+  const userMenu = (
+    <Menu
+      items={[
+        {
+          label: (
+            <Space>
+              {t("logout.button")}
+              <ArrowRightOutlined />
+            </Space>
+          ),
+          onClick: () => signOut({ callbackUrl: "/" }),
+          key: 0,
+        },
+      ]}
+    />
+  );
+
   return (
     <Header className="header">
       <Content className="header-logo">MyUI</Content>

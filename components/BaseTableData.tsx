@@ -1,17 +1,21 @@
 import { Table } from "antd";
 import React from "react";
 import { useQuery } from "react-query";
+import { useTranslation } from "next-i18next";
 import Loader from "../components/Loader";
 
 /**
  * @param {*} { hasuraProps, columns, tableName }
  * @return {*}
  */
-function BaseTableData({ hasuraProps, columns, tableName }: any) {
+function BaseTableData({ hasuraProps, systemProps, columns, tableName }: any): any {
+  const mediaDisplaySetting = systemProps.mediaDisplaySetting;
+  const { t } = useTranslation();
   enum dataState {
     LOADING,
     READY,
   }
+
   // Add state deciding whether to show loader or table
   const [tableState, setTableState] = React.useState({
     data: undefined,
@@ -19,6 +23,7 @@ function BaseTableData({ hasuraProps, columns, tableName }: any) {
     columnsReady: false,
     dataState: dataState.LOADING,
   });
+  
   const hasuraHeaders = {
     "Content-Type": "application/json",
     "x-hasura-admin-secret": hasuraProps.hasuraSecret,
@@ -50,6 +55,26 @@ function BaseTableData({ hasuraProps, columns, tableName }: any) {
               title: columnName,
               dataIndex: columnName,
               key: columnName,
+              render: (row: any) => {
+                // Check if the row contains an image
+                if (typeof row == 'string' && mediaDisplaySetting == 'MEDIA' && (row.endsWith('.png') || row.endsWith('.jpeg') || row.endsWith('.gif'))) {
+                  // Row contains image, so display it as an image 
+                  return (
+                    <img src={row}/>
+                  );
+                } else if (typeof row == 'string' && mediaDisplaySetting == 'MEDIA' && (row.endsWith('.mp4') || row.endsWith('.mp3'))) {
+                  // Row contains video, so display it as a video
+                  return (
+                    <video width="320" height="240" controls>
+                      <source src={row} type="video/mp4"/>
+                    </video>
+                  );
+                } else {
+                  return (
+                    row
+                  );
+                }
+             }
             };
           });
           columns = undefined;
@@ -76,7 +101,7 @@ function BaseTableData({ hasuraProps, columns, tableName }: any) {
           />
         ) : (
           // If table is empty, tell the user
-          <p>No data</p>
+          <p>{t("basetable.warning")}</p>
         )
       ) : (
         //If data is still loading, display throbber
@@ -87,22 +112,3 @@ function BaseTableData({ hasuraProps, columns, tableName }: any) {
 }
 
 export default BaseTableData;
-
-/**
- * @export
- * @param {*} context
- * @return {*} 
- */
-export function getServerSideProps(context: any) {
-  const hasuraProps = {
-    hasuraSecret: process.env.NEXT_PUBLIC_HASURA_GRAPHQL_ADMIN_SECRET as String,
-    hasuraEndpoint: process.env.NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT as
-      | RequestInfo
-      | URL,
-  };
-  return {
-    props: {
-      hasuraProps,
-    },
-  };
-}

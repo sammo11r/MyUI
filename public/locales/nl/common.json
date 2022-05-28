@@ -8,5 +8,37 @@
   },
   "logout": {
     "button": "Log uit"
+  },
+  "workspace": {
+    "welcome": "Welkom bij MyUI!"
+  },
+  "dashboard": {
+    "sidebar": "Dashboard",
+    "new": "Voeg toe",
+    "delete": "Verwijder",
+    "modal": {
+      "add": {
+        "title": "Voeg een nieuwe dashboard toe",
+        "name": "Naam",
+        "tooltip": "De naam van het dashboard moet uniek zijn",
+        "error": "Sorry, je kunt deze naam niet gebruiken"
+      },
+      "remove": {
+        "title": "Verwijder een dashboard",
+        "name": "Wat is de naam van het dashboard dat u wilt verwijderen?",
+        "tooltip": "Geef hier de naam van het dashboard dat u wilt verwijderen",
+        "error": "Dit is geen geldig dashboard"
+      },
+      "removewarning":{
+        "title": "Weet je zeker dat je dit dashboard wilt verwijderen?",
+        "description": "Als je een dashboard verwijdert, is deze niet meer toegankelijk. Deze actie kan niet ongedaan gemaakt worden.",
+        "confirmText": "Ja",
+        "cancelText": "Nee"
+      }
+    }
+  },
+  "basetable": {
+    "sidebar": "Basistabellen",
+    "warning": "Er is geen data beschikbaar"
   }
 }

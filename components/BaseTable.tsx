@@ -1,4 +1,3 @@
-import { Table } from "antd";
 import React from "react";
 import { useQuery } from "react-query";
 import BaseTableData from "./BaseTableData";
@@ -8,16 +7,18 @@ import Loader from "../components/Loader"
  * @param {*} { hasuraProps, name }
  * @return {*} 
  */
-function BaseTable({ hasuraProps, name }: any) {
+function BaseTable({ hasuraProps, systemProps, name }: any) {
   enum columnStates {
     LOADING,
     READY,
   }
+
   // Add state deciding whether to show loader or table
   const [columnState, setColumnState] = React.useState({
     columns: [{}],
     columnState: columnStates.LOADING,
   });
+
   const hasuraHeaders = {
     "Content-Type": "application/json",
     "x-hasura-admin-secret": hasuraProps.hasuraSecret,
@@ -63,6 +64,7 @@ function BaseTable({ hasuraProps, name }: any) {
           tableName={tableName}
           columns={columnState.columns}
           hasuraProps={hasuraProps}
+          systemProps={systemProps}
         />
       ) : (
         //If data is still loading, display throbber
@@ -73,22 +75,3 @@ function BaseTable({ hasuraProps, name }: any) {
 }
 
 export default BaseTable;
-
-/**
- * @export
- * @param {*} context
- * @return {*} 
- */
-export function getServerSideProps(context: any) {
-  const hasuraProps = {
-    hasuraSecret: process.env.NEXT_PUBLIC_HASURA_GRAPHQL_ADMIN_SECRET as String,
-    hasuraEndpoint: process.env.NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT as
-      | RequestInfo
-      | URL,
-  };
-  return {
-    props: {
-      hasuraProps,
-    },
-  };
-}
