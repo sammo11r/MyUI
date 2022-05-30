@@ -1,16 +1,16 @@
 /* eslint-disable new-cap*/
-import NextAuth from "next-auth";
+import NextAuth, { Awaitable, User } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import { JWT, JWTDecodeParams, Secret } from "next-auth/jwt";
+import ip from "ip";
 
 export default NextAuth({
   providers: [
     CredentialsProvider({
-      // The name to display on the sign in form (e.g. 'Sign in with...')
+      id: "login-credentials",
       name: "Credentials",
-      // The credentials is used to generate a suitable form on the signin page.
-      // You can specify whatever fields you are expecting to be submitted.
-      // e.g. domain, username, password, 2FA token, etc.
-      // You can pass any HTML attribute to the <input> tag through the object.
       credentials: {
         username: {
           label: "Username",
@@ -22,37 +22,162 @@ export default NextAuth({
           type: "password",
         },
       },
-      async authorize(credentials, req) {
-        // You need to provide your own logic here that takes the credentials
-        // submitted and returns either a object representing a user or value
-        // that is false/null if the credentials are invalid.
-        // e.g. return { id: 1, name: 'J Smith', email: 'jsmith@example.com' }
-        // You can also use the `req` object to obtain additional parameters
-        // (i.e., the request IP address)
-        // const res = await fetch('/your/endpoint', {
-        //   method: 'POST',
-        //   body: JSON.stringify(credentials),
-        //   headers: { 'Content-Type': 'application/json' }
-        // })
-        // const user = await res.json()
-
-        // @TODO: connection with Hasura
-        return {
-          name: "John doe",
+      /**
+       * @param {*} credentials
+       * @param {*} req
+       * @return {*}
+       */
+      async authorize(credentials: any, req: any) {
+        // Initialize hasura credentials in order to make API call
+        const hasuraProps = {
+          hasuraSecret: process.env
+            .NEXT_PUBLIC_HASURA_GRAPHQL_ADMIN_SECRET as String,
+          hasuraEndpoint: process.env.NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT as
+            | RequestInfo
+            | URL,
         };
+
+        const hasuraHeaders = {
+          "Content-Type": "application/json",
+          "x-hasura-admin-secret": hasuraProps.hasuraSecret,
+        } as unknown as HeadersInit;
+
+        // Fetch current IP address
+        var ipAddress = ip.address();
+
+        // Modify IP address to forward to docker container
+        // eslint-disable-next-line max-len
+        ipAddress = ipAddress.substring(0, ipAddress.lastIndexOf(".") + 1) + (parseInt(ipAddress.substring(ipAddress.length - 1)) + 1).toString();
+
+        // GET request to REST endpoint of Hasura to fetch all users
+        const res = await fetch(`http://${ipAddress}:8080/api/rest/users`, {
+          method: "GET",
+          headers: hasuraHeaders,
+        });
+
+        // Parse response as JSON
+        const usersData = await res.json();
+
+        // Filter through users to find matching username
+        // @ts-ignore: Object is possibly 'null'. eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const user = usersData.users.filter(
+          (user: { id: number; name: string; password: string }) =>
+            user.name === credentials.username
+        );
+
+        // If user is not found, credentials are invalid
+        if (!user || user === undefined) {
+          return null;
+        }
+
+        // Check validity of password with bcrypt
+        const passwordCheck = await bcrypt.compare(
+          credentials.password,
+          user[0].password
+        );
+
+        // If password is invalid, credentials are invalid
+        if (!res.ok || !passwordCheck) {
+          return null;
+        } else {
+          // If password is valid, return user
+          return user[0];
+        }
       },
     }),
   ],
+  secret: process.env.JWT_SECRET, // base64 JWT secret
   pages: {
     signIn: "/auth/signin",
     signOut: "/auth/signout",
-    // error: '/auth/error', // Error code passed in query string as ?error=
-    // verifyRequest: '/auth/verify-request', // (used for check email message)
-    // eslint-disable-next-line
-    // newUser: '/auth/new-user' // New users will be directed here on first sign in (leave the property out if not of interest)
   },
   session: {
-    // Set to jwt in order to CredentialsProvider works properly
     strategy: "jwt",
+  },
+  jwt: {
+    secret: process.env.JWT_SECRET,
+    /**
+     * Create Hasura-specific JWT token
+     * @param param0 
+     * @returns 
+     */
+    encode: async ({ secret, token }) => {
+      // Initialize Hasura-specific JWT claims
+      const generateAllowedRoles = (token: JWT | undefined) => {
+        // Initialize allowed roles
+        let allowedRoles = [];
+
+        // If user is admin, add admin role to allowed roles
+        if (token!.name === "admin") {
+          allowedRoles.push("admin");
+          allowedRoles.push("editor");
+          allowedRoles.push("user");
+        } else if (token!.name === "editor") {
+          allowedRoles.push("editor");
+          allowedRoles.push("user");
+        } else if (token!.name === "user") {
+          allowedRoles.push("user");
+        }
+
+        // Return allowed roles
+        return allowedRoles;
+      }
+
+      const jwtClaims = {
+        sub: token!.id,
+        name: token!.name,
+        admin: token!.name === "admin",
+        iat: Date.now() / 1000,
+        "https://hasura.io/jwt/claims": {
+          "x-hasura-allowed-roles": generateAllowedRoles(token),
+          "x-hasura-default-role": token!.name,
+        },
+      };
+
+      // JWT tokens are only valid if encoded/signed
+      const encodedToken = jwt.sign(jwtClaims, secret, { algorithm: "HS256" });
+
+      return encodedToken as Awaitable<string>;
+    },
+    /**
+     * Decode\Verify Hasura-specific JWT token
+     * @param param0 
+     * @returns 
+     */
+    decode: async ({ secret, token }: JWTDecodeParams) => {
+      // Token needs to be decoded to be "verified"
+      const decodedToken = jwt.verify(token as string, secret, {
+        algorithms: ["HS256"],
+      });
+
+      return decodedToken as Awaitable<JWT>;
+    },
+  },
+  callbacks: {
+    /**
+     * Called after a user has been successfully authenticated.
+     *
+     * @param {*} params
+     * @return {*}
+     */
+    async jwt({ token, user }) {
+      if (user) {
+        token.user = user;
+        token.id = user.id;
+      }
+      return token;
+    },
+    /**
+     * @param {*} { session, token }
+     * @return {*}
+     */
+    async session({ session, token }) {
+      session.user = token.user as User;
+      const encodedToken = jwt.sign(token, process.env.JWT_SECRET as Secret, {
+        algorithm: "HS256",
+      });
+      session.token = encodedToken;
+      return session;
+    },
   },
 });

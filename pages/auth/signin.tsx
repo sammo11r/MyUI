@@ -24,8 +24,8 @@ export default function SignIn() {
     remember: boolean;
   }
 
-  const onFinish = (values: values) => {
-    signIn("credentials", {
+  const onFinish = async (values: values) => {
+    await signIn("login-credentials", {
       username: values.username,
       password: values.password,
     });

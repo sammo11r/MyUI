@@ -1,1 +1,9 @@
-[]
+- definition:
+    query:
+      collection_name: allowed-queries
+      query_name: Get all users
+  url: users
+  methods:
+    - GET
+  name: Get all users
+  comment: Retrieves all users from the database

@@ -1,3 +1,50 @@
 table:
   schema: public
   name: Inventory
+object_relationships:
+  - name: Product
+    using:
+      foreign_key_constraint_on: product
+  - name: Store
+    using:
+      foreign_key_constraint_on: store
+insert_permissions:
+  - role: editor
+    permission:
+      check: {}
+      columns:
+        - date
+        - id
+        - price
+        - product
+        - store
+select_permissions:
+  - role: editor
+    permission:
+      columns:
+        - date
+        - id
+        - price
+        - product
+        - store
+      filter: {}
+  - role: user
+    permission:
+      columns:
+        - date
+        - id
+        - price
+        - product
+        - store
+      filter: {}
+update_permissions:
+  - role: editor
+    permission:
+      columns:
+        - date
+        - id
+        - price
+        - product
+        - store
+      filter: {}
+      check: null

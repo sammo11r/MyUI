@@ -61,7 +61,7 @@ console:
 
 run-migrations:
 	@echo "Running all database migrations..."
-	cd hasura && hasura migrate apply --up
+	cd hasura && hasura migrate apply --up all
 	
 squash-migrations:
 	@echo "Squashing migrations..."

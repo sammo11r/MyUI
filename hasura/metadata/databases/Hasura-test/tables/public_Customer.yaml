@@ -1,3 +1,47 @@
 table:
   schema: public
   name: Customer
+array_relationships:
+  - name: Purchases
+    using:
+      foreign_key_constraint_on:
+        column: customer
+        table:
+          schema: public
+          name: Purchase
+insert_permissions:
+  - role: editor
+    permission:
+      check: {}
+      columns:
+        - dateOfBirth
+        - id
+        - address
+        - name
+select_permissions:
+  - role: editor
+    permission:
+      columns:
+        - dateOfBirth
+        - id
+        - address
+        - name
+      filter: {}
+  - role: user
+    permission:
+      columns:
+        - dateOfBirth
+        - id
+        - address
+        - name
+      filter: {}
+update_permissions:
+  - role: editor
+    permission:
+      columns:
+        - dateOfBirth
+        - id
+        - address
+        - name
+      filter: {}
+      check: null
