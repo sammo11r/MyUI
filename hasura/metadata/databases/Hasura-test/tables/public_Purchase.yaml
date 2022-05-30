@@ -1,3 +1,53 @@
 table:
   schema: public
   name: Purchase
+object_relationships:
+  - name: Customer
+    using:
+      foreign_key_constraint_on: customer
+  - name: Product
+    using:
+      foreign_key_constraint_on: product
+  - name: Store
+    using:
+      foreign_key_constraint_on: store
+insert_permissions:
+  - role: editor
+    permission:
+      check: {}
+      columns:
+        - id
+        - product
+        - customer
+        - store
+        - date
+select_permissions:
+  - role: editor
+    permission:
+      columns:
+        - id
+        - product
+        - customer
+        - store
+        - date
+      filter: {}
+  - role: user
+    permission:
+      columns:
+        - date
+        - customer
+        - id
+        - product
+        - store
+      filter: {}
+update_permissions:
+  - role: editor
+    permission:
+      columns:
+        - id
+        - product
+        - customer
+        - store
+        - date
+      filter: {}
+      check: null

@@ -1,6 +1,13 @@
-actions: []
+actions:
+  - name: insert_product
+    definition:
+      kind: synchronous
+      handler: http://host.docker.internal:3000
+    permissions:
+      - role: editor
 custom_types:
   enums: []
   input_objects: []
-  objects: []
+  objects:
+    - name: productOutput
   scalars: []

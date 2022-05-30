@@ -1,3 +1,50 @@
 table:
   schema: public
   name: Store
+array_relationships:
+  - name: Inventories
+    using:
+      foreign_key_constraint_on:
+        column: store
+        table:
+          schema: public
+          name: Inventory
+  - name: Purchases
+    using:
+      foreign_key_constraint_on:
+        column: store
+        table:
+          schema: public
+          name: Purchase
+insert_permissions:
+  - role: editor
+    permission:
+      check: {}
+      columns:
+        - id
+        - address
+        - name
+select_permissions:
+  - role: editor
+    permission:
+      columns:
+        - id
+        - address
+        - name
+      filter: {}
+  - role: user
+    permission:
+      columns:
+        - id
+        - address
+        - name
+      filter: {}
+update_permissions:
+  - role: editor
+    permission:
+      columns:
+        - id
+        - address
+        - name
+      filter: {}
+      check: null

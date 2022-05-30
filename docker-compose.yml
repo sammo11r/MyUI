@@ -1,11 +1,11 @@
 version: "3"
 services:
-  gitlab-runner:
-    image: "gitlab/gitlab-runner:latest"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - ./config:/etc/gitlab-runner
-    restart: unless-stopped
+  # gitlab-runner:
+  #   image: "gitlab/gitlab-runner:latest"
+  #   volumes:
+  #     - /var/run/docker.sock:/var/run/docker.sock
+  #     - ./config:/etc/gitlab-runner
+  #   restart: unless-stopped
   react-app:
     build:
       context: .
@@ -46,5 +46,7 @@ services:
       HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup, http-log, webhook-log, websocket-log, query-log
       ## uncomment next line to set an admin secret
       HASURA_GRAPHQL_ADMIN_SECRET: myadminsecretkey
+      ## JWT secret key
+      HASURA_GRAPHQL_JWT_SECRET: '{"type":"HS256","key":"7c48f01ba9a3db23e469b3b9e095dfc1"}'
 volumes:
   db_data:

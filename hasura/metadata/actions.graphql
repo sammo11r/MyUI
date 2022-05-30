@@ -1,0 +1,11 @@
+type Mutation {
+  insert_product(
+    name: String!
+  ): productOutput
+}
+
+type productOutput {
+  id: Int
+  name: String
+}
+

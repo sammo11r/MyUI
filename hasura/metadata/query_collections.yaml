@@ -1,1 +1,12 @@
-[]
+- name: allowed-queries
+  definition:
+    queries:
+      - name: Get all users
+        query: |
+          query MyQuery {
+          	users {
+          		id
+          		name
+          		password
+          	}
+          }
