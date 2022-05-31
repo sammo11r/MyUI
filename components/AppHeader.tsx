@@ -44,19 +44,26 @@ function AppHeader({ workspaceState, toggleEditMode }: any) {
     }
   }
 
+  const rotateGear = () => {
+    if (workspaceState.displaying === workspaceStates.EDIT_DASHBOARD) {
+      return "gear"
+    }
+    return ""
+  }
+
   return (
     <Header className="header">
       <Content className="header-logo">MyUI</Content>
       {displayGear() ?
         <SettingFilled
-          className="header-settings"
+          className={rotateGear()}
           data-testid="header-settings-element"
           onClick={toggleEditMode}
           style={{
             position: "absolute",
             top: 16,
             float: "right",
-            right: 60,
+            right: 80,
             fontSize: "30px",
             color: "white",
           }}
@@ -69,22 +76,18 @@ function AppHeader({ workspaceState, toggleEditMode }: any) {
         placement="bottom"
         arrow={{ pointAtCenter: true }}
       >
-        <a
+        <UserOutlined
+          data-testid="header-profile-element"
           onClick={(e) => e.preventDefault()}
           style={{
             position: "absolute",
             top: 16,
             float: "right",
-            right: 20,
+            right: 40,
             fontSize: "30px",
             color: "white",
           }}
-        >
-          <UserOutlined
-            className="header-user-profile"
-            data-testid="header-profile-element"
-          />
-        </a>
+        />
       </Dropdown>
     </Header>
   );
