@@ -3,7 +3,6 @@ import React from "react";
 import GridLayout from "react-grid-layout";
 
 import { workspaceStates } from "../pages";
-import { draggedType } from "./AppSider";
 
 export enum elementType {
   GRIDVIEW,
