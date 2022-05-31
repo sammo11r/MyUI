@@ -1,9 +1,11 @@
 import { Grid } from "antd";
 import React from "react";
 import GridLayout from "react-grid-layout";
+
+import { draggedType } from "./AppSider";
 import { workspaceStates } from "../pages";
 
-enum elementType {
+export enum elementType {
   GRIDVIEW,
   STATIC
 }
@@ -13,10 +15,10 @@ function renderDashboardElement(element: any, hasuraProps: any, key: number): JS
   // position is absolute relative to parent element, i.e. WorkSpace
   const style = {
     position: "absolute",
-    top: element.position.y,
-    left: element.position.x,
-    height: element.height,
-    width: element.width,
+    top: element.y,
+    left: element.x,
+    height: element.h,
+    width: element.w,
     outline: "2px solid #ebf2ff",
   }
 
@@ -35,10 +37,10 @@ function renderDashboardElement(element: any, hasuraProps: any, key: number): JS
       key={key}
       style={{ outline: "2px solid #ebf2ff" }}
       data-grid={{
-        x: element.position.x,
-        y: element.position.y,
-        w: element.width,
-        h: element.height
+        x: element.x,
+        y: element.y,
+        w: element.w,
+        h: element.h,
       }}
     >
       {rendered_element}
@@ -52,12 +54,10 @@ function Dashboard({ hasuraProps, systemProps, name, mode, userConfig, setUserCo
     dashboardElements: [
       {
         name: "Cool Element",
-        position: {
-          x: 0,
-          y: 0
-        },
-        height: 9,
-        width: 6,
+        x: 0,
+        y: 0,
+        h: 9,
+        w: 6,
         rowsPerPage: 5,
         query: `
         query MyQuery {
@@ -72,23 +72,19 @@ function Dashboard({ hasuraProps, systemProps, name, mode, userConfig, setUserCo
       },
       {
         name: "Text Element",
-        position: {
-          x: 6,
-          y: 0
-        },
-        height: 9,
-        width: 6,
+        x: 6,
+        y: 0,
+        h: 9,
+        w: 6,
         text: "Dit is een klein stukje tekst. Prijs de heer, zuip wat meer!",
         type: elementType.STATIC
       },
       {
         name: "Video Element",
-        position: {
-          x: 0,
-          y: 9
-        },
-        height: 9,
-        width: 6,
+        x: 0,
+        y: 9,
+        h: 9,
+        w: 6,
         text: "https://archive.org/download/Rick_Astley_Never_Gonna_Give_You_Up/Rick_Astley_Never_Gonna_Give_You_Up.mp4",
         type: elementType.STATIC
       }]
@@ -103,10 +99,19 @@ function Dashboard({ hasuraProps, systemProps, name, mode, userConfig, setUserCo
     return dashboards[0];
   }
 
-  const onDrop = (layout: any, layoutItem: any, _event: Event) => {
-    console.log(layout)
-    console.log(layoutItem)
-    console.log(_event)
+  const onDrop = (layout: GridLayout.Layout[], layoutItem: GridLayout.Layout, _event: Event) => {
+    const element = {
+      name: "New Element " + Date.now(),
+      x: layoutItem["x"],
+      y: layoutItem["y"],
+      w: layoutItem["w"],
+      h: layoutItem["h"],
+      type: draggedType,
+      text: "Input text here..."
+    }
+    getDashboard(name).dashboardElements.push(element)
+    //renderDashboardElement(element, hasuraProps, Date.now())
+    console.log(getDashboard(name))
   };
 
   return (
@@ -118,6 +123,7 @@ function Dashboard({ hasuraProps, systemProps, name, mode, userConfig, setUserCo
       compactType={null}
       preventCollision={true}
       isDroppable={true}
+      isBounded={true}
       onDrop={onDrop}
     >
       {

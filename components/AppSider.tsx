@@ -2,15 +2,21 @@ import React from "react";
 import "antd/dist/antd.css";
 import { Layout, Menu } from "antd";
 import { sideBarItemTypes } from "../pages/index";
-import {  TableOutlined,
+import {
+  TableOutlined,
   PicCenterOutlined,
   PlusCircleOutlined,
-  MinusCircleOutlined } from "@ant-design/icons";
+  MinusCircleOutlined
+} from "@ant-design/icons";
 import { useTranslation } from "next-i18next";
+
+import { elementType } from "./Dashboard";
 
 const { Sider } = Layout;
 const dashboardAddKey = "dashboardAdd";
-const dashboardRemoveKey = "dashboardDelete"
+const dashboardRemoveKey = "dashboardDelete";
+
+let draggedType: elementType;
 
 /**
  * @param {*} label
@@ -19,7 +25,7 @@ const dashboardRemoveKey = "dashboardDelete"
  * @param {*} children
  * @return {*}
  */
- function getItem(label: any, key: any, icon: any, children: any) {
+function getItem(label: any, key: any, icon: any, children: any) {
   return {
     key,
     icon,
@@ -42,16 +48,16 @@ function getSideBarItems(tableNames: string[], dashboardNames: string[], t: any)
       tableNames.map((name: string) => getItem(name, `${name}`, null, null))
     ),
     getItem(
-      t("dashboard.sidebar"), 
-      sideBarItemTypes.DASHBOARD, 
-      <PicCenterOutlined />, 
+      t("dashboard.sidebar"),
+      sideBarItemTypes.DASHBOARD,
+      <PicCenterOutlined />,
       dashboardNames.map((name: string) => getItem(name, `${name}`, null, null))
-      .concat(
-        [
-          {...getItem(t("dashboard.new"), dashboardAddKey, <PlusCircleOutlined/>, null)},
-          {...getItem(t("dashboard.delete"), dashboardRemoveKey, <MinusCircleOutlined/>, null)}
-        ]
-      )
+        .concat(
+          [
+            { ...getItem(t("dashboard.new"), dashboardAddKey, <PlusCircleOutlined />, null) },
+            { ...getItem(t("dashboard.delete"), dashboardRemoveKey, <MinusCircleOutlined />, null) }
+          ]
+        )
     ),
   ];
   storedSideBarItems = dashboardItems;
@@ -93,14 +99,14 @@ function NavigationSider({
         onClick={(item) => {
           // Get type of item
           const itemType: string = item.keyPath[1];
-          
-          switch(itemType){
+
+          switch (itemType) {
             case sideBarItemTypes.BASE_TABLE.toString():
               baseTableOnClick(item.key);
               break;
             case sideBarItemTypes.DASHBOARD.toString():
               dashboardOnClick(item.key);
-              break; 
+              break;
           }
         }}
       />
@@ -109,27 +115,30 @@ function NavigationSider({
 }
 
 function EditModeSider() {
+  const draggableElement = (type: elementType, text: string): JSX.Element => {
+    return (
+      <div
+        className="droppable-element"
+        draggable={true}
+        unselectable="on"
+        onDragStart={e => {
+          e.dataTransfer.setData("text/plain", "")
+          draggedType = type
+        }}
+      >
+        {text}
+      </div>
+    )
+  }
+
   return (
     <Sider width={200} className="site-layout-background" theme="light">
-      <div
-          className="droppable-element"
-          draggable={true}
-          unselectable="on"
-          onDragStart={e => e.dataTransfer.setData("text/plain", "")}
-        >
-          Droppable Text Element (Drag me!)
-        </div>
-        <div
-          className="droppable-element"
-          draggable={true}
-          unselectable="on"
-          onDragStart={e => e.dataTransfer.setData("text/plain", "")}
-        >
-          Droppable Table Element (Drag me!)
-        </div>
+      {draggableElement(elementType.STATIC, "Droppable Static Element (Drag me!)")}
+      {draggableElement(elementType.GRIDVIEW, "Droppable Gridview Element (Drag me!)")}
     </Sider>
   )
 }
 
 export { EditModeSider, NavigationSider }
 export { dashboardAddKey, dashboardRemoveKey }
+export { draggedType }
