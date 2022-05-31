@@ -1,0 +1,5 @@
+.droppable-element {
+  outline: 1px dotted;
+  margin: 10px;
+  text-align: center;
+}
