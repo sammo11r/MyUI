@@ -239,8 +239,9 @@ export default function App({ hasuraProps, systemProps }: any) {
               workspaceState={workspaceState}
               hasuraProps={hasuraProps}
               systemProps={systemProps}
+              userConfig={userConfig} 
+              setUserConfig={setUserConfig}
             />
-            <Dashboard/>
             {/* <QueryInput hasuraProps={hasuraProps}/> */}
           </Content>
         </Layout>
