@@ -16,8 +16,6 @@ const { Sider } = Layout;
 const dashboardAddKey = "dashboardAdd";
 const dashboardRemoveKey = "dashboardDelete";
 
-let draggedType: elementType;
-
 /**
  * @param {*} label
  * @param {*} key
@@ -122,8 +120,7 @@ function EditModeSider() {
         draggable={true}
         unselectable="on"
         onDragStart={e => {
-          e.dataTransfer.setData("text/plain", "")
-          draggedType = type
+          e.dataTransfer.setData("text/plain", elementType[type])
         }}
       >
         {text}
@@ -141,4 +138,3 @@ function EditModeSider() {
 
 export { EditModeSider, NavigationSider }
 export { dashboardAddKey, dashboardRemoveKey }
-export { draggedType }

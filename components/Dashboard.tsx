@@ -1,9 +1,11 @@
 import { Grid } from "antd";
 import React from "react";
 import GridLayout from "react-grid-layout";
-import { workspaceStates } from "../pages";
 
-enum elementType {
+import { workspaceStates } from "../pages";
+import { draggedType } from "./AppSider";
+
+export enum elementType {
   GRIDVIEW,
   STATIC
 }
@@ -102,10 +104,18 @@ function Dashboard({ hasuraProps, systemProps, name, mode, userConfig, setUserCo
     }
   }
 
-  const onDrop = (layout: any, layoutItem: any, _event: Event) => {
-    console.log(layout)
-    console.log(layoutItem)
-    console.log(_event)
+  const onDrop = (layout: GridLayout.Layout[], layoutItem: GridLayout.Layout, _event: DragEvent) => {
+    const typeString = _event.dataTransfer?.getData("text/plain") as keyof typeof elementType
+    const element = {
+      name: "New Element " + Date.now(),
+      x: layoutItem["x"],
+      y: layoutItem["y"],
+      w: layoutItem["w"],
+      h: layoutItem["h"],
+      type: elementType[typeString],
+      text: "Input text here..."
+    }
+    getDashboard(name).dashboardElements.push(element)
   };
 
 
