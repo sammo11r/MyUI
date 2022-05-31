@@ -32,15 +32,7 @@ function BaseTable({ hasuraProps, systemProps, name }: any) {
       method: "POST",
       headers: hasuraHeaders,
       body: JSON.stringify({
-        query: `
-          query Columns {
-            __type(name: "${tableName}") {
-              fields {
-                name
-              }
-            }
-          }
-          `,
+        query: `query Columns { __type(name: "${tableName}") { fields { name }}}`,
       }),
     })
       .then((names) => names.json())
@@ -67,7 +59,6 @@ function BaseTable({ hasuraProps, systemProps, name }: any) {
           systemProps={systemProps}
         />
       ) : (
-        //If data is still loading, display throbber
         <Loader />
       )}
     </>

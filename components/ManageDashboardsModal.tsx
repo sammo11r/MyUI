@@ -98,13 +98,7 @@ export default function ManageDashboardsModal({
         method: "POST",
         headers: hasuraHeaders,
         body: JSON.stringify({
-          query: `
-            mutation insertUserConfig {
-              insert_user_versioned_config_one(object: {config: "${userConfigQueryInput}", user_id: ${userId}}) {
-                config
-              }
-            }
-            `,
+          query: ` mutation insertUserConfig { insert_user_versioned_config_one(object: {config: "${userConfigQueryInput}", user_id: ${userId}}) { config }}`,
         }),
       })
       // Clear the query input state variable

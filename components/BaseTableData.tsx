@@ -34,13 +34,7 @@ function BaseTableData({ hasuraProps, systemProps, columns, tableName }: any): a
       method: "POST",
       headers: hasuraHeaders,
       body: JSON.stringify({
-        query: `
-        {
-          ${tableName} {
-            ${columns}
-          }
-        }
-        `,
+        query: `{ ${tableName} { ${columns} }}`,
       }),
     })
       .then((res) => res.json())

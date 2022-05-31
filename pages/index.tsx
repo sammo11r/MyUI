@@ -125,17 +125,7 @@ export default function App({ hasuraProps, systemProps }: any) {
         method: "POST",
         headers: hasuraHeaders,
         body: JSON.stringify({
-          query: `
-      query LearnAboutSchema {
-        __schema {
-          queryType {
-            fields {
-              name
-            }
-          }
-        }
-      }
-    `,
+          query: `query LearnAboutSchema { __schema { queryType { fields { name }}}}`,
         }),
       })
         .then((res) => res.json())
