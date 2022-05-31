@@ -10,6 +10,8 @@ import "../styles/App.css";
 import "../styles/AppHeader.css";
 import "../styles/globals.css";
 import "../styles/index.css";
+import "../node_modules/react-grid-layout/css/styles.css";
+import "../node_modules/react-resizable/css/styles.css";
 import Loader from "../components/Loader";
 
 type AppAuthProps = AppProps & {
