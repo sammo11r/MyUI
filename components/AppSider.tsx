@@ -115,7 +115,6 @@ function EditModeSider() {
           className="droppable-element"
           draggable={true}
           unselectable="on"
-          onDrop={onDrop}
           onDragStart={e => e.dataTransfer.setData("text/plain", "")}
         >
           Droppable Text Element (Drag me!)
@@ -124,7 +123,6 @@ function EditModeSider() {
           className="droppable-element"
           draggable={true}
           unselectable="on"
-          onDrop={onDrop}
           onDragStart={e => e.dataTransfer.setData("text/plain", "")}
         >
           Droppable Table Element (Drag me!)
@@ -132,10 +130,6 @@ function EditModeSider() {
     </Sider>
   )
 }
-
-const onDrop = ({layout, layoutItem, _event}: any) => {
-  alert(`Dropped element props:\n${JSON.stringify(layoutItem, ['x', 'y', 'w', 'h'], 2)}`);
-};
 
 export { EditModeSider, NavigationSider }
 export { dashboardAddKey, dashboardRemoveKey }

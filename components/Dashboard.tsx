@@ -103,6 +103,12 @@ function Dashboard({ hasuraProps, systemProps, name, mode, userConfig, setUserCo
     return dashboards[0];
   }
 
+  const onDrop = (layout: any, layoutItem: any, _event: Event) => {
+    console.log(layout)
+    console.log(layoutItem)
+    console.log(_event)
+  };
+
   return (
     <GridLayout
       className="layout"
@@ -111,6 +117,8 @@ function Dashboard({ hasuraProps, systemProps, name, mode, userConfig, setUserCo
       width={1500}
       compactType={null}
       preventCollision={true}
+      isDroppable={true}
+      onDrop={onDrop}
     >
       {
         getDashboard(name)
