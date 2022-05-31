@@ -10,10 +10,12 @@ import { Content, Header } from "antd/lib/layout/layout";
 import { signOut } from "next-auth/react";
 import { useTranslation } from "next-i18next";
 
+import { workspaceStates } from "../pages/index";
+
 /**
  * @return {*}
  */
-function AppHeader() {
+function AppHeader({ workspaceState, toggleEditMode }: any) {
   const { t } = useTranslation();
   const userMenu = (
     <Menu
@@ -32,21 +34,34 @@ function AppHeader() {
     />
   );
 
+  const displayGear = () => {
+    switch (workspaceState.displaying) {
+      case workspaceStates.DISPLAY_DASHBOARD:
+      case workspaceStates.EDIT_DASHBOARD:
+        return true
+      default:
+        return false
+    }
+  }
+
   return (
     <Header className="header">
       <Content className="header-logo">MyUI</Content>
-      <SettingFilled
-        className="header-settings"
-        data-testid="header-settings-element"
-        style={{
-          position: "relative",
-          top: 16,
-          float: "right",
-          right: 40,
-          fontSize: "30px",
-          color: "white",
-        }}
-      />
+      {displayGear() ?
+        <SettingFilled
+          className="header-settings"
+          data-testid="header-settings-element"
+          onClick={toggleEditMode}
+          style={{
+            position: "absolute",
+            top: 16,
+            float: "right",
+            right: 60,
+            fontSize: "30px",
+            color: "white",
+          }}
+        /> : <></>
+      }
 
       <Dropdown
         overlay={userMenu}
@@ -57,10 +72,10 @@ function AppHeader() {
         <a
           onClick={(e) => e.preventDefault()}
           style={{
-            position: "relative",
+            position: "absolute",
             top: 16,
             float: "right",
-            left: 35,
+            right: 20,
             fontSize: "30px",
             color: "white",
           }}

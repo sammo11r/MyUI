@@ -12,7 +12,9 @@ function Workspace({ workspaceState, hasuraProps, systemProps }: any) {
   switch (workspaceState.displaying) {
     case workspaceStates.BASE_TABLE:
       return <BaseTable hasuraProps={hasuraProps} systemProps={systemProps} name={workspaceState.name} />;
-    case workspaceStates.DASHBOARD:
+    case workspaceStates.DISPLAY_DASHBOARD:
+      return <p>Coming Sooner!</p>;
+    case workspaceStates.EDIT_DASHBOARD:
       return <p>Coming Soon!</p>;
     case workspaceStates.EMPTY:
       return <p>{t("workspace.welcome")}</p>;

@@ -20,7 +20,8 @@ export enum sideBarItemTypes { BASE_TABLE, DASHBOARD }
 export enum workspaceStates {
   EMPTY,
   BASE_TABLE,
-  DASHBOARD,
+  DISPLAY_DASHBOARD,
+  EDIT_DASHBOARD
 }
 
 /**
@@ -166,7 +167,7 @@ export default function App({ hasuraProps, systemProps }: any) {
     } else if (name == dashboardRemoveKey){
       showModal(modalTypes.REMOVE);
     } else {
-      setWorkspaceState({ displaying: workspaceStates.DASHBOARD, name: name });
+      setWorkspaceState({ displaying: workspaceStates.DISPLAY_DASHBOARD, name: name });
     }
   };
 
@@ -174,13 +175,19 @@ export default function App({ hasuraProps, systemProps }: any) {
     setWorkspaceState({ displaying: workspaceStates.EMPTY, name: "" });
   };
 
+  const toggleEditMode = () => {
+    const newState = workspaceState.displaying === workspaceStates.DISPLAY_DASHBOARD ? 
+      workspaceStates.EDIT_DASHBOARD : workspaceStates.DISPLAY_DASHBOARD
+    setWorkspaceState({ displaying: newState, name: workspaceState.name });
+  }
+
   return (
     <Layout
       style={{
         height: "100vh",
       }}
     >
-      <AppHeader />
+      <AppHeader workspaceState={workspaceState} toggleEditMode={toggleEditMode}/>
       <ManageDashboardsModal
         isVisible={manageDashboardsModalState.visible}
         setVisible={ 
@@ -243,7 +250,7 @@ export default function App({ hasuraProps, systemProps }: any) {
 }
 
 // Make sure this page is protected
-App.auth = true;
+App.auth = false; // TODO turn back on
 
 export async function getServerSideProps(context: any) {
   const hasuraProps = {
