@@ -8,6 +8,7 @@ import { AuthEnabledComponentConfig } from "../utils/auth.utils";
 
 import "../styles/App.css";
 import "../styles/AppHeader.css";
+import "../styles/AppSider.css";
 import "../styles/globals.css";
 import "../styles/index.css";
 import "../node_modules/react-grid-layout/css/styles.css";

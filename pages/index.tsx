@@ -6,7 +6,8 @@ import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { useTranslation } from "next-i18next";
 
 import AppHeader from "../components/AppHeader";
-import AppSider, {dashboardAddKey, dashboardRemoveKey} from "../components/AppSider";
+import { dashboardAddKey, dashboardRemoveKey } from "../components/AppSider";
+import { EditModeSider, NavigationSider } from "../components/AppSider";
 import Dashboard from "../components/Dashboard";
 import ManageDashboardsModal, { modalTypes } from "../components/ManageDashboardsModal";
 import Loader from "../components/Loader";
@@ -30,19 +31,19 @@ export enum workspaceStates {
  */
 export default function App({ hasuraProps, systemProps }: any) {
   const { t } = useTranslation();
-  const [manageDashboardsModalState, setManageDashboardsModalState] = useState({visible: false, type: modalTypes.ADD});
+  const [manageDashboardsModalState, setManageDashboardsModalState] = useState({ visible: false, type: modalTypes.ADD });
   const [userConfig, setUserConfig] = useState();
   const [dashboardNames, setDashboardNames] = useState<string[]>([]);
 
   const showModal = (type: modalTypes) => {
-    setManageDashboardsModalState({ visible: true, type: type});
+    setManageDashboardsModalState({ visible: true, type: type });
   };
-  
+
   enum siderMenuState {
     READY,
     LOADING,
   }
-  
+
   const [siderState, setSiderState] = React.useState({
     tableNames: [],
     tableNamesState: siderMenuState.LOADING,
@@ -112,7 +113,7 @@ export default function App({ hasuraProps, systemProps }: any) {
         const dashboards = userConfig.dashboards;
         let dashboardNames = dashboards.map((dashboard: any) => dashboard.name);
         setDashboardNames(dashboardNames);
-        setUserConfig(userConfig); 
+        setUserConfig(userConfig);
       });
 
     return result;
@@ -164,7 +165,7 @@ export default function App({ hasuraProps, systemProps }: any) {
   const displayDashboard = (name: string) => {
     if (name == dashboardAddKey) {
       showModal(modalTypes.ADD);
-    } else if (name == dashboardRemoveKey){
+    } else if (name == dashboardRemoveKey) {
       showModal(modalTypes.REMOVE);
     } else {
       setWorkspaceState({ displaying: workspaceStates.DISPLAY_DASHBOARD, name: name });
@@ -176,9 +177,26 @@ export default function App({ hasuraProps, systemProps }: any) {
   };
 
   const toggleEditMode = () => {
-    const newState = workspaceState.displaying === workspaceStates.DISPLAY_DASHBOARD ? 
+    const newState = workspaceState.displaying === workspaceStates.DISPLAY_DASHBOARD ?
       workspaceStates.EDIT_DASHBOARD : workspaceStates.DISPLAY_DASHBOARD
-    setWorkspaceState({ displaying: newState, name: workspaceState.name });
+    setWorkspaceState({ displaying: newState, name: workspaceState.name })
+  }
+
+  const displaySider = () => {
+    if (workspaceState.displaying === workspaceStates.EDIT_DASHBOARD) {
+      return <EditModeSider />
+    }
+    return <NavigationSider
+      key={"sideBar"}
+      baseTableNames={tableNames}
+      dashboardNames={dashboardNames}
+      baseTableOnClick={(name: string) => {
+        displayBaseTable(name);
+      }}
+      dashboardOnClick={(name: string) => {
+        displayDashboard(name);
+      }}
+    />
   }
 
   return (
@@ -187,18 +205,18 @@ export default function App({ hasuraProps, systemProps }: any) {
         height: "100vh",
       }}
     >
-      <AppHeader workspaceState={workspaceState} toggleEditMode={toggleEditMode}/>
+      <AppHeader workspaceState={workspaceState} toggleEditMode={toggleEditMode} />
       <ManageDashboardsModal
         isVisible={manageDashboardsModalState.visible}
-        setVisible={ 
-          (visible:boolean) => setManageDashboardsModalState(
+        setVisible={
+          (visible: boolean) => setManageDashboardsModalState(
             { visible: visible, type: manageDashboardsModalState.type }
           )
         }
-        dashboardNames={dashboardNames} 
+        dashboardNames={dashboardNames}
         dashboardAddKey={dashboardAddKey}
         dashboardRemoveKey={dashboardRemoveKey}
-        setDashboardNames={setDashboardNames} 
+        setDashboardNames={setDashboardNames}
         tableNames={tableNames}
         modalType={manageDashboardsModalState.type}
         hasuraProps={hasuraProps}
@@ -209,17 +227,7 @@ export default function App({ hasuraProps, systemProps }: any) {
         {siderState.tableNamesState == siderMenuState.LOADING ? (
           <Loader />
         ) : (
-          <AppSider
-            key={"sideBar"}
-            baseTableNames = { tableNames }
-            dashboardNames = { dashboardNames }
-            baseTableOnClick={(name: string) => {
-              displayBaseTable(name);
-            }}
-            dashboardOnClick={(name: string) => {
-              displayDashboard(name);
-            }}
-          />
+          displaySider()
         )}
         <Layout
           style={{
