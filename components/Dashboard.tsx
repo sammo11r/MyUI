@@ -53,7 +53,6 @@ function Dashboard({ hasuraProps, systemProps, name, mode, userConfig, setUserCo
 
   function getDashboard(name: string) {
     const dashboard = dashboards.filter((dashboard: any) => dashboard.name === name)[0];
-    console.log(name);
     if (dashboard) {
       return dashboard
     }
