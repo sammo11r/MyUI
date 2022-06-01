@@ -83,7 +83,7 @@ function NavigationSider({
 }: any) {
   const { t } = useTranslation();
   return (
-    <Sider width={200} className="site-layout-background">
+    <Sider theme="light">
       <Menu
         data-testid="sider-menu"
         mode="inline"
@@ -128,7 +128,7 @@ function EditModeSider() {
   }
 
   return (
-    <Sider width={200} className="site-layout-background" theme="light">
+    <Sider theme="light">
       {draggableElement(elementType.STATIC, "Droppable Static Element (Drag me!)")}
       {draggableElement(elementType.GRIDVIEW, "Droppable Gridview Element (Drag me!)")}
     </Sider>

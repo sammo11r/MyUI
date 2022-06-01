@@ -4,6 +4,8 @@ import GridLayout from "react-grid-layout";
 
 import { workspaceStates } from "../pages";
 import { elementType } from "../pages";
+import GridView from "./GridView";
+import StaticElement from "./StaticElement";
 
 function Dashboard({ hasuraProps, systemProps, name, mode, userConfig, setUserConfig, dashboardState, setDashboardState }: any): JSX.Element {
 
@@ -11,17 +13,19 @@ function Dashboard({ hasuraProps, systemProps, name, mode, userConfig, setUserCo
     let rendered_element = <p>Unknown element type</p>;
     switch (element.type) {
       case elementType.GRIDVIEW:
-        rendered_element = <p>Gridview W.I.P.</p>;
+        rendered_element = <GridView query={element.query} hasuraProps={hasuraProps} style={{height:"100%", width:"100%", overflow:"auto"}}/>;
         break;
       case elementType.STATIC:
-        rendered_element = <p>Static W.I.P.</p>;
+        rendered_element = <StaticElement text={element.text} style={{height:"100%", width:"100%"}}/>;
         break;
     }
     return (
       <div
         id="test_id"
         key={index + Date.now()}
-        style={{ outline: "2px solid #ebf2ff" }}
+        style={{ 
+          outline: "2px solid #ebf2ff",
+        }}
         data-grid={{
           x: element.x,
           y: element.y,

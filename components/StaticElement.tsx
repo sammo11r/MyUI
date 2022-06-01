@@ -13,7 +13,7 @@ function convertText(text: string): JSX.Element {
     );
   } else {
     return (
-      <p>{text}</p>
+      <p style={{height:"100%", width:"100%", overflow:"auto"}}>{text}</p>
     );
   }
 }
