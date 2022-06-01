@@ -53,7 +53,7 @@ function Dashboard({ hasuraProps, systemProps, name, mode, userConfig, setUserCo
   const onDrop = (layout: GridLayout.Layout[], layoutItem: GridLayout.Layout, event: DragEvent) => {
     const typeString = event.dataTransfer?.getData("text/plain") as keyof typeof elementType
     const element = {
-      name: "New Element " + Date.now(),
+      name: "New Element",
       x: layoutItem["x"],
       y: layoutItem["y"],
       w: layoutItem["w"],
@@ -61,7 +61,7 @@ function Dashboard({ hasuraProps, systemProps, name, mode, userConfig, setUserCo
       type: elementType[typeString],
       text: "Input text here..."
     }
-    //getDashboard(name).dashboardElements.push(element)
+    setDashboardState({dashboard: dashboardState.dashboard.dashboardElements.push(element)})
   };
 
   return (
