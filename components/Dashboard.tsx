@@ -6,50 +6,8 @@ import { workspaceStates } from "../pages";
 import { elementType } from "../pages";
 
 function Dashboard({ hasuraProps, systemProps, name, mode, userConfig, setUserConfig, dashboardState, setDashboardState }: any): JSX.Element {
-  const dashboards = [{
-    name: "Cool Dashboard",
-    dashboardElements: [
-      {
-        name: "Cool Element",
-        x: 0,
-        y: 0,
-        h: 9,
-        w: 6,
-        rowsPerPage: 5,
-        query: `
-        query MyQuery {
-          Product {
-            id
-            name
-            description
-          }
-        }
-        `,
-        type: elementType.GRIDVIEW // type of visualization
-      },
-      {
-        name: "Text Element",
-        x: 6,
-        y: 0,
-        h: 9,
-        w: 6,
-        text: "Dit is een klein stukje tekst. Prijs de heer, zuip wat meer!",
-        type: elementType.STATIC
-      },
-      {
-        name: "Video Element",
-        x: 0,
-        y: 9,
-        h: 9,
-        w: 6,
-        text: "https://archive.org/download/Rick_Astley_Never_Gonna_Give_You_Up/Rick_Astley_Never_Gonna_Give_You_Up.mp4",
-        type: elementType.STATIC
-      }]
-  }];
-  //userConfig["dashboards"] ? userConfig["dashboards"] : [];
 
   function renderDashboardElement(element: any, hasuraProps: any, index: number): JSX.Element {
-
     let rendered_element = <p>Unknown element type</p>;
     switch (element.type) {
       case elementType.GRIDVIEW:
@@ -77,11 +35,12 @@ function Dashboard({ hasuraProps, systemProps, name, mode, userConfig, setUserCo
     );
   }
 
-  const saveChange = (layout: any) => {
-    console.log("Change made:");
-    console.log(layout)
-    let newDashboard = dashboardState.dashboard;
+  const saveChange = (layout: GridLayout.Layout[]) => {
+    const newDashboard = dashboardState.dashboard
     for (let i = 0; i < newDashboard.dashboardElements.length; i++) {
+      if (i >= layout.length) {
+        break
+      }
       newDashboard.dashboardElements[i].x = layout[i].x;
       newDashboard.dashboardElements[i].y = layout[i].y;
       newDashboard.dashboardElements[i].w = layout[i].w;
@@ -91,8 +50,8 @@ function Dashboard({ hasuraProps, systemProps, name, mode, userConfig, setUserCo
     setDashboardState({dashboard: newDashboard});
   }
 
-  const onDrop = (layout: GridLayout.Layout[], layoutItem: GridLayout.Layout, _event: DragEvent) => {
-    const typeString = _event.dataTransfer?.getData("text/plain") as keyof typeof elementType
+  const onDrop = (layout: GridLayout.Layout[], layoutItem: GridLayout.Layout, event: DragEvent) => {
+    const typeString = event.dataTransfer?.getData("text/plain") as keyof typeof elementType
     const element = {
       name: "New Element " + Date.now(),
       x: layoutItem["x"],
@@ -113,9 +72,9 @@ function Dashboard({ hasuraProps, systemProps, name, mode, userConfig, setUserCo
       width={1500} // TODO: Make width scale responsively
       compactType={null}
       preventCollision={true}
-      isDroppable={true}
+      isDroppable={mode === workspaceStates.EDIT_DASHBOARD}
       onDrop={onDrop}
-      onLayoutChange={(layout: any) => saveChange(layout)}
+      onLayoutChange={saveChange}
     >
       {
         dashboardState.dashboard

@@ -118,7 +118,6 @@ function EditModeSider() {
       <div
         className="droppable-element"
         draggable={true}
-        unselectable="on"
         onDragStart={e => {
           e.dataTransfer.setData("text/plain", elementType[type])
         }}
