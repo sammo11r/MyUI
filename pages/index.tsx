@@ -25,6 +25,11 @@ export enum workspaceStates {
   EDIT_DASHBOARD
 }
 
+export enum elementType {
+  GRIDVIEW,
+  STATIC
+}
+
 /**
  * @param {*} { hasuraProps, systemProps }
  * @return {*} 
@@ -52,6 +57,10 @@ export default function App({ hasuraProps, systemProps }: any) {
   const [workspaceState, setWorkspaceState] = React.useState({
     displaying: workspaceStates.EMPTY,
     name: "none",
+  });
+
+  const [dashboardState, setDashboardState] = React.useState({
+    dashboard: {}
   });
 
   // Define the default UI configuration
@@ -169,6 +178,46 @@ export default function App({ hasuraProps, systemProps }: any) {
       showModal(modalTypes.REMOVE);
     } else {
       setWorkspaceState({ displaying: workspaceStates.DISPLAY_DASHBOARD, name: name });
+      setDashboardState({dashboard: { // TODO: Fetch dashboard from userconfig instead
+        name: "Cool Dashboard",
+        dashboardElements: [
+          {
+            name: "Cool Element",
+            x: 0,
+            y: 0,
+            h: 9,
+            w: 6,
+            rowsPerPage: 5,
+            query: `
+            query MyQuery {
+              Product {
+                id
+                name
+                description
+              }
+            }
+            `,
+            type: elementType.GRIDVIEW // type of visualization
+          },
+          {
+            name: "Text Element",
+            x: 6,
+            y: 0,
+            h: 9,
+            w: 6,
+            text: "Dit is een klein stukje tekst. Prijs de heer, zuip wat meer!",
+            type: elementType.STATIC
+          },
+          {
+            name: "Video Element",
+            x: 0,
+            y: 9,
+            h: 9,
+            w: 6,
+            text: "https://archive.org/download/Rick_Astley_Never_Gonna_Give_You_Up/Rick_Astley_Never_Gonna_Give_You_Up.mp4",
+            type: elementType.STATIC
+          }]
+      }});
     }
   };
 
@@ -179,6 +228,49 @@ export default function App({ hasuraProps, systemProps }: any) {
   const toggleEditMode = () => {
     const newState = workspaceState.displaying === workspaceStates.DISPLAY_DASHBOARD ?
       workspaceStates.EDIT_DASHBOARD : workspaceStates.DISPLAY_DASHBOARD
+    
+    if (newState == workspaceStates.EDIT_DASHBOARD) {
+      setDashboardState({dashboard: { // TODO: Fetch dashboard from userconfig instead
+        name: "Cool Dashboard",
+        dashboardElements: [
+          {
+            name: "Cool Element",
+            x: 0,
+            y: 0,
+            h: 9,
+            w: 6,
+            rowsPerPage: 5,
+            query: `
+            query MyQuery {
+              Product {
+                id
+                name
+                description
+              }
+            }
+            `,
+            type: elementType.GRIDVIEW // type of visualization
+          },
+          {
+            name: "Text Element",
+            x: 6,
+            y: 0,
+            h: 9,
+            w: 6,
+            text: "Dit is een klein stukje tekst. Prijs de heer, zuip wat meer!",
+            type: elementType.STATIC
+          },
+          {
+            name: "Video Element",
+            x: 0,
+            y: 9,
+            h: 9,
+            w: 6,
+            text: "https://archive.org/download/Rick_Astley_Never_Gonna_Give_You_Up/Rick_Astley_Never_Gonna_Give_You_Up.mp4",
+            type: elementType.STATIC
+          }]
+      }})
+    }
     setWorkspaceState({ displaying: newState, name: workspaceState.name })
   }
 
@@ -249,6 +341,8 @@ export default function App({ hasuraProps, systemProps }: any) {
               systemProps={systemProps}
               userConfig={userConfig} 
               setUserConfig={setUserConfig}
+              dashboardState={dashboardState}
+              setDashboardState={setDashboardState}
             />
             {/* <QueryInput hasuraProps={hasuraProps}/> */}
           </Content>

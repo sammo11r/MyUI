@@ -10,7 +10,7 @@ import {
 } from "@ant-design/icons";
 import { useTranslation } from "next-i18next";
 
-import { elementType } from "./Dashboard";
+import { elementType } from "../pages";
 
 const { Sider } = Layout;
 const dashboardAddKey = "dashboardAdd";

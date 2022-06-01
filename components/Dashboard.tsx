@@ -3,13 +3,9 @@ import React from "react";
 import GridLayout from "react-grid-layout";
 
 import { workspaceStates } from "../pages";
+import { elementType } from "../pages";
 
-export enum elementType {
-  GRIDVIEW,
-  STATIC
-}
-
-function Dashboard({ hasuraProps, systemProps, name, mode, userConfig, setUserConfig }: any): JSX.Element {
+function Dashboard({ hasuraProps, systemProps, name, mode, userConfig, setUserConfig, dashboardState, setDashboardState }: any): JSX.Element {
   const dashboards = [{
     name: "Cool Dashboard",
     dashboardElements: [
@@ -52,16 +48,6 @@ function Dashboard({ hasuraProps, systemProps, name, mode, userConfig, setUserCo
   }];
   //userConfig["dashboards"] ? userConfig["dashboards"] : [];
 
-  function getDashboard(name: string) {
-    const dashboard = dashboards.filter((dashboard: any) => dashboard.name === name)[0];
-    if (dashboard) {
-      return dashboard
-    }
-    return dashboards[0];
-  }
- 
-  const dashboard = getDashboard(name);
-
   function renderDashboardElement(element: any, hasuraProps: any, index: number): JSX.Element {
 
     let rendered_element = <p>Unknown element type</p>;
@@ -94,13 +80,15 @@ function Dashboard({ hasuraProps, systemProps, name, mode, userConfig, setUserCo
   const saveChange = (layout: any) => {
     console.log("Change made:");
     console.log(layout)
-    let newDashboard = dashboard;
+    let newDashboard = dashboardState.dashboard;
     for (let i = 0; i < newDashboard.dashboardElements.length; i++) {
       newDashboard.dashboardElements[i].x = layout[i].x;
       newDashboard.dashboardElements[i].y = layout[i].y;
       newDashboard.dashboardElements[i].w = layout[i].w;
       newDashboard.dashboardElements[i].h = layout[i].h;
     }
+
+    setDashboardState({dashboard: newDashboard});
   }
 
   const onDrop = (layout: GridLayout.Layout[], layoutItem: GridLayout.Layout, _event: DragEvent) => {
@@ -114,9 +102,8 @@ function Dashboard({ hasuraProps, systemProps, name, mode, userConfig, setUserCo
       type: elementType[typeString],
       text: "Input text here..."
     }
-    getDashboard(name).dashboardElements.push(element)
+    //getDashboard(name).dashboardElements.push(element)
   };
-
 
   return (
     <GridLayout
@@ -131,7 +118,7 @@ function Dashboard({ hasuraProps, systemProps, name, mode, userConfig, setUserCo
       onLayoutChange={(layout: any) => saveChange(layout)}
     >
       {
-        dashboard
+        dashboardState.dashboard
           .dashboardElements
           .map((element: any, index: number) => renderDashboardElement(element, hasuraProps, index))
       }

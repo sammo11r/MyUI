@@ -8,7 +8,7 @@ import { useSWRConfig } from "swr";
 /**
  * @return {*}
  */
-function Workspace({ workspaceState, hasuraProps, systemProps, userConfig, setUserConfig }: any) {
+function Workspace({ workspaceState, hasuraProps, systemProps, userConfig, setUserConfig, dashboardState, setDashboardState }: any) {
   const { t } = useTranslation();
 
   switch (workspaceState.displaying) {
@@ -19,7 +19,9 @@ function Workspace({ workspaceState, hasuraProps, systemProps, userConfig, setUs
       return <Dashboard
         hasuraProps={hasuraProps}
         systemProps={systemProps}
-        name={workspaceState.name}
+        name={workspaceState.name} // TODO: Might not be neede anymore
+        dashboardState={dashboardState}
+        setDashboardState={() => {setDashboardState}}
         mode={workspaceState.displaying}
         userConfig={userConfig}
         setUserConfig={setUserConfig}
