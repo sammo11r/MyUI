@@ -51,6 +51,9 @@ function Dashboard({ hasuraProps, systemProps, name, mode, userConfig, setUserCo
 
   const onDrop = (layout: GridLayout.Layout[], layoutItem: GridLayout.Layout, event: DragEvent) => {
     const typeString = event.dataTransfer?.getData("text/plain") as keyof typeof elementType
+    if (elementType[typeString] === undefined) {
+      return
+    }
     const element = {
       name: "New Element",
       x: layoutItem["x"],
