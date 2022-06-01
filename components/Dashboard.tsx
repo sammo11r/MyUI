@@ -46,7 +46,6 @@ function Dashboard({ hasuraProps, systemProps, name, mode, userConfig, setUserCo
       newDashboard.dashboardElements[i].w = layout[i].w;
       newDashboard.dashboardElements[i].h = layout[i].h;
     }
-
     setDashboardState({dashboard: newDashboard});
   }
 
@@ -61,7 +60,9 @@ function Dashboard({ hasuraProps, systemProps, name, mode, userConfig, setUserCo
       type: elementType[typeString],
       text: "Input text here..."
     }
-    setDashboardState({dashboard: dashboardState.dashboard.dashboardElements.push(element)})
+    const newDashboard = dashboardState.dashboard
+    newDashboard.dashboardElements.push(element)
+    setDashboardState({dashboard: newDashboard})
   };
 
   return (
@@ -74,7 +75,8 @@ function Dashboard({ hasuraProps, systemProps, name, mode, userConfig, setUserCo
       preventCollision={true}
       isDroppable={mode === workspaceStates.EDIT_DASHBOARD}
       onDrop={onDrop}
-      onLayoutChange={saveChange}
+      onDragStop={saveChange}
+      onResizeStop={saveChange}
     >
       {
         dashboardState.dashboard

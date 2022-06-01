@@ -21,7 +21,7 @@ function Workspace({ workspaceState, hasuraProps, systemProps, userConfig, setUs
         systemProps={systemProps}
         name={workspaceState.name} // TODO: Might not be neede anymore
         dashboardState={dashboardState}
-        setDashboardState={() => {setDashboardState}}
+        setDashboardState={setDashboardState}
         mode={workspaceState.displaying}
         userConfig={userConfig}
         setUserConfig={setUserConfig}
