@@ -38,9 +38,6 @@ function Dashboard({ hasuraProps, systemProps, name, mode, userConfig, setUserCo
   const saveChange = (layout: GridLayout.Layout[]) => {
     const newDashboard = dashboardState.dashboard
     for (let i = 0; i < newDashboard.dashboardElements.length; i++) {
-      if (i >= layout.length) {
-        break
-      }
       newDashboard.dashboardElements[i].x = layout[i].x;
       newDashboard.dashboardElements[i].y = layout[i].y;
       newDashboard.dashboardElements[i].w = layout[i].w;
