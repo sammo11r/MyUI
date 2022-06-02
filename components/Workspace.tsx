@@ -3,12 +3,11 @@ import { useTranslation } from "next-i18next";
 import { workspaceStates } from "../pages";
 import BaseTable from "./BaseTable";
 import Dashboard from "./Dashboard";
-import { useSWRConfig } from "swr";
 
 /**
  * @return {*}
  */
-function Workspace({ workspaceState, hasuraProps, systemProps, userConfig, setUserConfig, dashboardState, setDashboardState }: any) {
+function Workspace({ workspaceState, hasuraProps, systemProps, userConfig, setUserConfig, dashboardState, setDashboardState, setEditElementModalState }: any) {
   const { t } = useTranslation();
 
   switch (workspaceState.displaying) {
@@ -25,6 +24,7 @@ function Workspace({ workspaceState, hasuraProps, systemProps, userConfig, setUs
         mode={workspaceState.displaying}
         userConfig={userConfig}
         setUserConfig={setUserConfig}
+        setEditElementModalState={setEditElementModalState}
       />;
     case workspaceStates.EMPTY:
       return <p>{t("workspace.welcome")}</p>;

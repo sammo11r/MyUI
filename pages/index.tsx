@@ -13,6 +13,7 @@ import ManageDashboardsModal, { modalTypes } from "../components/ManageDashboard
 import Loader from "../components/Loader";
 import Workspace from "../components/Workspace";
 import QueryInput from "../components/QueryInput";
+import EditElementModal from "../components/EditElementModal";
 
 const { Content, Sider } = Layout;
 
@@ -37,6 +38,7 @@ export enum elementType {
 export default function App({ hasuraProps, systemProps }: any) {
   const { t } = useTranslation();
   const [manageDashboardsModalState, setManageDashboardsModalState] = useState({ visible: false, type: modalTypes.ADD });
+  const [editElementModalState, setEditElementModalState] = useState({ visible: false, element: {} });
   const [userConfig, setUserConfig] = useState();
   const [dashboardNames, setDashboardNames] = useState<string[]>([]);
 
@@ -315,6 +317,14 @@ export default function App({ hasuraProps, systemProps }: any) {
         userConfig={userConfig}
         setUserConfig={setUserConfig}
       />
+      {
+        editElementModalState.visible ?
+          <EditElementModal
+            state={editElementModalState}
+            setState={setEditElementModalState}
+          /> : <></>
+      }
+
       <Layout>
         {siderState.tableNamesState == siderMenuState.LOADING ? (
           <Loader />
@@ -339,10 +349,11 @@ export default function App({ hasuraProps, systemProps }: any) {
               workspaceState={workspaceState}
               hasuraProps={hasuraProps}
               systemProps={systemProps}
-              userConfig={userConfig} 
+              userConfig={userConfig}
               setUserConfig={setUserConfig}
               dashboardState={dashboardState}
               setDashboardState={setDashboardState}
+              setEditElementModalState={setEditElementModalState}
             />
             {/* <QueryInput hasuraProps={hasuraProps}/> */}
           </Content>

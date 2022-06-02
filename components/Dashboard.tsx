@@ -8,7 +8,7 @@ import { elementType } from "../pages";
 import GridView from "./GridView";
 import StaticElement from "./StaticElement";
 
-function Dashboard({ hasuraProps, systemProps, name, mode, userConfig, setUserConfig, dashboardState, setDashboardState }: any): JSX.Element {
+function Dashboard({ hasuraProps, systemProps, name, mode, userConfig, setUserConfig, dashboardState, setDashboardState, setEditElementModalState }: any): JSX.Element {
   const { t } = useTranslation()
 
   const editElement = (event: any, index: number) => {
@@ -17,7 +17,8 @@ function Dashboard({ hasuraProps, systemProps, name, mode, userConfig, setUserCo
     }
 
     event.preventDefault()
-    const newDashboard = dashboardState.dashboard
+    const element = dashboardState.dashboard.dashboardElements[index]
+    setEditElementModalState({visible: true, element: element})
   }
 
   function renderDashboardElement(element: any, hasuraProps: any, index: number): JSX.Element {
