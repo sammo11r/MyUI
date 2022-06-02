@@ -79,9 +79,8 @@ function AppSider({
 }: any) {
   const { t } = useTranslation();
   return (
-    <Sider width={200} className="site-layout-background">
-      <Menu
-        data-testid="sider-menu"
+    <Sider width={200} className="site-layout-background" data-testid="sider">
+        <Menu
         mode="inline"
         defaultSelectedKeys={selectedKeys}
         defaultOpenKeys={openKeys}
