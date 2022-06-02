@@ -58,12 +58,18 @@ function removeDashboard(name: string, dashboardNames: any[]) {
 /**
  * @export
  * @param {*} {
+ *   modalType,
  *   isVisible,
  *   setVisible,
  *   dashboardNames,
  *   setDashboardNames,
  *   dashboardAddKey,
- *   dashboardRemoveKey
+ *   dashboardRemoveKey,
+ *   hasuraProps,
+ *   userConfig,
+ *   setUserConfig,
+ *   userConfigQueryInput,
+ *   setUserConfigQueryInput
  * }
  * @return {*}  {JSX.Element}
  */
@@ -77,7 +83,9 @@ export default function ManageDashboardsModal({
   dashboardRemoveKey,
   hasuraProps,
   userConfig,
-  setUserConfig
+  setUserConfig,
+  userConfigQueryInput,
+  setUserConfigQueryInput
 }: any): JSX.Element {
   const { t } = useTranslation();
   const [hasError, setError] = useState(false);
@@ -87,25 +95,6 @@ export default function ManageDashboardsModal({
     "Content-Type": "application/json",
     "x-hasura-admin-secret": hasuraProps.hasuraSecret,
   } as HeadersInit;
-
-  const [userConfigQueryInput, setUserConfigQueryInput] = useState();
-  let userId = 1; // @TODO: Get ID of currently logged in user
-  
-  // Update the user configuration versioning table on modifications of dashboards 
-  useQuery(["insertDashboardQuery", userId, userConfigQueryInput], async () => {
-    if (userConfigQueryInput != undefined) {
-      let result = await fetch(hasuraProps.hasuraEndpoint as RequestInfo, {
-        method: "POST",
-        headers: hasuraHeaders,
-        body: JSON.stringify({
-          query: ` mutation insertUserConfig { insert_user_versioned_config_one(object: {config: "${userConfigQueryInput}", user_id: ${userId}}) { config }}`,
-        }),
-      })
-      // Clear the query input state variable
-      setUserConfigQueryInput(undefined);
-    }
-  });
-
 
   const hideModal = () => {
     // Reset the text field and hide the modal
@@ -129,7 +118,7 @@ export default function ManageDashboardsModal({
         setDashboardNames(newDashboardNames);
         // Remove the dashboard from the user configuration
         userConfig.dashboards = userConfig.dashboards.filter((dashboard: any) => dashboard.name !== name)
-        updateConfig(userConfig);
+        setUserConfigQueryInput(userConfig);
         hideModal();
       },
     });
@@ -168,7 +157,7 @@ export default function ManageDashboardsModal({
           );
 
           setDashboardNames(newDashboardNames);
-          updateConfig(userConfig);
+          setUserConfigQueryInput(userConfig);
           hideModal();
           break;
         case (modalTypes.REMOVE):
