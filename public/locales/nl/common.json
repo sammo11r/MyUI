@@ -37,10 +37,24 @@
       }
     },
     "element": {
-      "unknown": "Onbekend elementtype",
       "new": {
         "name": "Nieuw Element",
         "text": "Voeg hier tekst toe..."
+      },
+      "gridview": {
+        "label": "Vraag",
+        "tooltip": "Verander hier de data die dit element opvraagt",
+        "type": "Roosterweergave element"
+      },
+      "static": {
+        "label": "Tekst",
+        "tooltip": "Verander hier de tekst die dit element vertoont. Linkjes die eindigen op .png, .jpeg, .gif, .mp3, and .mp4 worden ondersteund",
+        "type": "Statisch element"
+      },
+      "unknown": {
+        "label": "Tekst",
+        "tooltip": "Verander hier de inhoud van dit element",
+        "type": "Onbekend elementtype"
       }
     }
   },

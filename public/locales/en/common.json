@@ -37,10 +37,24 @@
       }
     },
     "element": {
-      "unknown": "Unknown element type",
       "new": {
         "name": "New Element",
-        "text": "Input text here..."
+        "text": "Add text here..."
+      },
+      "gridview": {
+        "label": "Query",
+        "tooltip": "Change this component's query here",
+        "type": "Gridview element"
+      },
+      "static": {
+        "label": "Text",
+        "tooltip": "Change this component's text here. URLs ending with .png, .jpeg, .gif, .mp3, and .mp4 are supported",
+        "type": "Static element"
+      },
+      "unknown": {
+        "label": "Text",
+        "tooltip": "Change this component's content here",
+        "type": "Unknown element type"
       }
     }
   },
