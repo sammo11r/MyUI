@@ -35,6 +35,13 @@
         "confirmText": "Ja",
         "cancelText": "Nee"
       }
+    },
+    "element": {
+      "unknown": "Onbekend elementtype",
+      "new": {
+        "name": "Nieuw Element",
+        "text": "Voeg hier tekst toe..."
+      }
     }
   },
   "basetable": {

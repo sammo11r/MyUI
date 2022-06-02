@@ -1,4 +1,5 @@
 import { Grid } from "antd";
+import { useTranslation } from "next-i18next";
 import React from "react";
 import GridLayout from "react-grid-layout";
 
@@ -8,9 +9,19 @@ import GridView from "./GridView";
 import StaticElement from "./StaticElement";
 
 function Dashboard({ hasuraProps, systemProps, name, mode, userConfig, setUserConfig, dashboardState, setDashboardState }: any): JSX.Element {
+  const { t } = useTranslation()
+
+  const editElement = (event: any, index: number) => {
+    if (mode !== workspaceStates.EDIT_DASHBOARD) {
+      return
+    }
+
+    event.preventDefault()
+    const newDashboard = dashboardState.dashboard
+  }
 
   function renderDashboardElement(element: any, hasuraProps: any, index: number): JSX.Element {
-    let rendered_element = <p>Unknown element type</p>;
+    let rendered_element = <p>{t("dashboard.element.unknown")}</p>;
     switch (element.type) {
       case elementType.GRIDVIEW:
         rendered_element = <GridView query={element.query} hasuraProps={hasuraProps} style={{height:"100%", width:"100%", overflow:"auto"}}/>;
@@ -26,6 +37,7 @@ function Dashboard({ hasuraProps, systemProps, name, mode, userConfig, setUserCo
         style={{ 
           outline: "2px solid #ebf2ff",
         }}
+        onClick={(e) => editElement(e, index)}
         data-grid={{
           x: element.x,
           y: element.y,
@@ -56,13 +68,13 @@ function Dashboard({ hasuraProps, systemProps, name, mode, userConfig, setUserCo
       return
     }
     const element = {
-      name: "New Element",
+      name: t("dashboard.element.new.name"),
       x: layoutItem["x"],
       y: layoutItem["y"],
       w: layoutItem["w"],
       h: layoutItem["h"],
       type: elementType[typeString],
-      text: "Input text here..."
+      text: t("dashboard.element.new.text")
     }
     const newDashboard = dashboardState.dashboard
     newDashboard.dashboardElements.push(element)

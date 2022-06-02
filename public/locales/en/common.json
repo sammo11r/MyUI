@@ -35,6 +35,13 @@
         "confirmText": "Yes",
         "cancelText": "No"
       }
+    },
+    "element": {
+      "unknown": "Unknown element type",
+      "new": {
+        "name": "New Element",
+        "text": "Input text here..."
+      }
     }
   },
   "basetable": {
