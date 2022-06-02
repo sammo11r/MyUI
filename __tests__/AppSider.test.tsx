@@ -8,7 +8,7 @@ describe("renderHeader", () => {
   it("renders AppSider correctly", () => {
     render(<AppSider></AppSider>);
 
-    const siderMenu = screen.getByTestId("sider-menu");
+    const siderMenu = screen.getByTestId("sider");
 
     expect(siderMenu).toBeInTheDocument();
   });

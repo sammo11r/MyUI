@@ -4,10 +4,26 @@ import BaseTableData from "./BaseTableData";
 import Loader from "../components/Loader"
 
 /**
- * @param {*} { hasuraProps, name }
+ * @param {*} {
+ *   hasuraProps,
+ *   systemProps,
+ *   name,
+ *   userConfig,
+ *   setUserConfig,
+ *   userConfigQueryInput,
+ *   setUserConfigQueryInput
+ * }
  * @return {*} 
  */
-function BaseTable({ hasuraProps, systemProps, name }: any) {
+function BaseTable({
+  hasuraProps,
+  systemProps,
+  name,
+  userConfig,
+  setUserConfig,
+  userConfigQueryInput,
+  setUserConfigQueryInput
+}: any) {
   enum columnStates {
     LOADING,
     READY,
@@ -57,6 +73,10 @@ function BaseTable({ hasuraProps, systemProps, name }: any) {
           columns={columnState.columns}
           hasuraProps={hasuraProps}
           systemProps={systemProps}
+          userConfig={userConfig}
+          setUserConfig={setUserConfig}
+          userConfigQueryInput={userConfigQueryInput}
+          setUserConfigQueryInput={setUserConfigQueryInput}
         />
       ) : (
         <Loader />

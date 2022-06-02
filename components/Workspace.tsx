@@ -4,14 +4,39 @@ import { workspaceStates } from "../pages";
 import BaseTable from "./BaseTable";
 
 /**
- * @return {*}
+ * @param {*} { 
+ *   workspaceState,
+ *   hasuraProps,
+ *   systemProps,
+ *   userConfig,
+ *   setUserConfig,
+ *   userConfigQueryInput,
+ *   setUserConfigQueryInput
+ * }
+ * @return {*} 
  */
-function Workspace({ workspaceState, hasuraProps, systemProps }: any) {
+function Workspace({ 
+  workspaceState,
+  hasuraProps,
+  systemProps,
+  userConfig,
+  setUserConfig,
+  userConfigQueryInput,
+  setUserConfigQueryInput
+}: any) {
   const { t } = useTranslation();
 
   switch (workspaceState.displaying) {
     case workspaceStates.BASE_TABLE:
-      return <BaseTable hasuraProps={hasuraProps} systemProps={systemProps} name={workspaceState.name} />;
+      return <BaseTable 
+        hasuraProps={hasuraProps}
+        systemProps={systemProps}
+        name={workspaceState.name}
+        userConfig={userConfig}
+        setUserConfig={setUserConfig}
+        userConfigQueryInput={userConfigQueryInput}
+        setUserConfigQueryInput={setUserConfigQueryInput}
+        />;
     case workspaceStates.DASHBOARD:
       return <p>Coming Soon!</p>;
     case workspaceStates.EMPTY:

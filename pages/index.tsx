@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+import React, { useState,  } from "react";
 import { useQuery } from "react-query";
+import { useSession } from "next-auth/react";
 import { Layout } from "antd";
 import "antd/dist/antd.css";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { useTranslation } from "next-i18next";
+import jwtDecode from "jwt-decode";
 
 import AppHeader from "../components/AppHeader";
 import AppSider, {dashboardAddKey, dashboardRemoveKey} from "../components/AppSider";
@@ -29,8 +31,15 @@ export enum workspaceStates {
  */
 export default function App({ hasuraProps, systemProps }: any) {
   const { t } = useTranslation();
+
   const [manageDashboardsModalState, setManageDashboardsModalState] = useState({visible: false, type: modalTypes.ADD});
+
+  // Define state variables for the user configuration
   const [userConfig, setUserConfig] = useState();
+
+  // Define state variables that, once set, update the user configuration file
+  const [userConfigQueryInput, setUserConfigQueryInput] = useState();
+
   const [dashboardNames, setDashboardNames] = useState<string[]>([]);
 
   const showModal = (type: modalTypes) => {
@@ -58,42 +67,43 @@ export default function App({ hasuraProps, systemProps }: any) {
     "uiPreferences": {
       "language": "nl"
     },
-    "baseTables": [
-      {
-        "name": "table1",
-        "columnNames": {
-          "key0": "someTitle",
-          "key1": "someTitle"
-        },
-        "ordering": {
-          "by": "someKey",
-          "ascending": false,
-          "ordered": false
-        }
-      }
-    ]
+    "baseTables": []
   }
+
+  // Fetching session token from the current session
+  const { data: session } = useSession();
+  const jwt = session!.token;
 
   const hasuraHeaders = {
     "Content-Type": "application/json",
     "x-hasura-admin-secret": hasuraProps.hasuraSecret,
   } as HeadersInit;
 
+  interface JWTHasura {
+    sub: number,
+    name: string,
+    admin: boolean,
+    iat: string,
+    "https://hasura.io/jwt/claims": {
+      "x-hasura-allowed-roles": Array<string>,
+      "x-hasura-default-role": string,
+    },
+  };
 
-  let userId = 1; // @TODO: Get ID of currently logged in user
+  // @ts-ignore
+  const jwtTokenDecoded = jwtDecode<JWTHasura>(jwt);
+
+  // Get ID from currently logged in user
+  // let userId = jwtTokenDecoded.sub;
+  let userId = 1; // @TODO
+
   // Get the configuration file of the currently loggged in user
   useQuery(["configurationQuery", userId], async () => {
     let result = await fetch(hasuraProps.hasuraEndpoint as RequestInfo, {
       method: "POST",
       headers: hasuraHeaders,
       body: JSON.stringify({
-        query: `
-          query getConfigurationFromUser {
-            user_versioned_config(where: {user_id: {_eq: ${userId}}}, order_by: {date: desc}, limit: 1) {
-              config
-            }
-          }
-          `,
+        query: `query getConfigurationFromUser { user_versioned_config(where: {user_id: {_eq: ${userId}}}, order_by: {date: desc}, limit: 1) { config }}`,
       }),
     })
       .then((userConfig) => userConfig.json())
@@ -101,6 +111,7 @@ export default function App({ hasuraProps, systemProps }: any) {
         if (userConfig.data.user_versioned_config.length == 0) {
           // Set the default empty user's configuration
           userConfig = defaultConfiguration;
+          setUserConfigQueryInput(userConfig); 
         } else {
           // Get the user's configuration        
           userConfig = userConfig.data.user_versioned_config[0].config;
@@ -115,6 +126,25 @@ export default function App({ hasuraProps, systemProps }: any) {
       });
 
     return result;
+  });
+
+  // Update the user configuration versioning table on modifications
+  useQuery(["updateUserConfiguration", userId, userConfigQueryInput], async () => {
+    if (userConfigQueryInput != undefined) {
+      console.log('User configuration file is updated...');
+      // Escape double quotes
+      let newUserConfig = JSON.stringify(userConfigQueryInput).replace(/"/g, "\\\"");
+
+      let result = await fetch(hasuraProps.hasuraEndpoint as RequestInfo, {
+        method: "POST",
+        headers: hasuraHeaders,
+        body: JSON.stringify({
+          query: `mutation insertUserConfig { insert_user_versioned_config_one(object: {config: "${newUserConfig}", user_id: ${userId}}) { config }}`,
+        }),
+      })
+      // Clear the query input state variable
+      setUserConfigQueryInput(undefined);
+    }
   });
 
   // Get the all base tables from hasura
@@ -187,6 +217,8 @@ export default function App({ hasuraProps, systemProps }: any) {
         hasuraProps={hasuraProps}
         userConfig={userConfig}
         setUserConfig={setUserConfig}
+        userConfigQueryInput={userConfigQueryInput}
+        setUserConfigQueryInput={setUserConfigQueryInput}
       />
       <Layout>
         {siderState.tableNamesState == siderMenuState.LOADING ? (
@@ -222,6 +254,10 @@ export default function App({ hasuraProps, systemProps }: any) {
               workspaceState={workspaceState}
               hasuraProps={hasuraProps}
               systemProps={systemProps}
+              userConfig={userConfig}
+              setUserConfig={setUserConfig}
+              userConfigQueryInput={userConfigQueryInput}
+              setUserConfigQueryInput={setUserConfigQueryInput}
             />
             <Dashboard/>
             {/* <QueryInput hasuraProps={hasuraProps}/> */}
