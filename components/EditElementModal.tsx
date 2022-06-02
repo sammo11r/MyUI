@@ -7,6 +7,7 @@ import { useTranslation } from "next-i18next";
 import { elementType } from "../pages";
 
 export default function EditElementModal({state, setState}: any): JSX.Element {
+  const { TextArea } = Input;
   const { t } = useTranslation();
   const [form] = Form.useForm();
 
@@ -67,7 +68,7 @@ export default function EditElementModal({state, setState}: any): JSX.Element {
             icon: <InfoCircleOutlined />,
           }}
         >
-          <Input />
+          <TextArea rows={10}/>
         </Form.Item>
       </Form>
     </Modal>
