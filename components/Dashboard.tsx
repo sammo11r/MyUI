@@ -4,6 +4,7 @@ import GridLayout from "react-grid-layout";
 import { Responsive, WidthProvider } from "react-grid-layout";
 import { workspaceStates } from "../pages";
 import { elementType } from "../pages";
+import { DeleteOutlined } from "@ant-design/icons";
 import GridView from "./GridView";
 import StaticElement from "./StaticElement";
 
@@ -18,24 +19,32 @@ function Dashboard({ hasuraProps, systemProps, name, mode, userConfig, setUserCo
     }
     event.preventDefault()
     const element = dashboardState.dashboard.dashboardElements[index]
-    setEditElementModalState({visible: true, element: element})
+    setEditElementModalState({ visible: true, element: element })
+  }
+
+  const deleteElement = (index: number) => {
+    const newDashboard = dashboardState.dashboard
+    newDashboard.dashboardElements.splice(index, 1)
+    setDashboardState({ dashboard: newDashboard })
   }
 
   function renderDashboardElement(element: any, hasuraProps: any, index: number): JSX.Element {
     let rendered_element = <p>{t("dashboard.element.unknown")}</p>;
     switch (element.type) {
       case elementType.GRIDVIEW:
-        rendered_element = <GridView query={element.query} hasuraProps={hasuraProps} style={{height:"100%", width:"100%", overflow:"auto"}}/>;
+        rendered_element = <GridView query={element.query} hasuraProps={hasuraProps} style={{ height: "100%", width: "100%", overflow: "auto" }} />;
+        console.log("rendering a GRIDVIEW at: " + element.x + ", " + element.y)
         break;
       case elementType.STATIC:
-        rendered_element = <StaticElement text={element.text} style={{height:"100%", width:"100%"}}/>;
+        rendered_element = <StaticElement text={element.text} style={{ height: "100%", width: "100%" }} />;
+        console.log("rendering a STATIC at: " + element.x + ", " + element.y)
         break;
     }
     return (
       <div
         id="test_id"
         key={index}
-        style={{ 
+        style={{
           outline: "2px solid #ebf2ff",
         }}
         onDoubleClick={(e) => editElement(e, index)}
@@ -46,6 +55,16 @@ function Dashboard({ hasuraProps, systemProps, name, mode, userConfig, setUserCo
           h: element.h,
         }}
       >
+        {mode === workspaceStates.EDIT_DASHBOARD ? <DeleteOutlined
+          style={{ // TODO: move style to css file, as none of it depends on state
+            position: "absolute",
+            zIndex: "10",
+            fontSize: "20px",
+            right: "5px",
+            top: "5px"
+          }}
+          onClick={(e) => deleteElement(index)}
+        /> : null}
         {rendered_element}
       </div>
     );
@@ -59,7 +78,7 @@ function Dashboard({ hasuraProps, systemProps, name, mode, userConfig, setUserCo
       newDashboard.dashboardElements[i].w = layout[i].w;
       newDashboard.dashboardElements[i].h = layout[i].h;
     }
-    setDashboardState({dashboard: newDashboard});
+    setDashboardState({ dashboard: newDashboard });
   }
 
   const onDrop = (layout: GridLayout.Layout[], layoutItem: GridLayout.Layout, event: DragEvent) => {
@@ -78,14 +97,20 @@ function Dashboard({ hasuraProps, systemProps, name, mode, userConfig, setUserCo
     }
     const newDashboard = dashboardState.dashboard
     newDashboard.dashboardElements.push(element)
-    setDashboardState({dashboard: newDashboard})
+    setDashboardState({ dashboard: newDashboard })
   };
+
+  const layout = dashboardState.dashboard.dashboardElements
+    .map((element: any, index: number) => {
+      return { i: index, x: element.x, y: element.y, w: element.w, h: element.h }
+    })
 
   return (
     <ResponsiveReactGridLayout
       className="layout"
       // Number of collumns needs to be consistent such that elements are always in the same place
-      cols={{lg: 12, md: 12, sm: 12, xs: 12, xxs: 12}}
+      breakpoints={{ bp: 0 }}
+      cols={{ bp: 12 }}
       rowHeight={30}
       compactType={null}
       preventCollision={true}
@@ -96,7 +121,15 @@ function Dashboard({ hasuraProps, systemProps, name, mode, userConfig, setUserCo
       onDrop={onDrop}
       onDragStop={saveChange}
       onResizeStop={saveChange}
-      style={{height: "100%"}}
+      style={{ height: "100%" }}
+      // Setting the layout prop is necessary in order to rerender 
+      // the elements in the correct position after deleting
+      layouts={{
+        bp: dashboardState.dashboard.dashboardElements
+          .map((element: any, index: number) => {
+            return { i: index, x: element.x, y: element.y, w: element.w, h: element.h }
+          })
+      }}
     >
       {
         dashboardState.dashboard
