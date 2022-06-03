@@ -1,11 +1,13 @@
 import { useTranslation } from "next-i18next";
 import React from "react";
 import GridLayout from "react-grid-layout";
-
+import { Responsive, WidthProvider } from "react-grid-layout";
 import { workspaceStates } from "../pages";
 import { elementType } from "../pages";
 import GridView from "./GridView";
 import StaticElement from "./StaticElement";
+
+const ResponsiveReactGridLayout = WidthProvider(Responsive);
 
 function Dashboard({ hasuraProps, systemProps, name, mode, userConfig, setUserConfig, dashboardState, setDashboardState, setEditElementModalState }: any): JSX.Element {
   const { t } = useTranslation()
@@ -80,11 +82,11 @@ function Dashboard({ hasuraProps, systemProps, name, mode, userConfig, setUserCo
   };
 
   return (
-    <GridLayout
+    <ResponsiveReactGridLayout
       className="layout"
-      cols={12}
+      // Number of collumns needs to be consistent such that elements are always in the same place
+      cols={{lg: 12, md: 12, sm: 12, xs: 12, xxs: 12}}
       rowHeight={30}
-      width={1500} // TODO: Make width scale responsively
       compactType={null}
       preventCollision={true}
       isBounded={true}
@@ -100,7 +102,7 @@ function Dashboard({ hasuraProps, systemProps, name, mode, userConfig, setUserCo
           .dashboardElements
           .map((element: any, index: number) => renderDashboardElement(element, hasuraProps, index))
       }
-    </GridLayout>
+    </ResponsiveReactGridLayout>
   );
 }
 
