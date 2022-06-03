@@ -34,7 +34,7 @@ function Dashboard({ hasuraProps, systemProps, name, mode, userConfig, setUserCo
     return (
       <div
         id="test_id"
-        key={index + Date.now()}
+        key={index}
         style={{ 
           outline: "2px solid #ebf2ff",
         }}
@@ -44,7 +44,6 @@ function Dashboard({ hasuraProps, systemProps, name, mode, userConfig, setUserCo
           y: element.y,
           w: element.w,
           h: element.h,
-          static: mode === workspaceStates.DISPLAY_DASHBOARD
         }}
       >
         {rendered_element}
@@ -91,6 +90,8 @@ function Dashboard({ hasuraProps, systemProps, name, mode, userConfig, setUserCo
       compactType={null}
       preventCollision={true}
       isDroppable={mode === workspaceStates.EDIT_DASHBOARD}
+      isDraggable={mode === workspaceStates.EDIT_DASHBOARD}
+      isResizable={mode === workspaceStates.EDIT_DASHBOARD}
       onDrop={onDrop}
       onDragStop={saveChange}
       onResizeStop={saveChange}

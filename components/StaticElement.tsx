@@ -1,7 +1,7 @@
 import React from "react";
 
 function convertText(text: string): JSX.Element {
-  if (text.endsWith('.png') || text.endsWith('.jpeg') || text.endsWith('.gif')) {
+  if (text.endsWith('.png') || text.endsWith('.jpg') || text.endsWith('.gif')) {
     return (
       <img height={"100%"} width={"100%"} src={text} />
     );
