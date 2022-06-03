@@ -85,7 +85,7 @@ const ResponsiveReactGridLayout = WidthProvider(Responsive);
     }
     return (
       <div
-        key={index + Date.now()} // Make sure that the key is unique
+        key={index}
         style={{ 
           outline: "2px solid #ebf2ff",
         }}
