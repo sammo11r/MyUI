@@ -96,6 +96,7 @@ function Dashboard({ hasuraProps, systemProps, name, mode, userConfig, setUserCo
       onDrop={onDrop}
       onDragStop={saveChange}
       onResizeStop={saveChange}
+      style={{height: "100%"}}
     >
       {
         dashboardState.dashboard
