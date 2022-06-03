@@ -6,14 +6,14 @@ import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { useTranslation } from "next-i18next";
 
 import AppHeader from "../components/AppHeader";
-import { dashboardAddKey, dashboardRemoveKey } from "../components/AppSider";
-import { EditModeSider, NavigationSider } from "../components/AppSider";
-import Dashboard from "../components/Dashboard";
-import ManageDashboardsModal, { modalTypes } from "../components/ManageDashboardsModal";
-import Loader from "../components/Loader";
-import Workspace from "../components/Workspace";
-import QueryInput from "../components/QueryInput";
+import { dashboardAddKey, dashboardRemoveKey } from "../components/NavigationSider";
 import EditElementModal from "../components/EditElementModal";
+import EditModeSider from "../components/EditModeSider";
+import Loader from "../components/Loader";
+import ManageDashboardsModal, { modalTypes } from "../components/ManageDashboardsModal";
+import NavigationSider from "../components/NavigationSider";
+import QueryInput from "../components/QueryInput";
+import Workspace from "../components/Workspace";
 
 const { Content, Sider } = Layout;
 

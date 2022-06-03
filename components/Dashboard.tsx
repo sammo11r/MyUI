@@ -1,4 +1,3 @@
-import { Grid } from "antd";
 import { useTranslation } from "next-i18next";
 import React from "react";
 import GridLayout from "react-grid-layout";
@@ -15,7 +14,6 @@ function Dashboard({ hasuraProps, systemProps, name, mode, userConfig, setUserCo
     if (mode !== workspaceStates.EDIT_DASHBOARD) {
       return
     }
-
     event.preventDefault()
     const element = dashboardState.dashboard.dashboardElements[index]
     setEditElementModalState({visible: true, element: element})
@@ -38,7 +36,7 @@ function Dashboard({ hasuraProps, systemProps, name, mode, userConfig, setUserCo
         style={{ 
           outline: "2px solid #ebf2ff",
         }}
-        onClick={(e) => editElement(e, index)}
+        onDoubleClick={(e) => editElement(e, index)}
         data-grid={{
           x: element.x,
           y: element.y,
@@ -89,6 +87,7 @@ function Dashboard({ hasuraProps, systemProps, name, mode, userConfig, setUserCo
       width={1500} // TODO: Make width scale responsively
       compactType={null}
       preventCollision={true}
+      isBounded={true}
       isDroppable={mode === workspaceStates.EDIT_DASHBOARD}
       isDraggable={mode === workspaceStates.EDIT_DASHBOARD}
       isResizable={mode === workspaceStates.EDIT_DASHBOARD}
