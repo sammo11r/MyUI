@@ -387,7 +387,7 @@ export default function App({ hasuraProps, systemProps }: any) {
 }
 
 // Make sure this page is protected
-App.auth = false; // TODO turn back on
+App.auth = true;
 
 export async function getServerSideProps(context: any) {
   const hasuraProps = {
