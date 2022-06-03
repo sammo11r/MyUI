@@ -52,7 +52,7 @@ const ResponsiveReactGridLayout = WidthProvider(Responsive);
       return;
     }
     event.preventDefault();
-    const element = dashboardState.dashboardElements[index];
+    const element = dashboardState.dashboard.dashboardElements[index];
     setEditElementModalState({visible: true, element: element});
   }
 

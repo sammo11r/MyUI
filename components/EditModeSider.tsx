@@ -4,6 +4,7 @@ import {
   TableOutlined,
   BorderOutlined
 } from "@ant-design/icons";
+import { useTranslation } from "next-i18next";
 
 import { elementType } from "../pages";
 
@@ -27,6 +28,7 @@ export default function EditModeSider({
   dashboardState,
   setDashboardState
 }: any): any {
+  const { t } = useTranslation();
   const [loadings, setLoadings] = useState(false);
 
   /**
@@ -35,10 +37,10 @@ export default function EditModeSider({
   const saveDashboardChanges = () => {
     setLoadings(true);
     // Remove the old dashboard from the user config
-    let otherDashboards = userConfig.dashboards.filter((dashboard: any) => dashboard.name != dashboardState.name);
+    let otherDashboards = userConfig.dashboards.filter((dashboard: any) => dashboard.name != dashboardState.dashboard.name);
 
     // Add the edited dashboard to the user config
-    otherDashboards.push(dashboardState);
+    otherDashboards.push(dashboardState.dashboard);
     userConfig.dashboards = otherDashboards;
 
     setUserConfigQueryInput(userConfig);
@@ -62,10 +64,10 @@ export default function EditModeSider({
 
   return (
     <Sider theme="light">
-      {draggableElement(elementType.STATIC, "Static Element (Drag me!)", <BorderOutlined/>)}
-      {draggableElement(elementType.GRIDVIEW, "Gridview Element (Drag me!)", <TableOutlined/>)}
+      {draggableElement(elementType.STATIC, t("dashboard.element.static.type"), <BorderOutlined/>)}
+      {draggableElement(elementType.GRIDVIEW, t("dashboard.element.gridview.type"), <TableOutlined/>)}
       <Button type="primary" loading={loadings} onClick={saveDashboardChanges} style={{width:"100%"}}>
-          Save changes
+        {t("dashboard.save")}
       </Button>
     </Sider>
   )

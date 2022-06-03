@@ -16,6 +16,7 @@
     "sidebar": "Dashboards",
     "new": "Add",
     "delete": "Delete",
+    "save": "Save",
     "modal": {
       "add": {
         "title": "Add a new dashboard",

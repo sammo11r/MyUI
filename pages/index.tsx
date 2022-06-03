@@ -210,7 +210,6 @@ export default function App({ hasuraProps, systemProps }: any) {
       setWorkspaceState({ displaying: workspaceStates.DISPLAY_DASHBOARD, name: name });
       // Get clicked dashboard configuration
       const currentDashboard = userConfig.dashboards.filter((dashboard: any) => dashboard.name == name)[0]
-      console.log(currentDashboard)
       setDashboardState({dashboard: currentDashboard});
     }
   };
