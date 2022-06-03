@@ -1,7 +1,8 @@
+import React, { useState, useEffect } from "react";
 import { useTranslation } from "next-i18next";
-import React from "react";
 import GridLayout from "react-grid-layout";
 import { Responsive, WidthProvider } from "react-grid-layout";
+
 import { workspaceStates } from "../pages";
 import { elementType } from "../pages";
 import GridView from "./GridView";
@@ -9,18 +10,60 @@ import StaticElement from "./StaticElement";
 
 const ResponsiveReactGridLayout = WidthProvider(Responsive);
 
-function Dashboard({ hasuraProps, systemProps, name, mode, userConfig, setUserConfig, dashboardState, setDashboardState, setEditElementModalState }: any): JSX.Element {
+/**
+ * @param {*} {
+ *   hasuraProps,
+ *   systemProps,
+ *   name,
+ *   mode,
+ *   userConfig,
+ *   setUserConfig,
+ *   dashboardState,
+ *   setDashboardState,
+ *   setEditElementModalState,
+ *   userConfigQueryInput,
+ *   setUserConfigQueryInput 
+ * }
+ * @return {*}  {JSX.Element}
+ */
+ export default function Dashboard({
+  hasuraProps,
+  systemProps,
+  name,
+  mode,
+  userConfig,
+  setUserConfig,
+  dashboardState,
+  setDashboardState,
+  setEditElementModalState,
+  userConfigQueryInput,
+  setUserConfigQueryInput 
+}: any): JSX.Element {
   const { t } = useTranslation()
 
+  /**
+   * Edit an element on the dashboard
+   *
+   * @param {*} event
+   * @param {number} index
+   */
   const editElement = (event: any, index: number) => {
     if (mode !== workspaceStates.EDIT_DASHBOARD) {
-      return
+      return;
     }
-    event.preventDefault()
-    const element = dashboardState.dashboard.dashboardElements[index]
-    setEditElementModalState({visible: true, element: element})
+    event.preventDefault();
+    const element = dashboardState.dashboardElements[index];
+    setEditElementModalState({visible: true, element: element});
   }
 
+  /**
+   * Render dashboard elements
+   *
+   * @param {*} element
+   * @param {*} hasuraProps
+   * @param {number} index
+   * @return {*}  {JSX.Element}
+   */
   function renderDashboardElement(element: any, hasuraProps: any, index: number): JSX.Element {
     let rendered_element = <p>{t("dashboard.element.unknown")}</p>;
     switch (element.type) {
@@ -33,8 +76,7 @@ function Dashboard({ hasuraProps, systemProps, name, mode, userConfig, setUserCo
     }
     return (
       <div
-        id="test_id"
-        key={index}
+        key={index + Date.now()} // Make sure that the key is unique
         style={{ 
           outline: "2px solid #ebf2ff",
         }}
@@ -51,8 +93,13 @@ function Dashboard({ hasuraProps, systemProps, name, mode, userConfig, setUserCo
     );
   }
 
+  /**
+   * Save the dashboard configuration changes
+   *
+   * @param {GridLayout.Layout[]} layout
+   */
   const saveChange = (layout: GridLayout.Layout[]) => {
-    const newDashboard = dashboardState.dashboard
+    const newDashboard = dashboardState.dashboard;
     for (let i = 0; i < newDashboard.dashboardElements.length; i++) {
       newDashboard.dashboardElements[i].x = layout[i].x;
       newDashboard.dashboardElements[i].y = layout[i].y;
@@ -62,12 +109,20 @@ function Dashboard({ hasuraProps, systemProps, name, mode, userConfig, setUserCo
     setDashboardState({dashboard: newDashboard});
   }
 
+  /**
+   * Add new elements to the dashboard configuration once dropped in the working area
+   *
+   * @param {GridLayout.Layout[]} layout
+   * @param {GridLayout.Layout} layoutItem
+   * @param {DragEvent} event
+   */
   const onDrop = (layout: GridLayout.Layout[], layoutItem: GridLayout.Layout, event: DragEvent) => {
-    const typeString = event.dataTransfer?.getData("text/plain") as keyof typeof elementType
+    const typeString = event.dataTransfer?.getData("text/plain") as keyof typeof elementType;
     if (elementType[typeString] === undefined) {
       return
     }
-    const element = {
+
+    let element = {
       name: t("dashboard.element.new.name"),
       x: layoutItem["x"],
       y: layoutItem["y"],
@@ -76,6 +131,7 @@ function Dashboard({ hasuraProps, systemProps, name, mode, userConfig, setUserCo
       type: elementType[typeString],
       text: t("dashboard.element.new.text")
     }
+
     const newDashboard = dashboardState.dashboard
     newDashboard.dashboardElements.push(element)
     setDashboardState({dashboard: newDashboard})
@@ -106,5 +162,3 @@ function Dashboard({ hasuraProps, systemProps, name, mode, userConfig, setUserCo
     </ResponsiveReactGridLayout>
   );
 }
-
-export default Dashboard;

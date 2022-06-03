@@ -5,16 +5,7 @@ import BaseTable from "./BaseTable";
 import Dashboard from "./Dashboard";
 
 /**
- * @param {*} { 
- *   workspaceState,
- *   hasuraProps,
- *   systemProps,
- *   userConfig,
- *   setUserConfig,
- *   userConfigQueryInput,
- *   setUserConfigQueryInput
- * }
- * @return {*} 
+ * @return {*}
  */
 function Workspace({
   workspaceState,
@@ -29,10 +20,9 @@ function Workspace({
   setEditElementModalState
 }: any) {
   const { t } = useTranslation();
-
   switch (workspaceState.displaying) {
     case workspaceStates.BASE_TABLE:
-      return <BaseTable
+      return <BaseTable 
         hasuraProps={hasuraProps}
         systemProps={systemProps}
         name={workspaceState.name}
@@ -40,7 +30,7 @@ function Workspace({
         setUserConfig={setUserConfig}
         userConfigQueryInput={userConfigQueryInput}
         setUserConfigQueryInput={setUserConfigQueryInput}
-      />;
+        />;
     case workspaceStates.DISPLAY_DASHBOARD:
     case workspaceStates.EDIT_DASHBOARD:
       return <Dashboard
@@ -53,7 +43,11 @@ function Workspace({
         userConfig={userConfig}
         setUserConfig={setUserConfig}
         setEditElementModalState={setEditElementModalState}
+        userConfigQueryInput={userConfigQueryInput}
+        setUserConfigQueryInput={setUserConfigQueryInput}
       />;
+    case workspaceStates.EMPTY:
+      return <p>{t("workspace.welcome")}</p>;
     default:
       return <p>Something!</p>;
   }
