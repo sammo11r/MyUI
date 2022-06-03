@@ -83,9 +83,8 @@ function NavigationSider({
 }: any) {
   const { t } = useTranslation();
   return (
-    <Sider theme="light">
+    <Sider width={200} className="site-layout-background" data-testid="sider">
       <Menu
-        data-testid="sider-menu"
         mode="inline"
         defaultSelectedKeys={selectedKeys}
         defaultOpenKeys={openKeys}

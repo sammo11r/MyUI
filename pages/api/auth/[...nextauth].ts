@@ -89,7 +89,6 @@ export default NextAuth({
   secret: process.env.JWT_SECRET, // base64 JWT secret
   pages: {
     signIn: "/auth/signin",
-    signOut: "/auth/signout",
   },
   session: {
     strategy: "jwt",

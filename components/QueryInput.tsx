@@ -20,21 +20,21 @@ export default function QueryInput({ hasuraProps }: any) {
 
     // This query is only executed when the state of queryString changes
     const { isSuccess, data } = useQuery(["userInputQuery", queryString], () =>
-    fetch(hasuraProps.hasuraEndpoint, {
-        method: "POST",
-        headers: hasuraHeaders,
-        body: JSON.stringify({
-        query: queryString,
-        }),
-    })
-        .then((res) => res.json())
-        .then((res) => {
-        res.data;
-        console.log(res.data);
-        }),
-    {
-        enabled: !!queryString,
-    }
+        fetch(hasuraProps.hasuraEndpoint, {
+            method: "POST",
+            headers: hasuraHeaders,
+            body: JSON.stringify({
+            query: queryString,
+            }),
+        })
+            .then((res) => res.json())
+            .then((res) => {
+            res.data;
+            console.log(res.data);
+            }),
+        {
+            enabled: !!queryString,
+        }
     );
 
     const onFinish = (values: any) => {
