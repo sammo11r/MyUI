@@ -1,4 +1,4 @@
-import React, { useState,  } from "react";
+import React, { useState } from "react";
 import { useQuery } from "react-query";
 import { useSession } from "next-auth/react";
 import { Layout } from "antd";
@@ -59,19 +59,17 @@ export default function App({ hasuraProps, systemProps }: any) {
     LOADING,
   }
 
-  const [siderState, setSiderState] = React.useState({
+  const [siderState, setSiderState] = useState({
     tableNames: [],
     tableNamesState: siderMenuState.LOADING,
   });
 
-  const [workspaceState, setWorkspaceState] = React.useState({
+  const [workspaceState, setWorkspaceState] = useState({
     displaying: workspaceStates.EMPTY,
     name: "none",
   });
 
-  const [dashboardState, setDashboardState] = React.useState({
-    dashboard: {}
-  });
+  const [dashboardState, setDashboardState] = useState({dashboard: {}});
 
   // Define the default UI configuration
   const defaultConfiguration = {
@@ -188,116 +186,55 @@ export default function App({ hasuraProps, systemProps }: any) {
         })
   );
 
+  /**
+   * Display a base table in the workspace
+   *
+   * @param {string} name
+   */
   const displayBaseTable = (name: string) => {
     setWorkspaceState({ displaying: workspaceStates.BASE_TABLE, name: name });
   };
 
-  const displayDashboard = (name: string) => {
+  /**
+   * Display a dashboard in the workspace
+   *
+   * @param {string} name
+   * @param {*} userConfig
+   */
+  const displayDashboard = (name: string, userConfig: any) => {
     if (name == dashboardAddKey) {
       showModal(modalTypes.ADD);
     } else if (name == dashboardRemoveKey) {
       showModal(modalTypes.REMOVE);
     } else {
       setWorkspaceState({ displaying: workspaceStates.DISPLAY_DASHBOARD, name: name });
-      setDashboardState({dashboard: { // TODO: Fetch dashboard from userconfig instead
-        name: "Cool Dashboard",
-        dashboardElements: [
-          {
-            name: "Cool Element",
-            x: 0,
-            y: 0,
-            h: 9,
-            w: 6,
-            rowsPerPage: 5,
-            query: `
-            query MyQuery {
-              Product {
-                id
-                name
-                description
-              }
-            }
-            `,
-            type: elementType.GRIDVIEW // type of visualization
-          },
-          {
-            name: "Text Element",
-            x: 6,
-            y: 0,
-            h: 9,
-            w: 6,
-            text: "Dit is een klein stukje tekst. Prijs de heer, zuip wat meer!",
-            type: elementType.STATIC
-          },
-          {
-            name: "Video Element",
-            x: 0,
-            y: 9,
-            h: 9,
-            w: 6,
-            text: "https://archive.org/download/Rick_Astley_Never_Gonna_Give_You_Up/Rick_Astley_Never_Gonna_Give_You_Up.mp4",
-            type: elementType.STATIC
-          }]
-      }});
+      // Get clicked dashboard configuration
+      const currentDashboard = userConfig.dashboards.filter((dashboard: any) => dashboard.name == name)[0]
+      setDashboardState({dashboard: currentDashboard});
     }
   };
 
-  const displayEmptyWorkspace = () => {
-    setWorkspaceState({ displaying: workspaceStates.EMPTY, name: "" });
-  };
-
+  /**
+   * Enable the edit mode on a dashboard
+   */
   const toggleEditMode = () => {
     const newState = workspaceState.displaying === workspaceStates.DISPLAY_DASHBOARD ?
-      workspaceStates.EDIT_DASHBOARD : workspaceStates.DISPLAY_DASHBOARD
-    
-    if (newState == workspaceStates.EDIT_DASHBOARD) {
-      setDashboardState({dashboard: { // TODO: Fetch dashboard from userconfig instead
-        name: "Cool Dashboard",
-        dashboardElements: [
-          {
-            name: "Cool Element",
-            x: 0,
-            y: 0,
-            h: 9,
-            w: 6,
-            rowsPerPage: 5,
-            query: `
-            query MyQuery {
-              Product {
-                id
-                name
-                description
-              }
-            }
-            `,
-            type: elementType.GRIDVIEW // type of visualization
-          },
-          {
-            name: "Text Element",
-            x: 6,
-            y: 0,
-            h: 9,
-            w: 6,
-            text: "Dit is een klein stukje tekst. Prijs de heer, zuip wat meer!",
-            type: elementType.STATIC
-          },
-          {
-            name: "Video Element",
-            x: 0,
-            y: 9,
-            h: 9,
-            w: 6,
-            text: "https://archive.org/download/Rick_Astley_Never_Gonna_Give_You_Up/Rick_Astley_Never_Gonna_Give_You_Up.mp4",
-            type: elementType.STATIC
-          }]
-      }})
-    }
+      workspaceStates.EDIT_DASHBOARD : workspaceStates.DISPLAY_DASHBOARD;  
     setWorkspaceState({ displaying: newState, name: workspaceState.name })
+
+    // @TODO: Discard or save changes if dashboard state has been changed...
   }
 
   const displaySider = () => {
     if (workspaceState.displaying === workspaceStates.EDIT_DASHBOARD) {
-      return <EditModeSider />
+      return <EditModeSider 
+        userConfig={userConfig}
+        setUserConfig={setUserConfig}
+        userConfigQueryInput={userConfigQueryInput}
+        setUserConfigQueryInput={setUserConfigQueryInput}
+        dashboardState={dashboardState}
+        setDashboardState={setDashboardState}
+      />
     }
     return <NavigationSider
       key={"sideBar"}
@@ -307,7 +244,7 @@ export default function App({ hasuraProps, systemProps }: any) {
         displayBaseTable(name);
       }}
       dashboardOnClick={(name: string) => {
-        displayDashboard(name);
+        displayDashboard(name, userConfig);
       }}
     />
   }
@@ -378,7 +315,6 @@ export default function App({ hasuraProps, systemProps }: any) {
               userConfigQueryInput={userConfigQueryInput}
               setUserConfigQueryInput={setUserConfigQueryInput}
             />
-            {/* <QueryInput hasuraProps={hasuraProps}/> */}
           </Content>
         </Layout>
       </Layout>

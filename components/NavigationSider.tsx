@@ -33,6 +33,13 @@ function getItem(label: any, key: any, icon: any, children: any) {
 }
 
 let storedSideBarItems: any;
+
+/**
+ * @param {string[]} tableNames
+ * @param {string[]} dashboardNames
+ * @param {*} t
+ * @return {*} 
+ */
 function getSideBarItems(tableNames: string[], dashboardNames: string[], t: any) {
   // Due to queries doing wonky stuff and executing 4 times,
   // later calls to this function might end up with undefined names, hence save copy
@@ -110,7 +117,6 @@ function NavigationSider({
     </Sider>
   );
 }
-
 
 export default NavigationSider
 export { dashboardAddKey, dashboardRemoveKey }

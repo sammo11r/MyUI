@@ -13,9 +13,10 @@
     "welcome": "Welkom bij MyUI!"
   },
   "dashboard": {
-    "sidebar": "Dashboard",
+    "sidebar": "Dashboards",
     "new": "Voeg toe",
     "delete": "Verwijder",
+    "save": "Opslaan",
     "modal": {
       "add": {
         "title": "Voeg een nieuwe dashboard toe",
@@ -42,13 +43,13 @@
         "text": "Voeg hier tekst toe..."
       },
       "gridview": {
-        "label": "Vraag",
+        "label": "Query",
         "tooltip": "Verander hier de data die dit element opvraagt",
         "type": "Roosterweergave element"
       },
       "static": {
         "label": "Tekst",
-        "tooltip": "Verander hier de tekst die dit element vertoont. Linkjes die eindigen op .png, .jpeg, .gif, .mp3, and .mp4 worden ondersteund",
+        "tooltip": "Verander hier de tekst die dit element vertoont. URLs die eindigen op .png, .jpeg, .gif, .mp3, and .mp4 worden ondersteund",
         "type": "Statisch element"
       },
       "unknown": {
