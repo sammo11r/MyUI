@@ -48,7 +48,7 @@ export default NextAuth({
         // Modify IP address to forward to docker container
         // eslint-disable-next-line max-len
         ipAddress = ipAddress.substring(0, ipAddress.lastIndexOf(".") + 1) + (parseInt(ipAddress.substring(ipAddress.length - 1)) + 1).toString();
-
+        
         // GET request to REST endpoint of Hasura to fetch all users
         const res = await fetch(`http://${ipAddress}:8080/api/rest/users`, {
           method: "GET",

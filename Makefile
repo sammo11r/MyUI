@@ -51,6 +51,9 @@ down: ## Stop and remove running containers
 	@echo "Stopping and removing containers ..."
 	docker-compose down
 
+up: 
+	docker-compose up -d
+
 test: ## Stop and remove running containers
 	@echo "Running all unit tests ..."
 	yarn jest --passWithNoTests --silent
