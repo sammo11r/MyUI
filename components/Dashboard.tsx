@@ -186,9 +186,12 @@ const ResponsiveReactGridLayout = WidthProvider(Responsive);
       text: t("dashboard.element.new.text")
     }
 
+    // Add new element to dashboard
     const newDashboard = dashboardState.dashboard
     newDashboard.dashboardElements.push(element)
     setDashboardState({ dashboard: newDashboard })
+    // Open editmenu for newly created element
+    setEditElementModalState({ visible: true, element: element })
   };
 
   const layout = dashboardState.dashboard.dashboardElements
