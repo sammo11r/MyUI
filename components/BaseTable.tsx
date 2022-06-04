@@ -2,6 +2,7 @@ import React from "react";
 import { useQuery } from "react-query";
 import BaseTableData from "./BaseTableData";
 import Loader from "../components/Loader"
+import { useSession } from "next-auth/react";
 
 /**
  * @param {*} {
@@ -35,9 +36,14 @@ function BaseTable({
     columnState: columnStates.LOADING,
   });
 
+  // Fetching session token from the current session
+  const { data: session } = useSession();
+
+  const jwt = session!.token;
+
   const hasuraHeaders = {
-    "Content-Type": "application/json",
-    "x-hasura-admin-secret": hasuraProps.hasuraSecret,
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${jwt}`, // Adding auth header instead of using the admin secret
   } as HeadersInit;
 
   let tableName = name;
@@ -72,6 +78,7 @@ function BaseTable({
           tableName={tableName}
           columns={columnState.columns}
           hasuraProps={hasuraProps}
+          hasuraHeaders={hasuraHeaders}
           systemProps={systemProps}
           userConfig={userConfig}
           setUserConfig={setUserConfig}

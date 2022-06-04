@@ -2,7 +2,7 @@
 import NextAuth, { Awaitable, User } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
+import jwt, { VerifyOptions } from "jsonwebtoken";
 import { JWT, JWTDecodeParams, Secret } from "next-auth/jwt";
 import ip from "ip";
 
@@ -108,12 +108,9 @@ export default NextAuth({
 
         // If user is admin, add admin role to allowed roles
         if (token!.name === "admin") {
-          allowedRoles.push("admin");
-          allowedRoles.push("editor");
-          allowedRoles.push("user");
+          allowedRoles.push("admin", "editor", "user");
         } else if (token!.name === "editor") {
-          allowedRoles.push("editor");
-          allowedRoles.push("user");
+          allowedRoles.push("editor", "user");
         } else if (token!.name === "user") {
           allowedRoles.push("user");
         }
@@ -121,9 +118,10 @@ export default NextAuth({
         // Return allowed roles
         return allowedRoles;
       }
-
+    
       const jwtClaims = {
-        sub: token!.id,
+        // @ts-ignore
+        sub: token!.id !== undefined ? token!.id.toString() : token!.sub,
         name: token!.name,
         admin: token!.name === "admin",
         iat: Date.now() / 1000,
@@ -131,23 +129,23 @@ export default NextAuth({
           "x-hasura-allowed-roles": generateAllowedRoles(token),
           "x-hasura-default-role": token!.name,
         },
-      };
+      } as JWT;
 
       // JWT tokens are only valid if encoded/signed
-      const encodedToken = jwt.sign(jwtClaims, secret, { algorithm: "HS256" });
-
+      const encodedToken = jwt.sign(jwtClaims, secret, { algorithm: "HS256", expiresIn: "12h" });
+    
       return encodedToken as Awaitable<string>;
     },
     /**
      * Decode\Verify Hasura-specific JWT token
-     * @param param0 
+     * @param params
      * @returns 
      */
     decode: async ({ secret, token }: JWTDecodeParams) => {
       // Token needs to be decoded to be "verified"
-      const decodedToken = jwt.verify(token as string, secret, {
+      const decodedToken = jwt.verify(token as string, secret as Secret, {
         algorithms: ["HS256"],
-      });
+      } as VerifyOptions);
 
       return decodedToken as Awaitable<JWT>;
     },
