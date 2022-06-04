@@ -27,69 +27,75 @@ function replaceNull(columnA: any, columnB: any, replacement: any) {
 }
 
 /**
- * @param {*} {
- *   hasuraProps, 
- *   systemProps,
- *   columns,
- *   tableName,
- *   userConfig,
- *   setUserConfig,
- *   userConfigQueryInput,
- *   setUserConfigQueryInput 
- * }
- * @return {*}  {*}
+ * Parse table data in an Ant Design table component
+ *
+ * @export
+ * @param {*} isBaseTable
+ * @param {*} mediaDisplaySetting
+ * @param {*} hasuraProps
+ * @param {string} query
+ * @param {*} userConfig
+ * @param {*} setUserConfig
+ * @param {*} setUserConfigQueryInput
+ * @param {*} tableState
+ * @param {*} setTableState
+ * @param {*} dataState
+ * @param {(string|null)} tableName
  */
-function BaseTableData({
-  hasuraProps, 
-  systemProps,
-  columns,
-  tableName,
-  userConfig,
-  setUserConfig,
-  userConfigQueryInput,
-  setUserConfigQueryInput 
-}: any): any {
-  const mediaDisplaySetting = systemProps.mediaDisplaySetting;
-  const { t } = useTranslation();
-  enum dataState {
-    LOADING,
-    READY,
-  }
-
-  // Add state deciding whether to show loader or table
-  const [tableState, setTableState] = React.useState({
-    data: undefined,
-    columns: [{}],
-    columnsReady: false,
-    dataState: dataState.LOADING,
-  });
-  
+export function parseTableData(
+  isBaseTable: any,
+  mediaDisplaySetting: any,
+  hasuraProps: any,
+  query: string,
+  userConfig: any,
+  setUserConfig: any,
+  setUserConfigQueryInput: any,
+  tableState: any,
+  setTableState: any,
+  dataState: any,
+  tableName: string|null
+) {
   const hasuraHeaders = {
     "Content-Type": "application/json",
     "x-hasura-admin-secret": hasuraProps.hasuraSecret,
   } as HeadersInit;
 
-  const { isSuccess: isSuccess, data: table } = useQuery(["tableQuery", tableName], async () => {
+  useQuery(["tableQuery", query], async () => {
     let result = await fetch(hasuraProps.hasuraEndpoint as RequestInfo, {
       method: "POST",
       headers: hasuraHeaders,
       body: JSON.stringify({
-        query: `{ ${tableName} { ${columns} }}`,
+        query: query,
       }),
     })
       .then((res) => res.json())
       .then((res) => {
+         // Succesful GraphQL query results have a 'data' field
         if (!res || !res.data) return null;
+        if (tableName == null) {
+          tableName = Object.keys(res.data)[0]; // TODO: how do we handle multiple tables?
+        }
         return res.data[tableName];
       })
       .then((res) => {
         if (res) {
           let columnNames: string[] = [];
-          let tableConfig = userConfig.baseTables.filter((baseTable: any) => baseTable.name == tableName);
+          let tableConfig;
+
+          if (isBaseTable) {
+            // If the query is called for a basetable, search for the basetable configuration
+            tableConfig = userConfig.baseTables.filter((baseTable: any) => baseTable.name == tableName);
+          } else {
+            // If the query is called for a dashboard element, search for the dashboard grid view element configuration
+            // @TODO: Change
+            tableConfig = null;
+          }
+
           let orderedColumn: string|null = null;
           let orderDirection: string|null = null;
+
           // Check if the table configuration exists in the user's configuration
-          if (tableConfig.length !== 0) {
+          if (isBaseTable && tableConfig.length !== 0) {
             tableConfig = tableConfig[0]
             // Define the ordering for this table
             orderedColumn = tableConfig.ordering.by;
@@ -160,7 +166,6 @@ function BaseTableData({
             row.key = index;
           }); 
 
-          columns = undefined;
           setTableState({
             data: res,
             columns: extractedColumns,
@@ -170,7 +175,7 @@ function BaseTableData({
 
           // If the base table does not exist in the configuration, add it
           let existsInConfiguration = userConfig.baseTables.filter((baseTable: any) => baseTable.name == tableName).length != 0
-          if (!existsInConfiguration) {
+          if (!existsInConfiguration && isBaseTable) { // @TODO: Change such that dashboard grid views are also saved
             userConfig.baseTables.push(
               {
                 "name": tableName,
@@ -185,7 +190,60 @@ function BaseTableData({
           }        
         }
       });
-  }, { enabled: !!tableName });
+  });
+}
+
+/**
+ * @param {*} {
+ *   hasuraProps, 
+ *   systemProps,
+ *   columns,
+ *   tableName,
+ *   userConfig,
+ *   setUserConfig,
+ *   userConfigQueryInput,
+ *   setUserConfigQueryInput 
+ * }
+ * @return {*}  {*}
+ */
+function BaseTableData({
+  hasuraProps, 
+  systemProps,
+  columns,
+  tableName,
+  userConfig,
+  setUserConfig,
+  userConfigQueryInput,
+  setUserConfigQueryInput 
+}: any): any {
+  const { t } = useTranslation();
+  
+  enum dataState {
+    LOADING,
+    READY,
+  }
+
+  // Add state deciding whether to show loader or table
+  const [tableState, setTableState] = useState({
+    data: undefined,
+    columns: [{}],
+    columnsReady: false,
+    dataState: dataState.LOADING,
+  });
+
+  parseTableData(
+    true, 
+    systemProps.mediaDisplaySetting, 
+    hasuraProps, 
+    `{ ${tableName} { ${columns} }}`, 
+    userConfig, 
+    setUserConfig,
+    setUserConfigQueryInput,
+    tableState,
+    setTableState,
+    dataState,
+    tableName
+  );
 
   const [selectionType, setSelectionType] = useState('checkbox');
 
@@ -218,6 +276,7 @@ function BaseTableData({
             onChange={ function(pagination, filters, sorter: SorterResult<RecordType> | SorterResult<RecordType>[]) {
               // Get the current table configuration
               const tableConfig = userConfig.baseTables.filter((baseTable: any) => baseTable.name == tableName)[0];
+
               // Remove the table configuration
               userConfig.baseTables = userConfig.baseTables.filter((baseTable: any) => baseTable.name != tableName);
               

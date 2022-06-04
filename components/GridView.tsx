@@ -1,78 +1,77 @@
-import React from "react";
+import React, { useState } from "react";
 import { Table } from "antd";
 import { useQuery } from "react-query";
+import { useTranslation } from "next-i18next";
+
 import Loader from "../components/Loader";
+import { parseTableData } from "../components/BaseTableData"
+import { SorterResult } from "antd/lib/table/interface";
 
+/**
+ * @param {*} {
+ *   hasuraProps,
+ *   query,
+ *   style,
+ *   rowsPerPage,
+ *   systemProps,
+ *   userConfig,
+ *   setUserConfig,
+ *   setUserConfigQueryInput 
+ * }
+ * @return {*} 
+ */
+function GridView({
+  hasuraProps,
+  query,
+  style,
+  rowsPerPage,
+  systemProps,
+  userConfig,
+  setUserConfig,
+  setUserConfigQueryInput 
+}: any) {
+  const { t } = useTranslation();
 
-function GridView({ hasuraProps, query, style, rowsPerPage }: any) {
   enum dataState {
     LOADING,
     READY,
   }
+
   // Add state deciding whether to show loader or table
-  const [tableState, setTableState] = React.useState({
+  const [tableState, setTableState] = useState({
     data: undefined,
     columns: [{}],
     columnsReady: false,
     dataState: dataState.LOADING,
   });
-  const hasuraHeaders = {
-    "Content-Type": "application/json",
-    "x-hasura-admin-secret": hasuraProps.hasuraSecret,
-  } as HeadersInit;
-  useQuery(["tableQuery", query], async () => {
-    await fetch(hasuraProps.hasuraEndpoint as RequestInfo, {
-      method: "POST",
-      headers: hasuraHeaders,
-      body: JSON.stringify({
-        query: query,
-      }),
-    })
-      .then((res) => res.json())
-      .then((res) => {
-        // Succesful GraphQL query results have a 'data' field
-        if (!res || !res.data) return null;
-        let tableName = Object.keys(res.data)[0]; // TODO: how do we handle multiple tables?
-        return res.data[tableName];
-      })
-      .then((res) => {
-        if (res) {
-          let extractedColumns = Object.keys(res[0]).map((columnName) => {
-            return {
-              title: columnName,
-              dataIndex: columnName,
-              key: columnName,
-              render: (row: any) => {
-                // Check if the row contains an image
-                if (typeof row == 'string' && (row.endsWith('.png') || row.endsWith('.jpeg') || row.endsWith('.gif'))) {
-                  // Row contains image, so display it as an image 
-                  return (
-                    <img src={row}/>
-                  );
-                } else if (typeof row == 'string' && (row.endsWith('.mp4') || row.endsWith('.mp3'))) {
-                  return (
-                    <video width="320" height="240" controls>
-                      <source src={row} type="video/mp4"/>
-                    </video>
-                  );
-                } else {
-                  return (
-                    row
-                  );
-                }
-             }
-            };
-          });
-          //columns = undefined;
-          setTableState({
-            data: res,
-            columns: extractedColumns,
-            columnsReady: true,
-            dataState: dataState.READY,
-          });
-        }
-      });
-  });
+
+  parseTableData(
+    false, 
+    systemProps.mediaDisplaySetting, 
+    hasuraProps, 
+    query, 
+    userConfig, 
+    setUserConfig,
+    setUserConfigQueryInput,
+    tableState,
+    setTableState,
+    dataState,
+    null
+  );
+
+  const [selectionType, setSelectionType] = useState('checkbox');
+
+  const rowSelection: any = {
+    // Get selected rows on
+    onChange: (selectedRowKeys: any, selectedRows: any) => {
+      console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
+    }
+  };
+
+  type RecordType = {
+    field: string;
+    order: string;
+  }
 
   return (
     <div style={style} >
@@ -82,14 +81,33 @@ function GridView({ hasuraProps, query, style, rowsPerPage }: any) {
           // If there is data, display table
           <Table
             pagination={{ pageSize: rowsPerPage }}
+            rowSelection={{
+              type: selectionType,
+              ...rowSelection,
+            }}
             size="small" // TODO: Make this customizable by user
             key={`tableData`} // TODO: make key unique
             dataSource={tableState.data}
             columns={tableState.columns}
+            onChange={ function(pagination, filters, sorter: SorterResult<RecordType> | SorterResult<RecordType>[]) {
+              // // Get the current table configuration
+              // const tableConfig = userConfig.baseTables.filter((baseTable: any) => baseTable.name == tableName)[0];
+
+              // // Remove the table configuration
+              // userConfig.baseTables = userConfig.baseTables.filter((baseTable: any) => baseTable.name != tableName);
+              
+              // // Set the ordering
+              // tableConfig.ordering.by = (sorter as SorterResult<RecordType>).field;
+              // tableConfig.ordering.direction = (sorter as SorterResult<RecordType>).order;
+
+              // @TODO Push the updated table configuration to the user's configuration
+              // userConfig.baseTables.push(tableConfig);
+              // setUserConfigQueryInput(userConfig);
+            }}
           />
         ) : (
-          // If table is empty, tell the user
-          <p>No data</p>
+          // If table is empty, warn the user
+          <p>{t("basetable.warning")}</p>
         )
       ) : (
         //If data is still loading, display throbber

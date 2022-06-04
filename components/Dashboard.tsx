@@ -71,11 +71,27 @@ const ResponsiveReactGridLayout = WidthProvider(Responsive);
    * @param {number} index
    * @return {*}  {JSX.Element}
    */
-  function renderDashboardElement(element: any, hasuraProps: any, index: number): JSX.Element {
+  function renderDashboardElement(
+    element: any,
+    hasuraProps: any,
+    index: number,
+    systemProps: any,
+    userConfig: any,
+    setUserConfig: any,
+    setUserConfigQueryInput: any
+  ): JSX.Element {
     let rendered_element = <p>{t("dashboard.element.unknown")}</p>;
     switch (element.type) {
       case elementType.GRIDVIEW:
-        rendered_element = <GridView query={element.query} hasuraProps={hasuraProps} style={{ height: "100%", width: "100%", overflow: "auto" }} />;
+        rendered_element = <GridView 
+          query={element.query}
+          hasuraProps={hasuraProps}
+          systemProps={systemProps}
+          userConfig={userConfig}
+          setUserConfig={setUserConfig}
+          setUserConfigQueryInput={setUserConfigQueryInput} 
+          style={{ height: "100%", width: "100%", overflow: "auto" }} 
+        />;
         console.log("rendering a GRIDVIEW at: " + element.x + ", " + element.y)
         break;
       case elementType.STATIC:
@@ -190,7 +206,7 @@ const ResponsiveReactGridLayout = WidthProvider(Responsive);
       {
         dashboardState.dashboard
           .dashboardElements
-          .map((element: any, index: number) => renderDashboardElement(element, hasuraProps, index))
+          .map((element: any, index: number) => renderDashboardElement(element, hasuraProps, index, systemProps, userConfig, setUserConfig, setUserConfigQueryInput))
       }
     </ResponsiveReactGridLayout>
   );
