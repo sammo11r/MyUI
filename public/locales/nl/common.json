@@ -59,6 +59,12 @@
         "label": "Tekst",
         "tooltip": "Verander hier de inhoud van dit element",
         "type": "Onbekend elementtype"
+      },
+      "removewarning": {
+        "title": "Weet je zeker dat je dit element wilt verwijderen?",
+        "description": "Deze actie kan niet ongedaan gemaakt worden!",
+        "confirmText": "Ja",
+        "cancelText": "Nee"
       }
     }
   },

@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from "react";
+import { Modal }  from "antd";
 import { useTranslation } from "next-i18next";
 import GridLayout from "react-grid-layout";
 import { Responsive, WidthProvider } from "react-grid-layout";
 
 import { workspaceStates } from "../pages";
 import { elementType } from "../pages";
-import { DeleteOutlined } from "@ant-design/icons";
+import { DeleteOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
 import GridView from "./GridView";
 import StaticElement from "./StaticElement";
 
+const { confirm } = Modal;
 const ResponsiveReactGridLayout = WidthProvider(Responsive);
 
 /**
@@ -57,10 +59,29 @@ const ResponsiveReactGridLayout = WidthProvider(Responsive);
     setEditElementModalState({ visible: true, element: element })
   }
 
+  /**
+   * Delete an element from the dashboard
+   *
+   * @param {number} index
+   */
   const deleteElement = (index: number) => {
     const newDashboard = dashboardState.dashboard
     newDashboard.dashboardElements.splice(index, 1)
     setDashboardState({ dashboard: newDashboard })
+  }
+
+  const showDeleteConfirm = (index: number) => {
+    confirm({
+      title: t("dashboard.element.removewarning.title"),
+      icon: <ExclamationCircleOutlined />,
+      content:  t("dashboard.element.removewarning.description"),
+      okText: t("dashboard.element.removewarning.confirmText"),
+      okType: 'danger',
+      cancelText: t("dashboard.element.removewarning.cancelText"),
+      onOk() { 
+        deleteElement(index); 
+      },
+    });
   }
 
   /**
@@ -76,11 +97,9 @@ const ResponsiveReactGridLayout = WidthProvider(Responsive);
     switch (element.type) {
       case elementType.GRIDVIEW:
         rendered_element = <GridView query={element.query} hasuraProps={hasuraProps} style={{ height: "100%", width: "100%", overflow: "auto" }} />;
-        console.log("rendering a GRIDVIEW at: " + element.x + ", " + element.y)
         break;
       case elementType.STATIC:
         rendered_element = <StaticElement text={element.text} style={{ height: "100%", width: "100%" }} />;
-        console.log("rendering a STATIC at: " + element.x + ", " + element.y)
         break;
     }
     return (
@@ -105,7 +124,7 @@ const ResponsiveReactGridLayout = WidthProvider(Responsive);
             right: "5px",
             top: "5px"
           }}
-          onClick={(e) => deleteElement(index)}
+          onClick={(e) => showDeleteConfirm(index)}
         /> : null}
         {rendered_element}
       </div>
