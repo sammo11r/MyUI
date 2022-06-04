@@ -14,7 +14,8 @@ export default function EditElementModal({state, setState}: any): JSX.Element {
   const onFinish = (values: {field: string}) => {
     switch (state.element.type) {
       case elementType.GRIDVIEW:
-        state.element.query = values.field
+        // Remove all line breaks from the query input
+        state.element.query = values.field.replace(/(\r\n|\n|\r)/gm, "")
         break;
       case elementType.STATIC:
         state.element.text = values.field
