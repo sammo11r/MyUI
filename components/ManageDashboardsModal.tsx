@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useQuery } from "react-query";
+import { useSession } from "next-auth/react";
 import {
   Form,
   Input,
@@ -8,6 +9,7 @@ import {
 import "antd/dist/antd.css";
 import { InfoCircleOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
 import { useTranslation } from "next-i18next";
+import jwtDecode from "jwt-decode";
 
 const { confirm } = Modal;
 
@@ -84,17 +86,13 @@ export default function ManageDashboardsModal({
   hasuraProps,
   userConfig,
   setUserConfig,
+  userId,
   userConfigQueryInput,
   setUserConfigQueryInput
 }: any): JSX.Element {
   const { t } = useTranslation();
   const [hasError, setError] = useState(false);
   const [form] = Form.useForm();
-
-  const hasuraHeaders = {
-    "Content-Type": "application/json",
-    "x-hasura-admin-secret": hasuraProps.hasuraSecret,
-  } as HeadersInit;
 
   const hideModal = () => {
     // Reset the text field and hide the modal

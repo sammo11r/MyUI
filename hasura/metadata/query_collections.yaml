@@ -1,7 +1,7 @@
 - name: allowed-queries
   definition:
     queries:
-      - name: Get all users
+      - name: Users
         query: |
           query MyQuery {
           	users {

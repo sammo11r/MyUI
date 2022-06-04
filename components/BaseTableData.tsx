@@ -41,6 +41,7 @@ function replaceNull(columnA: any, columnB: any, replacement: any) {
  */
 function BaseTableData({
   hasuraProps, 
+  hasuraHeaders,
   systemProps,
   columns,
   tableName,
@@ -63,11 +64,6 @@ function BaseTableData({
     columnsReady: false,
     dataState: dataState.LOADING,
   });
-  
-  const hasuraHeaders = {
-    "Content-Type": "application/json",
-    "x-hasura-admin-secret": hasuraProps.hasuraSecret,
-  } as HeadersInit;
 
   const { isSuccess: isSuccess, data: table } = useQuery(["tableQuery", tableName], async () => {
     let result = await fetch(hasuraProps.hasuraEndpoint as RequestInfo, {
