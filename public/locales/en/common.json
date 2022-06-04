@@ -66,6 +66,15 @@
         "confirmText": "Yes",
         "cancelText": "No"
       }
+    },
+    "savenotification": {
+      "message": "Successfully saved the current dashboard layout!"
+    },
+    "saveprompt": {
+      "title": "You still have unsaved changes, do you want to save them?",
+      "description": "If you click discard, all changes made to this dashboard since the last save will be lost",
+      "savetext": "Save changes",
+      "discardtext": "Discard changes"
     }
   },
   "basetable": {

@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { useQuery } from "react-query";
 import { useSession } from "next-auth/react";
-import { Layout } from "antd";
+import { Layout, Modal, notification } from "antd";
+import { QuestionCircleOutlined } from "@ant-design/icons";
 import "antd/dist/antd.css";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { i18n, useTranslation } from "next-i18next";
@@ -19,6 +20,7 @@ import QueryInput from "../components/QueryInput";
 import Workspace from "../components/Workspace";
 
 const { Content, Sider } = Layout;
+const { confirm } = Modal;
 
 export enum sideBarItemTypes { BASE_TABLE, DASHBOARD }
 
@@ -72,7 +74,10 @@ export default function App({ hasuraProps, systemProps }: any) {
     name: "none",
   });
 
-  const [dashboardState, setDashboardState] = useState({dashboard: {}});
+  const [dashboardState, setDashboardState] = useState({ dashboard: {} });
+
+  // True iff in the process of saving a dashboard
+  const [loadings, setLoadings] = useState(false);
 
   // Define the default UI configuration
   const defaultConfiguration = {
@@ -124,7 +129,7 @@ export default function App({ hasuraProps, systemProps }: any) {
         if (userConfig.data.user_versioned_config.length == 0) {
           // Set the default empty user's configuration
           userConfig = defaultConfiguration;
-          setUserConfigQueryInput(userConfig); 
+          setUserConfigQueryInput(userConfig);
         } else {
           // Get the user's configuration        
           userConfig = userConfig.data.user_versioned_config[0].config;
@@ -135,7 +140,7 @@ export default function App({ hasuraProps, systemProps }: any) {
         const dashboards = userConfig.dashboards;
         let dashboardNames = dashboards.map((dashboard: any) => dashboard.name);
         setDashboardNames(dashboardNames);
-        setUserConfig(userConfig); 
+        setUserConfig(userConfig);
 
         // Push the language locale - needed to retrieve the correct language on startup
         router.push({ pathname, query }, asPath, { locale: userConfig.uiPreferences.language })
@@ -213,9 +218,10 @@ export default function App({ hasuraProps, systemProps }: any) {
       showModal(modalTypes.REMOVE);
     } else {
       setWorkspaceState({ displaying: workspaceStates.DISPLAY_DASHBOARD, name: name });
-      // Get clicked dashboard configuration
-      const currentDashboard = userConfig.dashboards.filter((dashboard: any) => dashboard.name == name)[0]
-      setDashboardState({dashboard: currentDashboard});
+      // Get dashboard configuration by name, 
+      // needs to be deep copy to prevent dashboardstate becoming a reference to the dashboard stored in userConfig
+      const currentDashboard = structuredClone(userConfig.dashboards.filter((dashboard: any) => dashboard.name == name)[0]);
+      setDashboardState({ dashboard: currentDashboard });
     }
   };
 
@@ -224,21 +230,83 @@ export default function App({ hasuraProps, systemProps }: any) {
    */
   const toggleEditMode = () => {
     const newState = workspaceState.displaying === workspaceStates.DISPLAY_DASHBOARD ?
-      workspaceStates.EDIT_DASHBOARD : workspaceStates.DISPLAY_DASHBOARD;  
+      workspaceStates.EDIT_DASHBOARD : workspaceStates.DISPLAY_DASHBOARD;
+
     setWorkspaceState({ displaying: newState, name: workspaceState.name })
 
-    // @TODO: Discard or save changes if dashboard state has been changed...
+    // Auxiliary function used to check if to dashboards are equal
+    const unsavedChanges = (dashboardState: any, userConfig: any, name: string) => {
+      const editedDashboardElements = dashboardState.dashboard.dashboardElements;
+      const savedDashboardElements = userConfig.dashboards
+        .filter((dashboard: any) => dashboard.name == name)[0].dashboardElements;
+      // Check if length equal
+      if (savedDashboardElements.length !== editedDashboardElements.length) return true;
+      // Check if values are equal, keys are assumed to be equivalent
+      for (let i = 0; i < savedDashboardElements.length; i++) {
+        for (const key of Object.keys(savedDashboardElements[i])) {
+          if (savedDashboardElements[i][key] !== editedDashboardElements[i][key]) {
+            return true;
+          }
+        }
+      }
+      return false;
+    }
+
+    // If leaving edit mode while there are unsaved changes,
+    // ask user if they want to save changes
+    if (
+      newState === workspaceStates.DISPLAY_DASHBOARD &&
+      unsavedChanges(dashboardState, userConfig, workspaceState.name)
+    ) {
+      confirm({
+        title: t("dashboard.saveprompt.title"),
+        icon: <QuestionCircleOutlined />,
+        content: t("dashboard.saveprompt.description"),
+        okText: t("dashboard.saveprompt.savetext"),
+        cancelText: t("dashboard.saveprompt.discardtext"),
+        onOk() {
+          saveDashboardChanges(userConfig, dashboardState);
+        },
+        onCancel() {
+          // Display old (unchanged) dashboard
+          displayDashboard(workspaceState.name, userConfig);
+        }
+      });
+    }
+  }
+
+  /**
+   * Save the dashboard changes to the user's configuration file
+   */
+  const saveDashboardChanges = (userConfig: any, dashboardState: any) => {
+    setLoadings(true);
+    // Remove the old dashboard from the user config
+    let otherDashboards = userConfig.dashboards.filter((dashboard: any) => dashboard.name != dashboardState.dashboard.name);
+
+    // Add the edited dashboard to the user config
+    otherDashboards.push(dashboardState.dashboard);
+    userConfig.dashboards = otherDashboards;
+
+    setUserConfigQueryInput(userConfig);
+    setLoadings(false);
+    notification.open({
+      message: t("dashboard.savenotification.message"),
+      duration: 3,
+      placement: "bottomRight"
+    });
   }
 
   const displaySider = () => {
     if (workspaceState.displaying === workspaceStates.EDIT_DASHBOARD) {
-      return <EditModeSider 
+      return <EditModeSider
         userConfig={userConfig}
         setUserConfig={setUserConfig}
         userConfigQueryInput={userConfigQueryInput}
         setUserConfigQueryInput={setUserConfigQueryInput}
         dashboardState={dashboardState}
         setDashboardState={setDashboardState}
+        loadings={loadings}
+        saveDashboardChanges={saveDashboardChanges}
       />
     }
     return <NavigationSider
@@ -260,80 +328,80 @@ export default function App({ hasuraProps, systemProps }: any) {
         height: "100vh",
       }}
     >
-      { isSuccessConfig ? (
+      {isSuccessConfig ? (
         <>
-      <AppHeader 
-        userConfig={userConfig}
-        setUserConfig={setUserConfig}
-        userConfigQueryInput={userConfigQueryInput}
-        setUserConfigQueryInput={setUserConfigQueryInput}
-        workspaceState={workspaceState}
-        toggleEditMode={toggleEditMode}
-      />
-      <ManageDashboardsModal
-        isVisible={manageDashboardsModalState.visible}
-        setVisible={
-          (visible: boolean) => setManageDashboardsModalState(
-            { visible: visible, type: manageDashboardsModalState.type }
-          )
-        }
-        dashboardNames={dashboardNames}
-        dashboardAddKey={dashboardAddKey}
-        dashboardRemoveKey={dashboardRemoveKey}
-        setDashboardNames={setDashboardNames}
-        tableNames={tableNames}
-        modalType={manageDashboardsModalState.type}
-        hasuraProps={hasuraProps}
-        userConfig={userConfig}
-        setUserConfig={setUserConfig}
-        userConfigQueryInput={userConfigQueryInput}
-        setUserConfigQueryInput={setUserConfigQueryInput}
-      />
-      {
-        editElementModalState.visible ?
-          <EditElementModal
-            state={editElementModalState}
-            setState={setEditElementModalState}
-          /> : <></>
-      }
+          <AppHeader
+            userConfig={userConfig}
+            setUserConfig={setUserConfig}
+            userConfigQueryInput={userConfigQueryInput}
+            setUserConfigQueryInput={setUserConfigQueryInput}
+            workspaceState={workspaceState}
+            toggleEditMode={toggleEditMode}
+          />
+          <ManageDashboardsModal
+            isVisible={manageDashboardsModalState.visible}
+            setVisible={
+              (visible: boolean) => setManageDashboardsModalState(
+                { visible: visible, type: manageDashboardsModalState.type }
+              )
+            }
+            dashboardNames={dashboardNames}
+            dashboardAddKey={dashboardAddKey}
+            dashboardRemoveKey={dashboardRemoveKey}
+            setDashboardNames={setDashboardNames}
+            tableNames={tableNames}
+            modalType={manageDashboardsModalState.type}
+            hasuraProps={hasuraProps}
+            userConfig={userConfig}
+            setUserConfig={setUserConfig}
+            userConfigQueryInput={userConfigQueryInput}
+            setUserConfigQueryInput={setUserConfigQueryInput}
+          />
+          {
+            editElementModalState.visible ?
+              <EditElementModal
+                state={editElementModalState}
+                setState={setEditElementModalState}
+              /> : <></>
+          }
 
-      <Layout>
-        {siderState.tableNamesState == siderMenuState.LOADING ? (
-          <Loader />
-        ) : (
-          displaySider()
-        )}
-        <Layout
-          style={{
-            padding: "0 24px 24px",
-          }}
-        >
-          <Content
-            className="site-layout-background"
-            style={{
-              padding: 24,
-              margin: 0,
-              minHeight: 280,
-            }}
-          >
-            <Workspace
-              key={"workspace"}
-              workspaceState={workspaceState}
-              hasuraProps={hasuraProps}
-              systemProps={systemProps}
-              userConfig={userConfig}
-              setUserConfig={setUserConfig}
-              dashboardState={dashboardState}
-              setDashboardState={setDashboardState}
-              setEditElementModalState={setEditElementModalState}
-              userConfigQueryInput={userConfigQueryInput}
-              setUserConfigQueryInput={setUserConfigQueryInput}
-            />
-          </Content>
-        </Layout>
-      </Layout>
-      </>
-    ) : <></> }
+          <Layout>
+            {siderState.tableNamesState == siderMenuState.LOADING ? (
+              <Loader />
+            ) : (
+              displaySider()
+            )}
+            <Layout
+              style={{
+                padding: "0 24px 24px",
+              }}
+            >
+              <Content
+                className="site-layout-background"
+                style={{
+                  padding: 24,
+                  margin: 0,
+                  minHeight: 280,
+                }}
+              >
+                <Workspace
+                  key={"workspace"}
+                  workspaceState={workspaceState}
+                  hasuraProps={hasuraProps}
+                  systemProps={systemProps}
+                  userConfig={userConfig}
+                  setUserConfig={setUserConfig}
+                  dashboardState={dashboardState}
+                  setDashboardState={setDashboardState}
+                  setEditElementModalState={setEditElementModalState}
+                  userConfigQueryInput={userConfigQueryInput}
+                  setUserConfigQueryInput={setUserConfigQueryInput}
+                />
+              </Content>
+            </Layout>
+          </Layout>
+        </>
+      ) : <></>}
     </Layout>
   );
 }

@@ -66,6 +66,15 @@
         "confirmText": "Ja",
         "cancelText": "Nee"
       }
+    },
+    "savenotification": {
+      "message": "Het huidige dashboard ontwerp is succesvol opgeslagen!"
+    },
+    "saveprompt": {
+      "title": "Je hebt nog onopgeslagen veranderingen, wil je deze opslaan?",
+      "description": "Als je klikt op 'niet opslaan' zullen alle veranderingen sinds de laatste keer dat er is opgeslagen verloren gaan.",
+      "savetext": "Opslaan",
+      "discardtext": "Niet opslaan"
     }
   },
   "basetable": {

@@ -26,26 +26,11 @@ export default function EditModeSider({
   userConfigQueryInput,
   setUserConfigQueryInput,
   dashboardState,
-  setDashboardState
+  setDashboardState,
+  loadings,
+  saveDashboardChanges
 }: any): any {
   const { t } = useTranslation();
-  const [loadings, setLoadings] = useState(false);
-
-  /**
-   * Save the dashboard changes to the user's configuration file
-   */
-  const saveDashboardChanges = () => {
-    setLoadings(true);
-    // Remove the old dashboard from the user config
-    let otherDashboards = userConfig.dashboards.filter((dashboard: any) => dashboard.name != dashboardState.dashboard.name);
-
-    // Add the edited dashboard to the user config
-    otherDashboards.push(dashboardState.dashboard);
-    userConfig.dashboards = otherDashboards;
-
-    setUserConfigQueryInput(userConfig);
-    setLoadings(false);
-  }
   
   const draggableElement = (type: elementType, text: string, icon: any): JSX.Element => {
     return (
@@ -56,7 +41,7 @@ export default function EditModeSider({
           e.dataTransfer.setData("text/plain", elementType[type])
         }}
       > 
-        {icon} {/* TODO: improve the visuals */}
+        {icon} {/* @TODO: improve the visuals */}
         {text}
       </div>
     )
@@ -66,7 +51,7 @@ export default function EditModeSider({
     <Sider theme="light">
       {draggableElement(elementType.STATIC, t("dashboard.element.static.type"), <BorderOutlined/>)}
       {draggableElement(elementType.GRIDVIEW, t("dashboard.element.gridview.type"), <TableOutlined/>)}
-      <Button type="primary" loading={loadings} onClick={saveDashboardChanges} style={{width:"100%"}}>
+      <Button type="primary" loading={loadings} onClick={() => saveDashboardChanges(userConfig, dashboardState)} style={{width:"100%"}}>
         {t("dashboard.save")}
       </Button>
     </Sider>
