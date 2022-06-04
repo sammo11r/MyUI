@@ -4,7 +4,8 @@ import { useSession } from "next-auth/react";
 import { Layout } from "antd";
 import "antd/dist/antd.css";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
-import { useTranslation } from "next-i18next";
+import { i18n, useTranslation } from "next-i18next";
+import { useRouter } from 'next/router'
 import jwtDecode from "jwt-decode";
 
 import AppHeader from "../components/AppHeader";
@@ -41,6 +42,8 @@ export default function App({ hasuraProps, systemProps }: any) {
   const { t } = useTranslation();
   const [manageDashboardsModalState, setManageDashboardsModalState] = useState({ visible: false, type: modalTypes.ADD });
   const [editElementModalState, setEditElementModalState] = useState({ visible: false, element: {} });
+  const router = useRouter();
+  const { pathname, asPath, query } = router;
 
   // Define state variables for the user configuration
   const [userConfig, setUserConfig] = useState();
@@ -75,7 +78,7 @@ export default function App({ hasuraProps, systemProps }: any) {
   const defaultConfiguration = {
     "dashboards": [],
     "uiPreferences": {
-      "language": "nl"
+      "language": "en"
     },
     "baseTables": []
   }
@@ -108,7 +111,7 @@ export default function App({ hasuraProps, systemProps }: any) {
   let userId = 1; // @TODO
 
   // Get the configuration file of the currently loggged in user
-  useQuery(["configurationQuery", userId], async () => {
+  const { isSuccess: isSuccessConfig, data: configuration } = useQuery(["configurationQuery", userId], async () => {
     let result = await fetch(hasuraProps.hasuraEndpoint as RequestInfo, {
       method: "POST",
       headers: hasuraHeaders,
@@ -132,7 +135,10 @@ export default function App({ hasuraProps, systemProps }: any) {
         const dashboards = userConfig.dashboards;
         let dashboardNames = dashboards.map((dashboard: any) => dashboard.name);
         setDashboardNames(dashboardNames);
-        setUserConfig(userConfig);
+        setUserConfig(userConfig); 
+
+        // Push the language locale - needed to retrieve the correct language on startup
+        router.push({ pathname, query }, asPath, { locale: userConfig.uiPreferences.language })
       });
 
     return result;
@@ -170,7 +176,6 @@ export default function App({ hasuraProps, systemProps }: any) {
       })
         .then((res) => res.json())
         .then((res) => {
-          if (tableNames) return tableNames;
           const data = res.data.__schema.queryType.fields;
           let instances = data.map((instance: any) => instance.name);
           // For every table hasura has query types for aggregate functions and functions on the primary key.
@@ -255,7 +260,16 @@ export default function App({ hasuraProps, systemProps }: any) {
         height: "100vh",
       }}
     >
-      <AppHeader workspaceState={workspaceState} toggleEditMode={toggleEditMode} />
+      { isSuccessConfig ? (
+        <>
+      <AppHeader 
+        userConfig={userConfig}
+        setUserConfig={setUserConfig}
+        userConfigQueryInput={userConfigQueryInput}
+        setUserConfigQueryInput={setUserConfigQueryInput}
+        workspaceState={workspaceState}
+        toggleEditMode={toggleEditMode}
+      />
       <ManageDashboardsModal
         isVisible={manageDashboardsModalState.visible}
         setVisible={
@@ -318,6 +332,8 @@ export default function App({ hasuraProps, systemProps }: any) {
           </Content>
         </Layout>
       </Layout>
+      </>
+    ) : <></> }
     </Layout>
   );
 }

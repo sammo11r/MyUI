@@ -7,7 +7,10 @@
     "submit": "Verzend"
   },
   "logout": {
-    "button": "Log uit"
+    "button": "Log uit",
+    "language": "Taal veranderen naar:",
+    "english": "Engels",
+    "dutch": "Nederlands"
   },
   "workspace": {
     "welcome": "Welkom bij MyUI!"

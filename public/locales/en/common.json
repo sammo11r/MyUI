@@ -7,7 +7,10 @@
     "submit": "Submit"
   },
   "logout": {
-    "button": "Sign out"
+    "button": "Sign out",
+    "language": "Change language to:",
+    "english": "English",
+    "dutch": "Dutch"
   },
   "workspace": {
     "welcome": "Welcome to MyUI!"

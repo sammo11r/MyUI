@@ -123,16 +123,6 @@ export default function ManageDashboardsModal({
       },
     });
   };
-    
-  /**
-   * @param {*} userConfig
-   */
-  const updateConfig = (userConfig: any) => {
-    // Escape double quotes
-    userConfig = JSON.stringify(userConfig).replace(/"/g, "\\\"");
-    // Update the config query input to version the changes
-    setUserConfigQueryInput(userConfig);
-  }
 
   /**
    * @param {object} values
