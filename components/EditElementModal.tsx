@@ -24,13 +24,12 @@ export default function EditElementModal({state, setState}: any): JSX.Element {
           break;
         } catch (error) { break }
       case elementType.STATIC:
-        state.element.text = values.field
+        state.element.text = values.field.replace(/(\r\n|\n|\r)/gm, "");
         break;
     }
     
       // Hide the modal if there is no error in the query
       hideModal()
-    
   }
 
   const hideModal = () => {
