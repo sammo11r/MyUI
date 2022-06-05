@@ -11,6 +11,7 @@ export default function QueryInput({ hasuraProps }: any) {
     // Fetching session token from the current session
     const { data: session } = useSession();
 
+    // @ts-ignore
     const jwt = session!.token;
 
     const hasuraHeaders = {

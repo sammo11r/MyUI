@@ -1,11 +1,15 @@
 type Mutation {
-  insert_product(
-    name: String!
-  ): productOutput
+  actionName(
+    arg1: SampleInput!
+  ): SampleOutput
 }
 
-type productOutput {
-  id: Int
-  name: String
+input SampleInput {
+  username: String!
+  password: String!
+}
+
+type SampleOutput {
+  accessToken: String!
 }
 

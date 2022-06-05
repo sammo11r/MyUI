@@ -87,17 +87,23 @@ export default function App({ hasuraProps, systemProps }: any) {
     "baseTables": []
   }
 
+  const hasuraHeadersVersioning = {
+      "Content-Type": "application/json",
+      "x-hasura-admin-secret": hasuraProps.hasuraSecret, // Adding auth header instead of using the admin secret
+  } as HeadersInit;
+
   // Fetching session token from the current session
   const { data: session } = useSession();
+
   const jwt = session!.token;
 
   const hasuraHeaders = {
     "Content-Type": "application/json",
-    "x-hasura-admin-secret": hasuraProps.hasuraSecret,
+    "Authorization": `Bearer ${jwt}`, // Adding auth header instead of using the admin secret
   } as HeadersInit;
 
   interface JWTHasura {
-    sub: number,
+    sub: string,
     name: string,
     admin: boolean,
     iat: string,
@@ -109,16 +115,13 @@ export default function App({ hasuraProps, systemProps }: any) {
 
   // @ts-ignore
   const jwtTokenDecoded = jwtDecode<JWTHasura>(jwt);
-
-  // Get ID from currently logged in user
-  // let userId = jwtTokenDecoded.sub;
-  let userId = 1; // @TODO
+  const userId = parseInt(jwtTokenDecoded.sub);
 
   // Get the configuration file of the currently loggged in user
   const { isSuccess: isSuccessConfig, data: configuration } = useQuery(["configurationQuery", userId], async () => {
     let result = await fetch(hasuraProps.hasuraEndpoint as RequestInfo, {
       method: "POST",
-      headers: hasuraHeaders,
+      headers: hasuraHeadersVersioning,
       body: JSON.stringify({
         query: `query getConfigurationFromUser { user_versioned_config(where: {user_id: {_eq: ${userId}}}, order_by: {date: desc}, limit: 1) { config }}`,
       }),
@@ -157,7 +160,7 @@ export default function App({ hasuraProps, systemProps }: any) {
 
       let result = await fetch(hasuraProps.hasuraEndpoint as RequestInfo, {
         method: "POST",
-        headers: hasuraHeaders,
+        headers: hasuraHeadersVersioning,
         body: JSON.stringify({
           query: `mutation insertUserConfig { insert_user_versioned_config_one(object: {config: "${newUserConfig}", user_id: ${userId}}) { config }}`,
         }),
