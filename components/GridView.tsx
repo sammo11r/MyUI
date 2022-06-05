@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Table } from "antd";
-import { useQuery } from "react-query";
 import { useTranslation } from "next-i18next";
 
 import Loader from "../components/Loader";
@@ -86,30 +85,27 @@ function GridView({
               ...rowSelection,
             }}
             size="small" // TODO: Make this customizable by user
-            key={`tableData`} // TODO: make key unique
+            key={name}
             dataSource={tableState.data}
             columns={tableState.columns}
-            onChange={ function(pagination, filters, sorter: SorterResult<RecordType> | SorterResult<RecordType>[]) {
-              // Get the current table configuration
-              // @TODO: Fix issue @Jeroen
-              // const currentDashboardConfig = userConfig.dashboards.filter((dashboard: any) => dashboard.name == dashboardName)[0];
-              // const otherDashboardElements = currentDashboardConfig.dashboardElements.filter((element: any) => element.name != name);
-              // const otherDashboards = userConfig.dashboards.filter((dashboard: any) => dashboard.name != dashboardName);
-              // const currentTableConfig = currentDashboardConfig.dashboardElements.filter((element: any) => element.name == name)[0];
+            onChange={ function(pagination, filters, sorter: SorterResult<RecordType> | SorterResult<RecordType>[], extra: any) {
+              if (extra.action == 'sort') {
+                // Get the current table configuration
+                let currentDashboardConfig = userConfig.dashboards.filter((dashboard: any) => dashboard.name == dashboardName)[0];
+                let indexOfDashboard = userConfig.dashboards.indexOf(currentDashboardConfig);
+                let tableConfig = currentDashboardConfig.dashboardElements.filter((element: any) => element.name == name)[0];
+                let indexOfElement =  currentDashboardConfig.dashboardElements.indexOf(tableConfig);
 
-              // // Remove the table configuration
-              // userConfig.baseTables = userConfig.baseTables.filter((baseTable: any) => baseTable.name != name);
-              
-              // // Set the ordering
-              // currentTableConfig.ordering.by = (sorter as SorterResult<RecordType>).field;
-              // currentTableConfig.ordering.direction = (sorter as SorterResult<RecordType>).order;
+                // Update the ordering
+                if (tableConfig !== undefined) {
+                  tableConfig.ordering.by = (sorter as SorterResult<RecordType>).field;
+                  tableConfig.ordering.direction = (sorter as SorterResult<RecordType>).order;
 
-              // otherDashboardElements.push(currentTableConfig);
-              // currentDashboardConfig.dashboardElements = otherDashboardElements
-
-              // otherDashboards.push(currentDashboardConfig);
-              // userConfig.dashboards = otherDashboards;
-              // setUserConfigQueryInput(userConfig); 
+                  // Update the base table configuration
+                  userConfig.dashboards[indexOfDashboard].dashboardElements[indexOfElement] = tableConfig;
+                  setUserConfigQueryInput(userConfig);
+                }
+              }
             }}
           />
         ) : (
@@ -125,22 +121,3 @@ function GridView({
 }
 
 export default GridView;
-
-/**
- * @export
- * @param {*} context
- * @return {*} 
- */
-export function getServerSideProps(context: any) {
-  const hasuraProps = {
-    hasuraSecret: process.env.NEXT_PUBLIC_HASURA_GRAPHQL_ADMIN_SECRET as String,
-    hasuraEndpoint: process.env.NEXT_PUBLIC_HASURA_GRAPHQL_ENDPOINT as
-      | RequestInfo
-      | URL,
-  };
-  return {
-    props: {
-      hasuraProps,
-    },
-  };
-}

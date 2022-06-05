@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useQuery } from "react-query";
 import BaseTableData from "./BaseTableData";
 import Loader from "../components/Loader"
@@ -25,20 +25,16 @@ function BaseTable({
   userConfigQueryInput,
   setUserConfigQueryInput
 }: any) {
-  enum columnStates {
-    LOADING,
-    READY,
-  }
+  enum columnStates { LOADING, READY }
 
   // Add state deciding whether to show loader or table
-  const [columnState, setColumnState] = React.useState({
+  const [columnState, setColumnState] = useState({
     columns: [{}],
     columnState: columnStates.LOADING,
   });
 
   // Fetching session token from the current session
   const { data: session } = useSession();
-
   const jwt = session!.token;
 
   const hasuraHeaders = {

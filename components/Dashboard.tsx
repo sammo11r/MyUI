@@ -70,6 +70,11 @@ const ResponsiveReactGridLayout = WidthProvider(Responsive);
     setDashboardState({ dashboard: newDashboard })
   }
 
+  /**
+   * Show the confirmation modal
+   *
+   * @param {number} index
+   */
   const showDeleteConfirm = (index: number) => {
     confirm({
       title: t("dashboard.element.removewarning.title"),
@@ -123,7 +128,7 @@ const ResponsiveReactGridLayout = WidthProvider(Responsive);
     }
     return (
       <div
-        key={index}
+        key={element.name}
         style={{ 
           outline: "2px solid #ebf2ff",
         }}
@@ -197,11 +202,6 @@ const ResponsiveReactGridLayout = WidthProvider(Responsive);
     // Open editmenu for newly created element
     setEditElementModalState({ visible: true, element: element })
   };
-
-  const layout = dashboardState.dashboard.dashboardElements
-    .map((element: any, index: number) => {
-      return { i: index, x: element.x, y: element.y, w: element.w, h: element.h }
-    })
 
   return (
     <ResponsiveReactGridLayout

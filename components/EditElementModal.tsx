@@ -55,6 +55,7 @@ export default function EditElementModal({state, setState}: any): JSX.Element {
         return "unknown"
     }
   }
+  
   /**
    * Validate the gridview input format on change
    *
@@ -64,7 +65,7 @@ export default function EditElementModal({state, setState}: any): JSX.Element {
    */
   const checkFormat = (_: any, value: string) => {
     if (elementTypeTextRef() == "gridview") {
-      if (value == '') {
+      if (value == undefined) {
         // Input is empty, throw no error such that the user can modify the element later
         return Promise.resolve();
       }

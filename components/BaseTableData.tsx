@@ -7,7 +7,7 @@ import { useTranslation } from "next-i18next";
 import Loader from "../components/Loader";
 
 /**
- * Replace null by a replacement string
+ * Replace null values by a replacement string
  *
  * @param {string} columnA
  * @param {string} columnB
@@ -25,7 +25,6 @@ function replaceNull(columnA: any, columnB: any, replacement: any) {
 
   return {columnA, columnB};
 }
-
 
 /**
  * Parse table data in an Ant Design table component
@@ -63,7 +62,7 @@ export function parseTableData(
     "x-hasura-admin-secret": hasuraProps.hasuraSecret,
   } as HeadersInit;
 
-  useQuery(["tableQuery", query, crypto.randomUUID()], async () => {
+  useQuery(["tableQuery", query, tableName], async () => {
     let result = await fetch(hasuraProps.hasuraEndpoint as RequestInfo, {
       method: "POST",
       headers: hasuraHeaders,
@@ -94,17 +93,15 @@ export function parseTableData(
           let columnNames: string[] = [];
           let orderedColumn: string|null = null;
           let orderDirection: string|null = null;
-
           let tableConfig;
           let dashboardConfig;
-          let isEditMode;
 
           if (isBaseTable) {
             // If the query is called for a basetable, search for the basetable configuration
             tableConfig = userConfig.baseTables.filter((baseTable: any) => baseTable.name == tableName)[0];
 
             if (tableConfig !== undefined) {
-              // Get the ordering for this table
+              // If the table is defined, get the ordering for this table
               orderedColumn = tableConfig.ordering.by;
               orderDirection = tableConfig.ordering.direction;
             } else {
@@ -124,34 +121,27 @@ export function parseTableData(
           } else {
             // If the query is called for a dashboard element, search for the dashboard grid view element configuration
             dashboardConfig = userConfig.dashboards.filter((dashboard: any) => dashboard.name == dashboardName)[0];
+            let indexOfDashboard = userConfig.dashboards.indexOf(dashboardConfig);
             tableConfig = dashboardConfig.dashboardElements.filter((element: any) => element.name == tableName)[0];
+            let indexOfElement =  dashboardConfig.dashboardElements.indexOf(tableConfig);
 
             if (tableConfig !== undefined) {
-              // Get the ordering for this table
-              orderedColumn = tableConfig.ordering.by;
-              orderDirection = tableConfig.ordering.direction;
-            } else {
-              // Retrieve all other elements from this dashboard
-              let otherDashboardElements = dashboardConfig.dashboardElements.filter((element: any) => element.name != tableName);
-
-              // Retrieve all other dashboards from this user
-              let otherDashboards = userConfig.dashboards.filter((dashboard: any) => dashboard.name != dashboardName);
-
-              // Set the ordering
-              tableConfig['ordering'] = {
-                "by": "",
-                "direction": ""
-              };
-
-              // Update the configuration
-              otherDashboardElements.push(tableConfig);
-              dashboardConfig.dashboardElements = otherDashboardElements
-              otherDashboards.push(dashboardConfig);
-              userConfig.dashboards = otherDashboards;
-              // setUserConfigQueryInput(userConfig);
-            }
+              if (tableConfig.ordering == undefined) {
+                // If the table did not have an ordering yet, set the default ordering
+                tableConfig['ordering'] = {
+                  "by": "",
+                  "direction": ""
+                };
+                // Update the user configuration state variable
+                userConfig.dashboards[indexOfDashboard].dashboardElements[indexOfElement] = tableConfig;
+              } else {
+                // Get the ordering for this table
+                orderedColumn = tableConfig.ordering.by;
+                orderDirection = tableConfig.ordering.direction;
+              }
+            } 
           }
-          
+
           // Retrieve column names from the table
           let extractedColumns = Object.keys(res[0]).map((columnName, index) => {
             columnNames.push(columnName);
@@ -308,20 +298,20 @@ function BaseTableData({
             }}
             dataSource={tableState.data}
             columns={tableState.columns}
-            onChange={ function(pagination, filters, sorter: SorterResult<RecordType> | SorterResult<RecordType>[]) {
-              // Get the current table configuration
-              const tableConfig = userConfig.baseTables.filter((baseTable: any) => baseTable.name == tableName)[0];
+            onChange={ function(pagination, filters, sorter: SorterResult<RecordType> | SorterResult<RecordType>[], extra: any) {
+              if (extra.action == 'sort') {
+                // Get the current table configuration
+                const baseTableConfig = userConfig.baseTables.filter((baseTable: any) => baseTable.name == tableName)[0];
+                let indexOfBaseTable = userConfig.baseTables.indexOf(baseTableConfig);
 
-              // Remove the table configuration
-              userConfig.baseTables = userConfig.baseTables.filter((baseTable: any) => baseTable.name != tableName);
-              
-              // Set the ordering
-              tableConfig.ordering.by = (sorter as SorterResult<RecordType>).field;
-              tableConfig.ordering.direction = (sorter as SorterResult<RecordType>).order;
+                // Udate the ordering
+                baseTableConfig.ordering.by = (sorter as SorterResult<RecordType>).field;
+                baseTableConfig.ordering.direction = (sorter as SorterResult<RecordType>).order;
 
-              // Push the updated table configuration to the user's configuration
-              userConfig.baseTables.push(tableConfig);
-              setUserConfigQueryInput(userConfig);
+                // Update the base table configuration
+                userConfig.baseTables[indexOfBaseTable] = baseTableConfig;
+                setUserConfigQueryInput(userConfig);
+              }
             }}
           />
         ) : (
