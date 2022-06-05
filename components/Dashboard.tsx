@@ -123,7 +123,7 @@ const ResponsiveReactGridLayout = WidthProvider(Responsive);
     }
     return (
       <div
-        key={crypto.randomUUID()}
+        key={index}
         style={{ 
           outline: "2px solid #ebf2ff",
         }}
