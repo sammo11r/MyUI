@@ -358,6 +358,9 @@ export default function App({ hasuraProps, systemProps }: any) {
             setUserConfig={setUserConfig}
             userConfigQueryInput={userConfigQueryInput}
             setUserConfigQueryInput={setUserConfigQueryInput}
+            displayDashboard={displayDashboard}
+            setWorkspaceState={setWorkspaceState}
+            workspaceStates={workspaceStates}
           />
           {
             editElementModalState.visible ?

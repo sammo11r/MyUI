@@ -88,7 +88,10 @@ export default function ManageDashboardsModal({
   setUserConfig,
   userId,
   userConfigQueryInput,
-  setUserConfigQueryInput
+  setUserConfigQueryInput,
+  displayDashboard,
+  setWorkspaceState,
+  workspaceStates
 }: any): JSX.Element {
   const { t } = useTranslation();
   const [hasError, setError] = useState(false);
@@ -118,6 +121,8 @@ export default function ManageDashboardsModal({
         userConfig.dashboards = userConfig.dashboards.filter((dashboard: any) => dashboard.name !== name)
         setUserConfigQueryInput(userConfig);
         hideModal();
+
+        setWorkspaceState({displaying: workspaceStates.EMPTY, name: "none",})
       },
     });
   };
@@ -147,6 +152,7 @@ export default function ManageDashboardsModal({
           setDashboardNames(newDashboardNames);
           setUserConfigQueryInput(userConfig);
           hideModal();
+          displayDashboard(name, userConfig);
           break;
         case (modalTypes.REMOVE):
           newDashboardNames = removeDashboard(name, dashboardNames);
