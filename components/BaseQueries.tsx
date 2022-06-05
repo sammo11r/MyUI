@@ -1,22 +1,4 @@
-import React, { useState } from "react";
 import { useQuery } from "react-query";
-import { useSession } from "next-auth/react";
-import { Layout, Modal, notification } from "antd";
-import { QuestionCircleOutlined } from "@ant-design/icons";
-import "antd/dist/antd.css";
-import { serverSideTranslations } from "next-i18next/serverSideTranslations";
-import { i18n, useTranslation } from "next-i18next";
-import { useRouter } from 'next/router'
-import jwtDecode from "jwt-decode";
-
-import AppHeader from "../components/AppHeader";
-import { dashboardAddKey, dashboardRemoveKey } from "../components/NavigationSider";
-import EditElementModal from "../components/EditElementModal";
-import EditModeSider from "../components/EditModeSider";
-import Loader from "../components/Loader";
-import ManageDashboardsModal, { modalTypes } from "../components/ManageDashboardsModal";
-import NavigationSider from "../components/NavigationSider";
-import Workspace from "../components/Workspace";
 
 // Define the default UI configuration
 const defaultConfiguration = {
