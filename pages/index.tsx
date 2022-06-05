@@ -17,6 +17,11 @@ import Loader from "../components/Loader";
 import ManageDashboardsModal, { modalTypes } from "../components/ManageDashboardsModal";
 import NavigationSider from "../components/NavigationSider";
 import Workspace from "../components/Workspace";
+import { 
+  configurationQuery,
+  updateUserConfiguration,
+  tableQuery
+} from "../components/BaseQueries"
 
 const { Content, Sider } = Layout;
 const { confirm } = Modal;
@@ -30,10 +35,7 @@ export enum workspaceStates {
   EDIT_DASHBOARD
 }
 
-export enum elementType {
-  GRIDVIEW,
-  STATIC
-}
+export enum elementType { GRIDVIEW, STATIC }
 
 /**
  * @param {*} { hasuraProps, systemProps }
@@ -44,7 +46,6 @@ export default function App({ hasuraProps, systemProps }: any) {
   const [manageDashboardsModalState, setManageDashboardsModalState] = useState({ visible: false, type: modalTypes.ADD });
   const [editElementModalState, setEditElementModalState] = useState({ visible: false, element: {} });
   const router = useRouter();
-  const { pathname, asPath, query } = router;
 
   // Define state variables for the user configuration
   const [userConfig, setUserConfig] = useState();
@@ -58,10 +59,7 @@ export default function App({ hasuraProps, systemProps }: any) {
     setManageDashboardsModalState({ visible: true, type: type });
   };
 
-  enum siderMenuState {
-    READY,
-    LOADING,
-  }
+  enum siderMenuState { READY, LOADING}
 
   const [siderState, setSiderState] = useState({
     tableNames: [],
@@ -78,28 +76,18 @@ export default function App({ hasuraProps, systemProps }: any) {
   // True iff in the process of saving a dashboard
   const [loadings, setLoadings] = useState(false);
 
-  // Define the default UI configuration
-  const defaultConfiguration = {
-    "dashboards": [],
-    "uiPreferences": {
-      "language": "en"
-    },
-    "baseTables": []
-  }
-
-  const hasuraHeadersVersioning = {
-      "Content-Type": "application/json",
-      "x-hasura-admin-secret": hasuraProps.hasuraSecret, // Adding auth header instead of using the admin secret
-  } as HeadersInit;
-
   // Fetching session token from the current session
   const { data: session } = useSession();
-
   const jwt = session!.token;
 
   const hasuraHeaders = {
     "Content-Type": "application/json",
     "Authorization": `Bearer ${jwt}`, // Adding auth header instead of using the admin secret
+  } as HeadersInit;
+
+  const hasuraHeadersVersioning = {
+    "Content-Type": "application/json",
+    "x-hasura-admin-secret": hasuraProps.hasuraSecret, // Adding auth header instead of using the admin secret
   } as HeadersInit;
 
   interface JWTHasura {
@@ -118,85 +106,13 @@ export default function App({ hasuraProps, systemProps }: any) {
   const userId = parseInt(jwtTokenDecoded.sub);
 
   // Get the configuration file of the currently loggged in user
-  const { isSuccess: isSuccessConfig, data: configuration } = useQuery(["configurationQuery", userId], async () => {
-    let result = await fetch(hasuraProps.hasuraEndpoint as RequestInfo, {
-      method: "POST",
-      headers: hasuraHeadersVersioning,
-      body: JSON.stringify({
-        query: `query getConfigurationFromUser { user_versioned_config(where: {user_id: {_eq: ${userId}}}, order_by: {date: desc}, limit: 1) { config }}`,
-      }),
-    })
-      .then((userConfig) => userConfig.json())
-      .then((userConfig) => {
-        if (userConfig.data.user_versioned_config.length == 0) {
-          // Set the default empty user's configuration
-          userConfig = defaultConfiguration;
-          setUserConfigQueryInput(userConfig);
-        } else {
-          // Get the user's configuration        
-          userConfig = userConfig.data.user_versioned_config[0].config;
-          // Undo escaping of double quotes
-          userConfig = JSON.parse(userConfig.replace('\"', '"'));
-        }
-        // Get the dashboard names to display on the sidebar
-        const dashboards = userConfig.dashboards;
-        let dashboardNames = dashboards.map((dashboard: any) => dashboard.name);
-        setDashboardNames(dashboardNames);
-        setUserConfig(userConfig);
-
-        // Push the language locale - needed to retrieve the correct language on startup
-        router.push({ pathname, query }, asPath, { locale: userConfig.uiPreferences.language })
-      });
-
-    return result;
-  });
-
+  const { isSuccessConfig, configuration } = configurationQuery(userId, hasuraProps, hasuraHeadersVersioning, setUserConfigQueryInput, setDashboardNames, setUserConfig, router);
+  
   // Update the user configuration versioning table on modifications
-  useQuery(["updateUserConfiguration", userId, userConfigQueryInput], async () => {
-    if (userConfigQueryInput != undefined) {
-      console.log('User configuration file is updated...');
-      // Escape double quotes
-      let newUserConfig = JSON.stringify(userConfigQueryInput).replace(/"/g, "\\\"");
-
-      let result = await fetch(hasuraProps.hasuraEndpoint as RequestInfo, {
-        method: "POST",
-        headers: hasuraHeadersVersioning,
-        body: JSON.stringify({
-          query: `mutation insertUserConfig { insert_user_versioned_config_one(object: {config: "${newUserConfig}", user_id: ${userId}}) { config }}`,
-        }),
-      })
-      // Clear the query input state variable
-      setUserConfigQueryInput(undefined);
-    }
-  });
+  updateUserConfiguration(userId, hasuraProps, hasuraHeadersVersioning, setUserConfigQueryInput, userConfigQueryInput);
 
   // Get the all base tables from hasura
-  const { isSuccess: isSuccessTable, data: tableNames }: any = useQuery(
-    "tableQuery",
-    () =>
-      fetch(hasuraProps.hasuraEndpoint as RequestInfo, {
-        method: "POST",
-        headers: hasuraHeaders,
-        body: JSON.stringify({
-          query: `query LearnAboutSchema { __schema { queryType { fields { name }}}}`,
-        }),
-      })
-        .then((res) => res.json())
-        .then((res) => {
-          const data = res.data.__schema.queryType.fields;
-          let instances = data.map((instance: any) => instance.name);
-          // For every table hasura has query types for aggregate functions and functions on the primary key.
-          // We are not intrested in those tables, only the base table, so we filter them.
-          instances = instances.filter((name: string) => {
-            return !name.endsWith("_aggregate") && !name.endsWith("_by_pk");
-          });
-          setSiderState({
-            tableNames: instances,
-            tableNamesState: siderMenuState.READY,
-          });
-          return instances;
-        })
-  );
+  const { isSuccessTable, tableNames } = tableQuery(hasuraProps, hasuraHeaders, setSiderState, siderMenuState);
 
   /**
    * Display a base table in the workspace
@@ -326,9 +242,7 @@ export default function App({ hasuraProps, systemProps }: any) {
 
   return (
     <Layout
-      style={{
-        height: "100vh",
-      }}
+      style={{ height: "100vh" }}
     >
       {isSuccessConfig ? (
         <>
@@ -376,11 +290,7 @@ export default function App({ hasuraProps, systemProps }: any) {
             ) : (
               displaySider()
             )}
-            <Layout
-              style={{
-                padding: "0 24px 24px",
-              }}
-            >
+            <Layout style={{ padding: "0 24px 24px", }}>
               <Content
                 className="site-layout-background"
                 style={{
