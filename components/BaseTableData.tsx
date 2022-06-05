@@ -92,49 +92,66 @@ export function parseTableData(
       .then((res) => {
         if (res) {
           let columnNames: string[] = [];
+          let orderedColumn: string|null = null;
+          let orderDirection: string|null = null;
+
           let tableConfig;
           let dashboardConfig;
-          let isEditMode
+          let isEditMode;
 
           if (isBaseTable) {
             // If the query is called for a basetable, search for the basetable configuration
             tableConfig = userConfig.baseTables.filter((baseTable: any) => baseTable.name == tableName)[0];
+
+            if (tableConfig !== undefined) {
+              // Get the ordering for this table
+              orderedColumn = tableConfig.ordering.by;
+              orderDirection = tableConfig.ordering.direction;
+            } else {
+              // If the base table does not exist in the configuration, add it
+              userConfig.baseTables.push(
+                {
+                  "name": tableName,
+                  "columnNames": columnNames,
+                  "ordering": {
+                    "by": "",
+                    "direction": ""
+                  }
+                }
+              );
+              setUserConfigQueryInput(userConfig);
+            }
           } else {
             // If the query is called for a dashboard element, search for the dashboard grid view element configuration
             dashboardConfig = userConfig.dashboards.filter((dashboard: any) => dashboard.name == dashboardName)[0];
             tableConfig = dashboardConfig.dashboardElements.filter((element: any) => element.name == tableName)[0];
-            isEditMode = tableConfig == undefined
+
+            if (tableConfig !== undefined) {
+              // Get the ordering for this table
+              orderedColumn = tableConfig.ordering.by;
+              orderDirection = tableConfig.ordering.direction;
+            } else {
+              // Retrieve all other elements from this dashboard
+              let otherDashboardElements = dashboardConfig.dashboardElements.filter((element: any) => element.name != tableName);
+
+              // Retrieve all other dashboards from this user
+              let otherDashboards = userConfig.dashboards.filter((dashboard: any) => dashboard.name != dashboardName);
+
+              // Set the ordering
+              tableConfig['ordering'] = {
+                "by": "",
+                "direction": ""
+              };
+
+              // Update the configuration
+              otherDashboardElements.push(tableConfig);
+              dashboardConfig.dashboardElements = otherDashboardElements
+              otherDashboards.push(dashboardConfig);
+              userConfig.dashboards = otherDashboards;
+              // setUserConfigQueryInput(userConfig);
+            }
           }
-
-          let orderedColumn: string|null = null;
-          let orderDirection: string|null = null;
-
-          // Check if the table configuration exists in the user's configuration
-          if ((isBaseTable && tableConfig.length !== 0) || (!isEditMode && tableConfig.ordering !== undefined)) {
-            // Define the ordering for this table
-            orderedColumn = tableConfig.ordering.by;
-            orderDirection = tableConfig.ordering.direction;
-          } else if (!isBaseTable && !isEditMode) {
-             // Retrieve all other elements from this dashboard
-            let otherDashboardElements = dashboardConfig.dashboardElements.filter((element: any) => element.name != tableName);
-
-            // Retrieve all other dashboards from this user
-            let otherDashboards = userConfig.dashboards.filter((dashboard: any) => dashboard.name != dashboardName);
-
-            // Set the ordering
-            tableConfig['ordering'] = {
-              "by": "",
-              "direction": ""
-            };
-
-            // Update the configuration
-            otherDashboardElements.push(tableConfig);
-            dashboardConfig.dashboardElements = otherDashboardElements
-            otherDashboards.push(dashboardConfig);
-            userConfig.dashboards = otherDashboards;
-            setUserConfigQueryInput(userConfig);
-          }
-
+          
           // Retrieve column names from the table
           let extractedColumns = Object.keys(res[0]).map((columnName, index) => {
             columnNames.push(columnName);
@@ -205,23 +222,6 @@ export function parseTableData(
             columnsReady: true,
             dataState: dataState.READY,
           });
-
-          // If the base table does not exist in the configuration, add it
-          let existsInConfiguration = userConfig.baseTables.filter((baseTable: any) => baseTable.name == tableName).length != 0
-          if (isBaseTable && !existsInConfiguration) { 
-            // If the configuration does not exists for the base table, push it
-            userConfig.baseTables.push(
-              {
-                "name": tableName,
-                "columnNames": columnNames,
-                "ordering": {
-                  "by": "",
-                  "direction": ""
-                }
-              }
-            );
-            setUserConfigQueryInput(userConfig);
-          }
         }
       })
   });
