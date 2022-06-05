@@ -1,12 +1,17 @@
-import React from "react";
-
+import React, { useState } from "react";
 import { Form, Input, Modal } from "antd";
 import { InfoCircleOutlined } from "@ant-design/icons";
 import { useTranslation } from "next-i18next";
 
 import { elementType } from "../pages";
 
+/**
+ * @export
+ * @param {*} {state, setState}
+ * @return {*}  {JSX.Element}
+ */
 export default function EditElementModal({state, setState}: any): JSX.Element {
+  const [hasError, setError] = useState(false);
   const { TextArea } = Input;
   const { t } = useTranslation();
   const [form] = Form.useForm();
@@ -14,14 +19,22 @@ export default function EditElementModal({state, setState}: any): JSX.Element {
   const onFinish = (values: {field: string}) => {
     switch (state.element.type) {
       case elementType.GRIDVIEW:
-        // Remove all line breaks from the query input
-        state.element.query = values.field.replace(/(\r\n|\n|\r)/gm, "")
-        break;
+        try {
+          // Remove all line breaks from the query input
+          state.element.query = values.field.replace(/(\r\n|\n|\r)/gm, "");
+          break;
+        } catch (error) {
+          console.log(error)
+          setError(true);
+        }
       case elementType.STATIC:
         state.element.text = values.field
         break;
     }
-    hideModal()
+    
+      // Hide the modal if there is no error in the query
+      hideModal()
+    
   }
 
   const hideModal = () => {
@@ -47,6 +60,30 @@ export default function EditElementModal({state, setState}: any): JSX.Element {
         return "unknown"
     }
   }
+  /**
+   * Validate the gridview input format on change
+   *
+   * @param {*} _
+   * @param {string} value
+   * @return {*} 
+   */
+  const checkFormat = (_: any, value: string) => {
+    if (elementTypeTextRef() == "gridview") {
+      if (value == '') {
+        // Input is empty, throw no error such that the user can modify the element later
+        return Promise.resolve();
+      }
+      // Check if the input contains the required brackets and 'query'
+      const containsQuery = value.includes('query');
+      const containsBrackets = (value.split("{").length - 1 >= 2) && (value.split("}").length - 1 >= 2);
+      if (containsQuery && containsBrackets) {
+        return Promise.resolve();
+      }
+
+      return Promise.reject(new Error(t(`dashboard.queryinput.warning`)));
+    }
+    return Promise.resolve();
+  };
 
   return(
     <Modal
@@ -68,6 +105,11 @@ export default function EditElementModal({state, setState}: any): JSX.Element {
             title: t(`dashboard.element.${elementTypeTextRef()}.tooltip`),
             icon: <InfoCircleOutlined />,
           }}
+          rules={[
+            {
+              validator: checkFormat,
+            },
+          ]}
         >
           <TextArea rows={10}/>
         </Form.Item>

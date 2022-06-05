@@ -16,7 +16,6 @@ import EditModeSider from "../components/EditModeSider";
 import Loader from "../components/Loader";
 import ManageDashboardsModal, { modalTypes } from "../components/ManageDashboardsModal";
 import NavigationSider from "../components/NavigationSider";
-import QueryInput from "../components/QueryInput";
 import Workspace from "../components/Workspace";
 
 const { Content, Sider } = Layout;

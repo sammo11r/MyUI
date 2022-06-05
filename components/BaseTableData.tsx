@@ -71,7 +71,15 @@ export function parseTableData(
       .then((res) => res.json())
       .then((res) => {
          // Succesful GraphQL query results have a 'data' field
-        if (!res || !res.data) return null;
+        if (!res || !res.data) {
+          setTableState({
+            data: null,
+            columns: null,
+            columnsReady: true,
+            dataState: dataState.READY,
+          });
+          return null;
+        }
         if (tableName == null) {
           tableName = Object.keys(res.data)[0]; // TODO: how do we handle multiple tables?
         }
@@ -189,7 +197,7 @@ export function parseTableData(
             setUserConfigQueryInput(userConfig);
           }        
         }
-      });
+      })
   });
 }
 

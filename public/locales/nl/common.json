@@ -72,9 +72,12 @@
     },
     "saveprompt": {
       "title": "Je hebt nog onopgeslagen veranderingen, wil je deze opslaan?",
-      "description": "Als je klikt op 'niet opslaan' zullen alle veranderingen sinds de laatste keer dat er is opgeslagen verloren gaan.",
+      "description": "Je hebt niet-opgeslagen wijzizigen. Als u op niet-opslaan drukt, worden je niet-opgeslagen wijzigingen verwijderd. Je kunt deze actie niet ongedaan maken.",
       "savetext": "Opslaan",
       "discardtext": "Niet opslaan"
+    },
+    "queryinput": {
+      "warning": "De input lijkt geen geldige GraphQL query"
     }
   },
   "basetable": {

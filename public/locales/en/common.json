@@ -72,9 +72,12 @@
     },
     "saveprompt": {
       "title": "You still have unsaved changes, do you want to save them?",
-      "description": "If you click discard, all changes made to this dashboard since the last save will be lost",
+      "description": "You've made changes that haven't been saved yet. If you discard changes, your unsaved changes will be deleted. You can't undo this action.",
       "savetext": "Save changes",
       "discardtext": "Discard changes"
+    },
+    "queryinput": {
+      "warning": "The input does not seem a valid GraphQL query"
     }
   },
   "basetable": {
