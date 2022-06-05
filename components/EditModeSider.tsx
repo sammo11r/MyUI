@@ -32,6 +32,14 @@ export default function EditModeSider({
 }: any): any {
   const { t } = useTranslation();
   
+  /**
+   * Define a draggable element for the sider
+   *
+   * @param {elementType} type
+   * @param {string} text
+   * @param {*} icon
+   * @return {*}  {JSX.Element}
+   */
   const draggableElement = (type: elementType, text: string, icon: any): JSX.Element => {
     return (
       <div
@@ -41,12 +49,13 @@ export default function EditModeSider({
           e.dataTransfer.setData("text/plain", elementType[type])
         }}
       > 
-        {icon} {/* @TODO: improve the visuals */}
+        {icon}
         {text}
       </div>
     )
   }
 
+  // Render the sider with the draggable elements
   return (
     <Sider theme="light">
       {draggableElement(elementType.STATIC, t("dashboard.element.static.type"), <BorderOutlined/>)}
@@ -57,4 +66,3 @@ export default function EditModeSider({
     </Sider>
   )
 }
-

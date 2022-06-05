@@ -30,7 +30,8 @@ export function configurationQuery(
   setDashboardNames: any,
   setUserConfig: any,
   router: any
-) {
+): any {
+  // Get the router variables
   const { pathname, asPath, query } = router;
 
   const { isSuccess: isSuccessConfig, data: configuration } = useQuery(["configurationQuery", userId], async () => {
@@ -43,7 +44,9 @@ export function configurationQuery(
     })
       .then((userConfig) => userConfig.json())
       .then((userConfig) => {
+        // Check if the user has a user configuration saved in the database
         if (userConfig.data.user_versioned_config.length == 0) {
+          // No user configuration found for this user
           // Set the default empty user's configuration
           userConfig = defaultConfiguration;
           setUserConfigQueryInput(userConfig);
@@ -98,13 +101,23 @@ export function updateUserConfiguration(
           query: `mutation insertUserConfig { insert_user_versioned_config_one(object: {config: "${newUserConfig}", user_id: ${userId}}) { config }}`,
         }),
       })
+
       // Clear the query input state variable
       setUserConfigQueryInput(undefined);
     }
   });
 }
 
-
+/**
+ * Retrieve table names the user has access to
+ *
+ * @export
+ * @param {*} hasuraProps
+ * @param {*} hasuraHeaders
+ * @param {*} setSiderState
+ * @param {*} siderMenuState
+ * @return {*} 
+ */
 export function tableQuery(
   hasuraProps: any,
   hasuraHeaders: any,

@@ -17,31 +17,20 @@ import Loader from "../components/Loader";
 import ManageDashboardsModal, { modalTypes } from "../components/ManageDashboardsModal";
 import NavigationSider from "../components/NavigationSider";
 import Workspace from "../components/Workspace";
-import { 
-  configurationQuery,
-  updateUserConfiguration,
-  tableQuery
-} from "../components/BaseQueries"
+import { configurationQuery, updateUserConfiguration, tableQuery } from "../components/BaseQueries"
 
 const { Content, Sider } = Layout;
 const { confirm } = Modal;
 
 export enum sideBarItemTypes { BASE_TABLE, DASHBOARD }
-
-export enum workspaceStates {
-  EMPTY,
-  BASE_TABLE,
-  DISPLAY_DASHBOARD,
-  EDIT_DASHBOARD
-}
-
+export enum workspaceStates { EMPTY, BASE_TABLE, DISPLAY_DASHBOARD, EDIT_DASHBOARD }
 export enum elementType { GRIDVIEW, STATIC }
 
 /**
  * @param {*} { hasuraProps, systemProps }
  * @return {*} 
  */
-export default function App({ hasuraProps, systemProps }: any) {
+export default function App({ hasuraProps, systemProps }: any): any {
   const { t } = useTranslation();
   const [manageDashboardsModalState, setManageDashboardsModalState] = useState({ visible: false, type: modalTypes.ADD });
   const [editElementModalState, setEditElementModalState] = useState({ visible: false, element: {} });
@@ -214,6 +203,11 @@ export default function App({ hasuraProps, systemProps }: any) {
     });
   }
 
+  /**
+   * Display the sider
+   *
+   * @return {*} 
+   */
   const displaySider = () => {
     if (workspaceState.displaying === workspaceStates.EDIT_DASHBOARD) {
       return <EditModeSider
@@ -267,13 +261,11 @@ export default function App({ hasuraProps, systemProps }: any) {
             setDashboardNames={setDashboardNames}
             tableNames={tableNames}
             modalType={manageDashboardsModalState.type}
-            hasuraProps={hasuraProps}
             userConfig={userConfig}
-            setUserConfig={setUserConfig}
-            userConfigQueryInput={userConfigQueryInput}
             setUserConfigQueryInput={setUserConfigQueryInput}
             displayDashboard={displayDashboard}
             setWorkspaceState={setWorkspaceState}
+            workspaceState={workspaceState}
             workspaceStates={workspaceStates}
           />
           {
@@ -311,6 +303,7 @@ export default function App({ hasuraProps, systemProps }: any) {
                   setEditElementModalState={setEditElementModalState}
                   userConfigQueryInput={userConfigQueryInput}
                   setUserConfigQueryInput={setUserConfigQueryInput}
+                  hasuraHeaders={hasuraHeaders}
                 />
               </Content>
             </Layout>

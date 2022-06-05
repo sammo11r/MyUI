@@ -15,7 +15,10 @@ import { SorterResult } from "antd/lib/table/interface";
  *   systemProps,
  *   userConfig,
  *   setUserConfig,
- *   setUserConfigQueryInput 
+ *   setUserConfigQueryInput,
+ *   name,
+ *   dashboardName,
+ *   hasuraHeaders
  * }
  * @return {*} 
  */
@@ -29,10 +32,10 @@ function GridView({
   setUserConfig,
   setUserConfigQueryInput,
   name,
-  dashboardName 
-}: any) {
+  dashboardName,
+  hasuraHeaders
+}: any): any {
   const { t } = useTranslation();
-
   enum dataState { LOADING, READY };
 
   // Add state deciding whether to show loader or table
@@ -49,13 +52,12 @@ function GridView({
     hasuraProps, 
     query, 
     userConfig, 
-    setUserConfig,
     setUserConfigQueryInput,
-    tableState,
     setTableState,
     dataState,
     name,
-    dashboardName
+    dashboardName,
+    hasuraHeaders
   );
 
   const [selectionType, setSelectionType] = useState('checkbox');
@@ -96,7 +98,8 @@ function GridView({
                 let tableConfig = currentDashboardConfig.dashboardElements.filter((element: any) => element.name == name)[0];
                 let indexOfElement =  currentDashboardConfig.dashboardElements.indexOf(tableConfig);
 
-                // Update the ordering
+                // Update the ordering if the table configuration is defined
+                // If the table configuration is not defined, do not update orderings yet, as the user is still in edit mode with an unsaved table
                 if (tableConfig !== undefined) {
                   tableConfig.ordering.by = (sorter as SorterResult<RecordType>).field;
                   tableConfig.ordering.direction = (sorter as SorterResult<RecordType>).order;

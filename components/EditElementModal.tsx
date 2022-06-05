@@ -19,23 +19,35 @@ export default function EditElementModal({state, setState}: any): JSX.Element {
     switch (state.element.type) {
       case elementType.GRIDVIEW:
         try {
-          // Remove all line breaks from the query input
+          // Remove all line breaks from the query input as this cannot be saved in the configuration
           state.element.query = values.field.replace(/(\r\n|\n|\r)/gm, "");
           break;
-        } catch (error) { break }
+        } catch (error) { 
+          // If the input is empty, catch the error
+          break 
+        }
       case elementType.STATIC:
+        // Remove all line breaks from the text input as this cannot be saved in the configuration
         state.element.text = values.field.replace(/(\r\n|\n|\r)/gm, "");
         break;
     }
     
-      // Hide the modal if there is no error in the query
-      hideModal()
+    hideModal()
   }
 
+  /**
+   * Hide the modal by setting the visible state to false
+   *
+   */
   const hideModal = () => {
     setState({visible: false, element: {}})
   }
 
+  /**
+   * Define the content of the element
+   *
+   * @return {*} 
+   */
   const elementContent = () => {
     switch (state.element.type) {
       case elementType.GRIDVIEW:
@@ -45,6 +57,11 @@ export default function EditElementModal({state, setState}: any): JSX.Element {
     }
   }
 
+  /**
+   * Define which text type the element holds
+   *
+   * @return {*} 
+   */
   const elementTypeTextRef = () => {
     switch (state.element.type) {
       case elementType.GRIDVIEW:
@@ -65,17 +82,19 @@ export default function EditElementModal({state, setState}: any): JSX.Element {
    */
   const checkFormat = (_: any, value: string) => {
     if (elementTypeTextRef() == "gridview") {
+      // Only validate the input for an gridview
       if (value == undefined) {
         // Input is empty, throw no error such that the user can modify the element later
         return Promise.resolve();
       }
-      // Check if the input contains the required brackets and 'query'
+      // Check if the input contains the required brackets and word 'query'
       const containsQuery = value.includes('query');
       const containsBrackets = (value.split("{").length - 1 >= 2) && (value.split("}").length - 1 >= 2);
+
       if (containsQuery && containsBrackets) {
+        // The input is valid
         return Promise.resolve();
       }
-
       return Promise.reject(new Error(t(`dashboard.queryinput.warning`)));
     }
     return Promise.resolve();

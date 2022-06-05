@@ -14,6 +14,7 @@ const { confirm } = Modal;
 const ResponsiveReactGridLayout = WidthProvider(Responsive);
 
 /**
+ * @export
  * @param {*} {
  *   hasuraProps,
  *   systemProps,
@@ -25,11 +26,12 @@ const ResponsiveReactGridLayout = WidthProvider(Responsive);
  *   setDashboardState,
  *   setEditElementModalState,
  *   userConfigQueryInput,
- *   setUserConfigQueryInput 
+ *   setUserConfigQueryInput ,
+ *   hasuraHeaders
  * }
  * @return {*}  {JSX.Element}
  */
- export default function Dashboard({
+export default function Dashboard({
   hasuraProps,
   systemProps,
   name,
@@ -40,7 +42,8 @@ const ResponsiveReactGridLayout = WidthProvider(Responsive);
   setDashboardState,
   setEditElementModalState,
   userConfigQueryInput,
-  setUserConfigQueryInput 
+  setUserConfigQueryInput,
+  hasuraHeaders
 }: any): JSX.Element {
   const { t } = useTranslation()
 
@@ -108,6 +111,7 @@ const ResponsiveReactGridLayout = WidthProvider(Responsive);
     dashboardState: any
   ): JSX.Element {
     let rendered_element = <p>{t("dashboard.element.unknown")}</p>;
+    // Render element based on type
     switch (element.type) {
       case elementType.GRIDVIEW:
         rendered_element = <GridView 
@@ -119,6 +123,7 @@ const ResponsiveReactGridLayout = WidthProvider(Responsive);
           setUserConfigQueryInput={setUserConfigQueryInput} 
           name={element.name}
           dashboardName={dashboardState.dashboard.name}
+          hasuraHeaders={hasuraHeaders}
           style={{ height: "100%", width: "100%", overflow: "auto" }} 
         />;
         break;
@@ -184,8 +189,10 @@ const ResponsiveReactGridLayout = WidthProvider(Responsive);
       return
     }
 
+    // Define the element
     let element = {
-      name: crypto.randomUUID(), // Give the element a unique name
+      // Give the element a unique name
+      name: crypto.randomUUID(), 
       x: layoutItem["x"],
       y: layoutItem["y"],
       w: layoutItem["w"],

@@ -9,7 +9,6 @@ import {
 import "antd/dist/antd.css";
 import { InfoCircleOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
 import { useTranslation } from "next-i18next";
-import jwtDecode from "jwt-decode";
 
 const { confirm } = Modal;
 
@@ -29,7 +28,8 @@ const isValidDashboardName = (
   dashboardNames: any,
   dashboardAddKey: string,
   dashboardRemoveKey: string,
-  type: modalTypes) => {
+  type: modalTypes
+): any => {
   const nameInList =
     // If the type is ADD, name should not yet exist
     (type == modalTypes.ADD && dashboardNames.includes(name)) ||
@@ -43,7 +43,7 @@ const isValidDashboardName = (
  * @param {*} dashboardNames
  * @return {*} 
  */
-function addDashboard(name: string, dashboardNames: any) {
+function addDashboard(name: string, dashboardNames: any): any {
   dashboardNames.push(name);
   return dashboardNames
 }
@@ -83,14 +83,11 @@ export default function ManageDashboardsModal({
   setDashboardNames,
   dashboardAddKey,
   dashboardRemoveKey,
-  hasuraProps,
   userConfig,
-  setUserConfig,
-  userId,
-  userConfigQueryInput,
   setUserConfigQueryInput,
   displayDashboard,
   setWorkspaceState,
+  workspaceState,
   workspaceStates
 }: any): JSX.Element {
   const { t } = useTranslation();
@@ -120,9 +117,13 @@ export default function ManageDashboardsModal({
         // Remove the dashboard from the user configuration
         userConfig.dashboards = userConfig.dashboards.filter((dashboard: any) => dashboard.name !== name)
         setUserConfigQueryInput(userConfig);
-        hideModal();
 
-        setWorkspaceState({displaying: workspaceStates.EMPTY, name: "none",})
+        if (workspaceState.name == name) {
+          // If the deleted dashboard was currently displayed, set the working space back to empty
+          setWorkspaceState({displaying: workspaceStates.EMPTY, name: "none",})
+        }
+
+        hideModal();
       },
     });
   };
@@ -151,8 +152,9 @@ export default function ManageDashboardsModal({
 
           setDashboardNames(newDashboardNames);
           setUserConfigQueryInput(userConfig);
-          hideModal();
+          // Display the newly created dashboard in the working space
           displayDashboard(name, userConfig);
+          hideModal();
           break;
         case (modalTypes.REMOVE):
           newDashboardNames = removeDashboard(name, dashboardNames);

@@ -105,6 +105,11 @@ export default function AppHeader({
     />
   );
 
+  /**
+   * Display the gear if the user has a dashboard in the working area
+   *
+   * @return {*} 
+   */
   const displayGear = () => {
     switch (workspaceState.displaying) {
       case workspaceStates.DISPLAY_DASHBOARD:
@@ -115,6 +120,11 @@ export default function AppHeader({
     }
   }
 
+  /**
+   * Rotate the gear if the user is currently in edit mode
+   *
+   * @return {*} 
+   */
   const rotateGear = () => {
     if (workspaceState.displaying === workspaceStates.EDIT_DASHBOARD) {
       return "gear"

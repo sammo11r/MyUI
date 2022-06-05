@@ -14,7 +14,7 @@ import Loader from "../components/Loader";
  * @param {string} replacement
  * @return {*} 
  */
-function replaceNull(columnA: any, columnB: any, replacement: any) {
+function replaceNull(columnA: any, columnB: any, replacement: any): any {
   if (columnA == null) {
     columnA = replacement;
   } 
@@ -35,13 +35,12 @@ function replaceNull(columnA: any, columnB: any, replacement: any) {
  * @param {*} hasuraProps
  * @param {string} query
  * @param {*} userConfig
- * @param {*} setUserConfig
  * @param {*} setUserConfigQueryInput
- * @param {*} tableState
  * @param {*} setTableState
  * @param {*} dataState
  * @param {string} tableName
  * @param {(string|null)} dashboardName
+ * @param {*} hasuraHeaders
  */
 export function parseTableData(
   isBaseTable: any,
@@ -49,19 +48,14 @@ export function parseTableData(
   hasuraProps: any,
   query: string,
   userConfig: any,
-  setUserConfig: any,
   setUserConfigQueryInput: any,
-  tableState: any,
   setTableState: any,
   dataState: any,
   tableName: string,
-  dashboardName: string|null
+  dashboardName: string|null,
+  hasuraHeaders: any
 ) {
-  const hasuraHeaders = {
-    "Content-Type": "application/json",
-    "x-hasura-admin-secret": hasuraProps.hasuraSecret,
-  } as HeadersInit;
-
+  // Query the table data
   useQuery(["tableQuery", query, tableName], async () => {
     let result = await fetch(hasuraProps.hasuraEndpoint as RequestInfo, {
       method: "POST",
@@ -74,6 +68,7 @@ export function parseTableData(
       .then((res) => {
          // Succesful GraphQL query results have a 'data' field
         if (!res || !res.data) {
+          // Hasura returned an error, set table state
           setTableState({
             data: null,
             columns: null,
@@ -82,9 +77,11 @@ export function parseTableData(
           });
           return null;
         }
+        // If the table is not a base table, get the table name from the data and return the reponse
         if (!isBaseTable) {
           return res.data[Object.keys(res.data)[0]]; // TODO: how do we handle multiple tables?
         } 
+        // Return query data
         return res.data[tableName]
         ;
       })
@@ -145,7 +142,6 @@ export function parseTableData(
           // Retrieve column names from the table
           let extractedColumns = Object.keys(res[0]).map((columnName, index) => {
             columnNames.push(columnName);
-
             return {
               title: columnName,
               dataIndex: columnName,
@@ -159,16 +155,19 @@ export function parseTableData(
 
                 // Check the type of the column to determine the ordering
                 if (typeof a[columnName] == 'number' && typeof a[columnName] == 'number') {
-                  const {columnA, columnB} = replaceNull(a[columnName], b[columnName], 999)
+                  // Replace null number columns by a big number to make ordering possible
+                  const {columnA, columnB} = replaceNull(a[columnName], b[columnName], 999999)
                   // Order numbers in numerical order
                   return columnA - columnB;
                 } else if (moment(a[columnName], formats, true).isValid()) {
+                  // Replace null date columns by a future date to make ordering possible
                   const {columnA, columnB} = replaceNull(a[columnName], b[columnName], '2092-05-31')
                   // Order dates in chronological order
                   let dateA: any = new Date(columnA);
                   let dateB: any = new Date(columnB);
                   return dateA - dateB;
                 } else {
+                  // Replace null string columns by a 'z' to make ordering possible
                   const {columnA, columnB} = replaceNull(a[columnName], b[columnName], 'z')
                   // Order text in alphabetical order
                   return columnA.localeCompare(columnB);
@@ -226,7 +225,8 @@ export function parseTableData(
  *   userConfig,
  *   setUserConfig,
  *   userConfigQueryInput,
- *   setUserConfigQueryInput 
+ *   setUserConfigQueryInput,
+ *   hasuraHeaders 
  * }
  * @return {*}  {*}
  */
@@ -238,14 +238,11 @@ function BaseTableData({
   userConfig,
   setUserConfig,
   userConfigQueryInput,
-  setUserConfigQueryInput 
+  setUserConfigQueryInput,
+  hasuraHeaders 
 }: any): any {
   const { t } = useTranslation();
-  
-  enum dataState {
-    LOADING,
-    READY,
-  }
+  enum dataState { LOADING, READY }
 
   // Add state deciding whether to show loader or table
   const [tableState, setTableState] = useState({
@@ -261,13 +258,12 @@ function BaseTableData({
     hasuraProps, 
     `{ ${tableName} { ${columns} }}`, 
     userConfig, 
-    setUserConfig,
     setUserConfigQueryInput,
-    tableState,
     setTableState,
     dataState,
     tableName,
-    null
+    null,
+    hasuraHeaders
   );
 
   const [selectionType, setSelectionType] = useState('checkbox');

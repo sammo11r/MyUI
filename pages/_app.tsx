@@ -61,6 +61,7 @@ type Props = {
 function Auth({ children }: Props): JSX.Element {
   const { status } = useSession({ required: true });
 
+  // If the session is still loading, display a loader
   if (status === "loading") {
     return (
       <div style={{width: '100vw', height: '100vh'}}>

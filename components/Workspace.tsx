@@ -1,5 +1,6 @@
 import React from "react";
 import { useTranslation } from "next-i18next";
+
 import { workspaceStates } from "../pages";
 import BaseTable from "./BaseTable";
 import Dashboard from "./Dashboard";
@@ -17,8 +18,9 @@ function Workspace({
   setUserConfigQueryInput,
   dashboardState,
   setDashboardState,
-  setEditElementModalState
-}: any) {
+  setEditElementModalState,
+  hasuraHeaders
+}: any): any {
   const { t } = useTranslation();
   switch (workspaceState.displaying) {
     case workspaceStates.BASE_TABLE:
@@ -30,13 +32,14 @@ function Workspace({
         setUserConfig={setUserConfig}
         userConfigQueryInput={userConfigQueryInput}
         setUserConfigQueryInput={setUserConfigQueryInput}
+        hasuraHeaders={hasuraHeaders}
         />;
     case workspaceStates.DISPLAY_DASHBOARD:
     case workspaceStates.EDIT_DASHBOARD:
       return <Dashboard
         hasuraProps={hasuraProps}
         systemProps={systemProps}
-        name={workspaceState.name} // TODO: Might not be neede anymore
+        name={workspaceState.name}
         dashboardState={dashboardState}
         setDashboardState={setDashboardState}
         mode={workspaceState.displaying}
@@ -45,6 +48,7 @@ function Workspace({
         setEditElementModalState={setEditElementModalState}
         userConfigQueryInput={userConfigQueryInput}
         setUserConfigQueryInput={setUserConfigQueryInput}
+        hasuraHeaders={hasuraHeaders}
       />;
     case workspaceStates.EMPTY:
       return <p>{t("workspace.welcome")}</p>;
