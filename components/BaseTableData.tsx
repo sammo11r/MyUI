@@ -26,6 +26,7 @@ function replaceNull(columnA: any, columnB: any, replacement: any) {
   return {columnA, columnB};
 }
 
+
 /**
  * Parse table data in an Ant Design table component
  *
@@ -40,7 +41,8 @@ function replaceNull(columnA: any, columnB: any, replacement: any) {
  * @param {*} tableState
  * @param {*} setTableState
  * @param {*} dataState
- * @param {(string|null)} tableName
+ * @param {string} tableName
+ * @param {(string|null)} dashboardName
  */
 export function parseTableData(
   isBaseTable: any,
@@ -53,14 +55,15 @@ export function parseTableData(
   tableState: any,
   setTableState: any,
   dataState: any,
-  tableName: string|null
+  tableName: string,
+  dashboardName: string|null
 ) {
   const hasuraHeaders = {
     "Content-Type": "application/json",
     "x-hasura-admin-secret": hasuraProps.hasuraSecret,
   } as HeadersInit;
 
-  useQuery(["tableQuery", query], async () => {
+  useQuery(["tableQuery", query, crypto.randomUUID()], async () => {
     let result = await fetch(hasuraProps.hasuraEndpoint as RequestInfo, {
       method: "POST",
       headers: hasuraHeaders,
@@ -80,34 +83,56 @@ export function parseTableData(
           });
           return null;
         }
-        if (tableName == null) {
-          tableName = Object.keys(res.data)[0]; // TODO: how do we handle multiple tables?
-        }
-        return res.data[tableName];
+        if (!isBaseTable) {
+          return res.data[Object.keys(res.data)[0]]; // TODO: how do we handle multiple tables?
+        } 
+        return res.data[tableName]
+        ;
       })
       .then((res) => {
         if (res) {
           let columnNames: string[] = [];
           let tableConfig;
+          let dashboardConfig;
+          let isEditMode
 
           if (isBaseTable) {
             // If the query is called for a basetable, search for the basetable configuration
-            tableConfig = userConfig.baseTables.filter((baseTable: any) => baseTable.name == tableName);
+            tableConfig = userConfig.baseTables.filter((baseTable: any) => baseTable.name == tableName)[0];
           } else {
             // If the query is called for a dashboard element, search for the dashboard grid view element configuration
-            // @TODO: Change
-            tableConfig = null;
+            dashboardConfig = userConfig.dashboards.filter((dashboard: any) => dashboard.name == dashboardName)[0];
+            tableConfig = dashboardConfig.dashboardElements.filter((element: any) => element.name == tableName)[0];
+            isEditMode = tableConfig == undefined
           }
 
           let orderedColumn: string|null = null;
           let orderDirection: string|null = null;
 
           // Check if the table configuration exists in the user's configuration
-          if (isBaseTable && tableConfig.length !== 0) {
-            tableConfig = tableConfig[0]
+          if ((isBaseTable && tableConfig.length !== 0) || (!isEditMode && tableConfig.ordering !== undefined)) {
             // Define the ordering for this table
             orderedColumn = tableConfig.ordering.by;
             orderDirection = tableConfig.ordering.direction;
+          } else if (!isBaseTable && !isEditMode) {
+             // Retrieve all other elements from this dashboard
+            let otherDashboardElements = dashboardConfig.dashboardElements.filter((element: any) => element.name != tableName);
+
+            // Retrieve all other dashboards from this user
+            let otherDashboards = userConfig.dashboards.filter((dashboard: any) => dashboard.name != dashboardName);
+
+            // Set the ordering
+            tableConfig['ordering'] = {
+              "by": "",
+              "direction": ""
+            };
+
+            // Update the configuration
+            otherDashboardElements.push(tableConfig);
+            dashboardConfig.dashboardElements = otherDashboardElements
+            otherDashboards.push(dashboardConfig);
+            userConfig.dashboards = otherDashboards;
+            setUserConfigQueryInput(userConfig);
           }
 
           // Retrieve column names from the table
@@ -183,7 +208,8 @@ export function parseTableData(
 
           // If the base table does not exist in the configuration, add it
           let existsInConfiguration = userConfig.baseTables.filter((baseTable: any) => baseTable.name == tableName).length != 0
-          if (!existsInConfiguration && isBaseTable) { // @TODO: Change such that dashboard grid views are also saved
+          if (isBaseTable && !existsInConfiguration) { 
+            // If the configuration does not exists for the base table, push it
             userConfig.baseTables.push(
               {
                 "name": tableName,
@@ -195,7 +221,7 @@ export function parseTableData(
               }
             );
             setUserConfigQueryInput(userConfig);
-          }        
+          }
         }
       })
   });
@@ -250,7 +276,8 @@ function BaseTableData({
     tableState,
     setTableState,
     dataState,
-    tableName
+    tableName,
+    null
   );
 
   const [selectionType, setSelectionType] = useState('checkbox');

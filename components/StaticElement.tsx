@@ -1,7 +1,13 @@
 import React from "react";
 
+/**
+ * Convert text to media 
+ *
+ * @param {string} text
+ * @return {*}  {JSX.Element}
+ */
 function convertText(text: string): JSX.Element {
-  if (text.endsWith('.png') || text.endsWith('.jpg') || text.endsWith('.gif')) {
+  if (text.endsWith('.png') || text.endsWith('.jpg') || text.endsWith('.jpeg') || text.endsWith('.gif')) {
     return (
       <img height={"100%"} width={"100%"} src={text} />
     );
@@ -18,12 +24,14 @@ function convertText(text: string): JSX.Element {
   }
 }
 
-function StaticElement({text, style}: any): JSX.Element {
+/**
+ * @param {*} {text, style}
+ * @return {*}  {JSX.Element}
+ */
+export default function StaticElement({text, style}: any): JSX.Element {
   return (
     <div style={style}>
       {convertText(text)}
     </div>
   );
-}
-
-export default StaticElement;
+};

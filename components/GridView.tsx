@@ -28,14 +28,13 @@ function GridView({
   systemProps,
   userConfig,
   setUserConfig,
-  setUserConfigQueryInput 
+  setUserConfigQueryInput,
+  name,
+  dashboardName 
 }: any) {
   const { t } = useTranslation();
 
-  enum dataState {
-    LOADING,
-    READY,
-  }
+  enum dataState { LOADING, READY };
 
   // Add state deciding whether to show loader or table
   const [tableState, setTableState] = useState({
@@ -56,7 +55,8 @@ function GridView({
     tableState,
     setTableState,
     dataState,
-    null
+    name,
+    dashboardName
   );
 
   const [selectionType, setSelectionType] = useState('checkbox');
@@ -90,19 +90,26 @@ function GridView({
             dataSource={tableState.data}
             columns={tableState.columns}
             onChange={ function(pagination, filters, sorter: SorterResult<RecordType> | SorterResult<RecordType>[]) {
-              // // Get the current table configuration
-              // const tableConfig = userConfig.baseTables.filter((baseTable: any) => baseTable.name == tableName)[0];
+              // Get the current table configuration
+              // @TODO: Fix issue @Jeroen
+              // const currentDashboardConfig = userConfig.dashboards.filter((dashboard: any) => dashboard.name == dashboardName)[0];
+              // const otherDashboardElements = currentDashboardConfig.dashboardElements.filter((element: any) => element.name != name);
+              // const otherDashboards = userConfig.dashboards.filter((dashboard: any) => dashboard.name != dashboardName);
+              // const currentTableConfig = currentDashboardConfig.dashboardElements.filter((element: any) => element.name == name)[0];
 
               // // Remove the table configuration
-              // userConfig.baseTables = userConfig.baseTables.filter((baseTable: any) => baseTable.name != tableName);
+              // userConfig.baseTables = userConfig.baseTables.filter((baseTable: any) => baseTable.name != name);
               
               // // Set the ordering
-              // tableConfig.ordering.by = (sorter as SorterResult<RecordType>).field;
-              // tableConfig.ordering.direction = (sorter as SorterResult<RecordType>).order;
+              // currentTableConfig.ordering.by = (sorter as SorterResult<RecordType>).field;
+              // currentTableConfig.ordering.direction = (sorter as SorterResult<RecordType>).order;
 
-              // @TODO Push the updated table configuration to the user's configuration
-              // userConfig.baseTables.push(tableConfig);
-              // setUserConfigQueryInput(userConfig);
+              // otherDashboardElements.push(currentTableConfig);
+              // currentDashboardConfig.dashboardElements = otherDashboardElements
+
+              // otherDashboards.push(currentDashboardConfig);
+              // userConfig.dashboards = otherDashboards;
+              // setUserConfigQueryInput(userConfig); 
             }}
           />
         ) : (

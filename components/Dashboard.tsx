@@ -99,7 +99,8 @@ const ResponsiveReactGridLayout = WidthProvider(Responsive);
     systemProps: any,
     userConfig: any,
     setUserConfig: any,
-    setUserConfigQueryInput: any
+    setUserConfigQueryInput: any,
+    dashboardState: any
   ): JSX.Element {
     let rendered_element = <p>{t("dashboard.element.unknown")}</p>;
     switch (element.type) {
@@ -111,6 +112,8 @@ const ResponsiveReactGridLayout = WidthProvider(Responsive);
           userConfig={userConfig}
           setUserConfig={setUserConfig}
           setUserConfigQueryInput={setUserConfigQueryInput} 
+          name={element.name}
+          dashboardName={dashboardState.dashboard.name}
           style={{ height: "100%", width: "100%", overflow: "auto" }} 
         />;
         break;
@@ -120,7 +123,7 @@ const ResponsiveReactGridLayout = WidthProvider(Responsive);
     }
     return (
       <div
-        key={index}
+        key={crypto.randomUUID()}
         style={{ 
           outline: "2px solid #ebf2ff",
         }}
@@ -177,7 +180,7 @@ const ResponsiveReactGridLayout = WidthProvider(Responsive);
     }
 
     let element = {
-      name: t("dashboard.element.new.name"),
+      name: crypto.randomUUID(), // Give the element a unique name
       x: layoutItem["x"],
       y: layoutItem["y"],
       w: layoutItem["w"],
@@ -190,6 +193,7 @@ const ResponsiveReactGridLayout = WidthProvider(Responsive);
     const newDashboard = dashboardState.dashboard
     newDashboard.dashboardElements.push(element)
     setDashboardState({ dashboard: newDashboard })
+    
     // Open editmenu for newly created element
     setEditElementModalState({ visible: true, element: element })
   };
@@ -228,7 +232,7 @@ const ResponsiveReactGridLayout = WidthProvider(Responsive);
       {
         dashboardState.dashboard
           .dashboardElements
-          .map((element: any, index: number) => renderDashboardElement(element, hasuraProps, index, systemProps, userConfig, setUserConfig, setUserConfigQueryInput))
+          .map((element: any, index: number) => renderDashboardElement(element, hasuraProps, index, systemProps, userConfig, setUserConfig, setUserConfigQueryInput, dashboardState))
       }
     </ResponsiveReactGridLayout>
   );

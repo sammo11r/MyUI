@@ -11,7 +11,6 @@ import { elementType } from "../pages";
  * @return {*}  {JSX.Element}
  */
 export default function EditElementModal({state, setState}: any): JSX.Element {
-  const [hasError, setError] = useState(false);
   const { TextArea } = Input;
   const { t } = useTranslation();
   const [form] = Form.useForm();
@@ -23,10 +22,7 @@ export default function EditElementModal({state, setState}: any): JSX.Element {
           // Remove all line breaks from the query input
           state.element.query = values.field.replace(/(\r\n|\n|\r)/gm, "");
           break;
-        } catch (error) {
-          console.log(error)
-          setError(true);
-        }
+        } catch (error) { break }
       case elementType.STATIC:
         state.element.text = values.field
         break;
