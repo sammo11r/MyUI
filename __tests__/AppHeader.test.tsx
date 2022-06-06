@@ -1,6 +1,6 @@
 import React from "react";
 import AppHeader from "../components/AppHeader";
-import AppSider from "../components/AppSider";
+import NavigationAppSider from "../components/NavigationSider";
 import { render, screen, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 

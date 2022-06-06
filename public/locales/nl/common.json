@@ -16,9 +16,10 @@
     "welcome": "Welkom bij MyUI!"
   },
   "dashboard": {
-    "sidebar": "Dashboard",
+    "sidebar": "Dashboards",
     "new": "Voeg toe",
     "delete": "Verwijder",
+    "save": "Opslaan",
     "modal": {
       "add": {
         "title": "Voeg een nieuwe dashboard toe",
@@ -38,6 +39,48 @@
         "confirmText": "Ja",
         "cancelText": "Nee"
       }
+    },
+    "element": {
+      "new": {
+        "name": "Nieuw Element",
+        "text": "Voeg hier tekst toe..."
+      },
+      "gridview": {
+        "label": "Query",
+        "tooltip": "Verander hier de data die dit element opvraagt",
+        "type": "Roosterweergave element"
+      },
+      "static": {
+        "label": "Tekst",
+        "tooltip": "Verander hier de tekst die dit element vertoont. URLs die eindigen op .png, .jpeg, .gif, .mp3, and .mp4 worden ondersteund",
+        "type": "Statisch element"
+      },
+      "unknown": {
+        "label": "Tekst",
+        "tooltip": "Verander hier de inhoud van dit element",
+        "type": "Onbekend elementtype"
+      },
+      "removewarning": {
+        "title": "Weet je zeker dat je dit element wilt verwijderen?",
+        "description": "Deze actie kan niet ongedaan gemaakt worden!",
+        "confirmText": "Ja",
+        "cancelText": "Nee"
+      }
+    },
+    "savenotification": {
+      "message": "Het huidige dashboard ontwerp is succesvol opgeslagen!"
+    },
+    "saveprompt": {
+      "title": "Je hebt nog onopgeslagen veranderingen, wil je deze opslaan?",
+      "description": "Je hebt niet-opgeslagen wijzizigen. Als u op niet-opslaan drukt, worden je niet-opgeslagen wijzigingen verwijderd. Je kunt deze actie niet ongedaan maken.",
+      "savetext": "Opslaan",
+      "discardtext": "Niet opslaan"
+    },
+    "queryinput": {
+      "warning": "De input lijkt geen geldige GraphQL query"
+    },
+    "textiput": {
+      "warning": "Deze karakters zijn niet toegestaan"
     }
   },
   "basetable": {

@@ -1,31 +1,27 @@
 import React from "react";
 import { useTranslation } from "next-i18next";
+
 import { workspaceStates } from "../pages";
 import BaseTable from "./BaseTable";
+import Dashboard from "./Dashboard";
 
 /**
- * @param {*} { 
- *   workspaceState,
- *   hasuraProps,
- *   systemProps,
- *   userConfig,
- *   setUserConfig,
- *   userConfigQueryInput,
- *   setUserConfigQueryInput
- * }
- * @return {*} 
+ * @return {*}
  */
-function Workspace({ 
+function Workspace({
   workspaceState,
   hasuraProps,
   systemProps,
   userConfig,
   setUserConfig,
   userConfigQueryInput,
-  setUserConfigQueryInput
-}: any) {
+  setUserConfigQueryInput,
+  dashboardState,
+  setDashboardState,
+  setEditElementModalState,
+  hasuraHeaders
+}: any): any {
   const { t } = useTranslation();
-
   switch (workspaceState.displaying) {
     case workspaceStates.BASE_TABLE:
       return <BaseTable 
@@ -36,9 +32,24 @@ function Workspace({
         setUserConfig={setUserConfig}
         userConfigQueryInput={userConfigQueryInput}
         setUserConfigQueryInput={setUserConfigQueryInput}
+        hasuraHeaders={hasuraHeaders}
         />;
-    case workspaceStates.DASHBOARD:
-      return <p>Coming Soon!</p>;
+    case workspaceStates.DISPLAY_DASHBOARD:
+    case workspaceStates.EDIT_DASHBOARD:
+      return <Dashboard
+        hasuraProps={hasuraProps}
+        systemProps={systemProps}
+        name={workspaceState.name}
+        dashboardState={dashboardState}
+        setDashboardState={setDashboardState}
+        mode={workspaceState.displaying}
+        userConfig={userConfig}
+        setUserConfig={setUserConfig}
+        setEditElementModalState={setEditElementModalState}
+        userConfigQueryInput={userConfigQueryInput}
+        setUserConfigQueryInput={setUserConfigQueryInput}
+        hasuraHeaders={hasuraHeaders}
+      />;
     case workspaceStates.EMPTY:
       return <p>{t("workspace.welcome")}</p>;
     default:
