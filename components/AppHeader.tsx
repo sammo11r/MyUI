@@ -9,10 +9,11 @@ import {
 import { Content, Header } from "antd/lib/layout/layout";
 import { signOut } from "next-auth/react";
 import { useTranslation } from "next-i18next";
-
 import i18next from "i18next";
 import type { RadioChangeEvent } from 'antd';
-import { useRouter } from 'next/router'
+import { useRouter } from 'next/router';
+
+import { workspaceStates } from "../pages/index";
 
 /**
  * Update the language in i18next
@@ -40,7 +41,9 @@ export default function AppHeader({
   userConfig,
   setUserConfig,
   userConfigQueryInput,
-  setUserConfigQueryInput
+  setUserConfigQueryInput,
+  workspaceState,
+  toggleEditMode
 }: any): JSX.Element {
   const { t } = useTranslation();
 
@@ -102,21 +105,51 @@ export default function AppHeader({
     />
   );
 
+  /**
+   * Display the gear if the user has a dashboard in the working area
+   *
+   * @return {*} 
+   */
+  const displayGear = () => {
+    switch (workspaceState.displaying) {
+      case workspaceStates.DISPLAY_DASHBOARD:
+      case workspaceStates.EDIT_DASHBOARD:
+        return true
+      default:
+        return false
+    }
+  }
+
+  /**
+   * Rotate the gear if the user is currently in edit mode
+   *
+   * @return {*} 
+   */
+  const rotateGear = () => {
+    if (workspaceState.displaying === workspaceStates.EDIT_DASHBOARD) {
+      return "gear"
+    }
+    return ""
+  }
+
   return (
     <Header className="header">
       <Content className="header-logo">MyUI</Content>
-      <SettingFilled
-        className="header-settings"
-        data-testid="header-settings-element"
-        style={{
-          position: "relative",
-          top: 16,
-          float: "right",
-          right: 40,
-          fontSize: "30px",
-          color: "white",
-        }}
-      />
+      {displayGear() ?
+        <SettingFilled
+          className={rotateGear()}
+          data-testid="header-settings-element"
+          onClick={toggleEditMode}
+          style={{
+            position: "absolute",
+            top: 16,
+            float: "right",
+            right: 80,
+            fontSize: "30px",
+            color: "white",
+          }}
+        /> : <></>
+      }
 
       <Dropdown
         overlay={userMenu}
@@ -124,22 +157,18 @@ export default function AppHeader({
         placement="bottomRight"
         arrow={{ pointAtCenter: true }}
       >
-        <a
+        <UserOutlined
+          data-testid="header-profile-element"
           onClick={(e) => e.preventDefault()}
           style={{
-            position: "relative",
+            position: "absolute",
             top: 16,
             float: "right",
-            left: 35,
+            right: 40,
             fontSize: "30px",
             color: "white",
           }}
-        >
-          <UserOutlined
-            className="header-user-profile"
-            data-testid="header-profile-element"
-          />
-        </a>
+        />
       </Dropdown>
     </Header>
   );

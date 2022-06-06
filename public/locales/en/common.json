@@ -16,9 +16,10 @@
     "welcome": "Welcome to MyUI!"
   },
   "dashboard": {
-    "sidebar": "Dashboard",
+    "sidebar": "Dashboards",
     "new": "Add",
     "delete": "Delete",
+    "save": "Save",
     "modal": {
       "add": {
         "title": "Add a new dashboard",
@@ -33,11 +34,53 @@
         "error": "This is not a valid dashboard"
       },
       "removewarning":{
-        "title": "Are you sure delete this dashboard?",
+        "title": "Are you sure you want to delete this dashboard?",
         "description": "If you remove a dashboard, it will be deleted and it will no longer be accessible. This action cannot be undone!",
         "confirmText": "Yes",
         "cancelText": "No"
       }
+    },
+    "element": {
+      "new": {
+        "name": "New Element",
+        "text": "Add text here..."
+      },
+      "gridview": {
+        "label": "Query",
+        "tooltip": "Change this component's query here",
+        "type": "Gridview element"
+      },
+      "static": {
+        "label": "Text",
+        "tooltip": "Change this component's text here. URLs ending with .png, .jpeg, .gif, .mp3, and .mp4 are supported",
+        "type": "Static element"
+      },
+      "unknown": {
+        "label": "Text",
+        "tooltip": "Change this component's content here",
+        "type": "Unknown element type"
+      },
+      "removewarning": {
+        "title": "Are you sure you want to delete this element?",
+        "description": "This action cannot be undone!",
+        "confirmText": "Yes",
+        "cancelText": "No"
+      }
+    },
+    "savenotification": {
+      "message": "Successfully saved the current dashboard layout!"
+    },
+    "saveprompt": {
+      "title": "You still have unsaved changes, do you want to save them?",
+      "description": "You've made changes that haven't been saved yet. If you discard changes, your unsaved changes will be deleted. You can't undo this action.",
+      "savetext": "Save changes",
+      "discardtext": "Discard changes"
+    },
+    "queryinput": {
+      "warning": "The input does not seem a valid GraphQL query"
+    },
+    "textiput": {
+      "warning": "These characters are not allowed"
     }
   },
   "basetable": {

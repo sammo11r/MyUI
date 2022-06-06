@@ -8,8 +8,11 @@ import { AuthEnabledComponentConfig } from "../utils/auth.utils";
 
 import "../styles/App.css";
 import "../styles/AppHeader.css";
+import "../styles/AppSider.css";
 import "../styles/globals.css";
 import "../styles/index.css";
+import "../node_modules/react-grid-layout/css/styles.css";
+import "../node_modules/react-resizable/css/styles.css";
 import Loader from "../components/Loader";
 
 type AppAuthProps = AppProps & {
@@ -58,6 +61,7 @@ type Props = {
 function Auth({ children }: Props): JSX.Element {
   const { status } = useSession({ required: true });
 
+  // If the session is still loading, display a loader
   if (status === "loading") {
     return (
       <div style={{width: '100vw', height: '100vh'}}>

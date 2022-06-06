@@ -7,14 +7,14 @@ import { useTranslation } from "next-i18next";
 import Loader from "../components/Loader";
 
 /**
- * Replace null by a replacement string
+ * Replace null values by a replacement string
  *
  * @param {string} columnA
  * @param {string} columnB
  * @param {string} replacement
  * @return {*} 
  */
-function replaceNull(columnA: any, columnB: any, replacement: any) {
+function replaceNull(columnA: any, columnB: any, replacement: any): any {
   if (columnA == null) {
     columnA = replacement;
   } 
@@ -27,75 +27,121 @@ function replaceNull(columnA: any, columnB: any, replacement: any) {
 }
 
 /**
- * @param {*} {
- *   hasuraProps, 
- *   systemProps,
- *   columns,
- *   tableName,
- *   userConfig,
- *   setUserConfig,
- *   userConfigQueryInput,
- *   setUserConfigQueryInput 
- * }
- * @return {*}  {*}
+ * Parse table data in an Ant Design table component
+ *
+ * @export
+ * @param {*} isBaseTable
+ * @param {*} mediaDisplaySetting
+ * @param {*} hasuraProps
+ * @param {string} query
+ * @param {*} userConfig
+ * @param {*} setUserConfigQueryInput
+ * @param {*} setTableState
+ * @param {*} dataState
+ * @param {string} tableName
+ * @param {(string|null)} dashboardName
+ * @param {*} hasuraHeaders
  */
-function BaseTableData({
-  hasuraProps, 
-  hasuraHeaders,
-  systemProps,
-  columns,
-  tableName,
-  userConfig,
-  setUserConfig,
-  userConfigQueryInput,
-  setUserConfigQueryInput 
-}: any): any {
-  const mediaDisplaySetting = systemProps.mediaDisplaySetting;
-  const { t } = useTranslation();
-  enum dataState {
-    LOADING,
-    READY,
-  }
-
-  // Add state deciding whether to show loader or table
-  const [tableState, setTableState] = React.useState({
-    data: undefined,
-    columns: [{}],
-    columnsReady: false,
-    dataState: dataState.LOADING,
-  });
-
-  const { isSuccess: isSuccess, data: table } = useQuery(["tableQuery", tableName], async () => {
+export function parseTableData(
+  isBaseTable: any,
+  mediaDisplaySetting: any,
+  hasuraProps: any,
+  query: string,
+  userConfig: any,
+  setUserConfigQueryInput: any,
+  setTableState: any,
+  dataState: any,
+  tableName: string,
+  dashboardName: string|null,
+  hasuraHeaders: any
+) {
+  // Query the table data
+  useQuery(["tableQuery", query, tableName], async () => {
     let result = await fetch(hasuraProps.hasuraEndpoint as RequestInfo, {
       method: "POST",
       headers: hasuraHeaders,
       body: JSON.stringify({
-        query: `{ ${tableName} { ${columns} }}`,
+        query: query,
       }),
     })
       .then((res) => res.json())
       .then((res) => {
-        if (!res || !res.data) return null;
-        return res.data[tableName];
+         // Succesful GraphQL query results have a 'data' field
+        if (!res || !res.data) {
+          // Hasura returned an error, set table state
+          setTableState({
+            data: null,
+            columns: null,
+            columnsReady: true,
+            dataState: dataState.READY,
+          });
+          return null;
+        }
+        // If the table is not a base table, get the table name from the data and return the reponse
+        if (!isBaseTable) {
+          return res.data[Object.keys(res.data)[0]]; // TODO: how do we handle multiple tables?
+        } 
+        // Return query data
+        return res.data[tableName]
+        ;
       })
       .then((res) => {
         if (res) {
           let columnNames: string[] = [];
-          let tableConfig = userConfig.baseTables.filter((baseTable: any) => baseTable.name == tableName);
           let orderedColumn: string|null = null;
           let orderDirection: string|null = null;
-          // Check if the table configuration exists in the user's configuration
-          if (tableConfig.length !== 0) {
-            tableConfig = tableConfig[0]
-            // Define the ordering for this table
-            orderedColumn = tableConfig.ordering.by;
-            orderDirection = tableConfig.ordering.direction;
+          let tableConfig;
+          let dashboardConfig;
+
+          if (isBaseTable) {
+            // If the query is called for a basetable, search for the basetable configuration
+            tableConfig = userConfig.baseTables.filter((baseTable: any) => baseTable.name == tableName)[0];
+
+            if (tableConfig !== undefined) {
+              // If the table is defined, get the ordering for this table
+              orderedColumn = tableConfig.ordering.by;
+              orderDirection = tableConfig.ordering.direction;
+            } else {
+              // If the base table does not exist in the configuration, add it
+              userConfig.baseTables.push(
+                {
+                  "name": tableName,
+                  "columnNames": columnNames,
+                  "ordering": {
+                    "by": "",
+                    "direction": ""
+                  }
+                }
+              );
+              setUserConfigQueryInput(userConfig);
+            }
+          } else {
+            // If the query is called for a dashboard element, search for the dashboard grid view element configuration
+            dashboardConfig = userConfig.dashboards.filter((dashboard: any) => dashboard.name == dashboardName)[0];
+            let indexOfDashboard = userConfig.dashboards.indexOf(dashboardConfig);
+            tableConfig = dashboardConfig.dashboardElements.filter((element: any) => element.name == tableName)[0];
+            let indexOfElement =  dashboardConfig.dashboardElements.indexOf(tableConfig);
+
+            if (tableConfig !== undefined) {
+              if (tableConfig.ordering == undefined) {
+                // If the table did not have an ordering yet, set the default ordering
+                tableConfig['ordering'] = {
+                  "by": "",
+                  "direction": ""
+                };
+                // Update the user configuration state variable
+                userConfig.dashboards[indexOfDashboard].dashboardElements[indexOfElement] = tableConfig;
+              } else {
+                // Get the ordering for this table
+                orderedColumn = tableConfig.ordering.by;
+                orderDirection = tableConfig.ordering.direction;
+              }
+            } 
           }
 
           // Retrieve column names from the table
           let extractedColumns = Object.keys(res[0]).map((columnName, index) => {
             columnNames.push(columnName);
-
             return {
               title: columnName,
               dataIndex: columnName,
@@ -109,16 +155,19 @@ function BaseTableData({
 
                 // Check the type of the column to determine the ordering
                 if (typeof a[columnName] == 'number' && typeof a[columnName] == 'number') {
-                  const {columnA, columnB} = replaceNull(a[columnName], b[columnName], 999)
+                  // Replace null number columns by a big number to make ordering possible
+                  const {columnA, columnB} = replaceNull(a[columnName], b[columnName], 999999)
                   // Order numbers in numerical order
                   return columnA - columnB;
                 } else if (moment(a[columnName], formats, true).isValid()) {
+                  // Replace null date columns by a future date to make ordering possible
                   const {columnA, columnB} = replaceNull(a[columnName], b[columnName], '2092-05-31')
                   // Order dates in chronological order
                   let dateA: any = new Date(columnA);
                   let dateB: any = new Date(columnB);
                   return dateA - dateB;
                 } else {
+                  // Replace null string columns by a 'z' to make ordering possible
                   const {columnA, columnB} = replaceNull(a[columnName], b[columnName], 'z')
                   // Order text in alphabetical order
                   return columnA.localeCompare(columnB);
@@ -156,32 +205,66 @@ function BaseTableData({
             row.key = index;
           }); 
 
-          columns = undefined;
           setTableState({
             data: res,
             columns: extractedColumns,
             columnsReady: true,
             dataState: dataState.READY,
           });
-
-          // If the base table does not exist in the configuration, add it
-          let existsInConfiguration = userConfig.baseTables.filter((baseTable: any) => baseTable.name == tableName).length != 0
-          if (!existsInConfiguration) {
-            userConfig.baseTables.push(
-              {
-                "name": tableName,
-                "columnNames": columnNames,
-                "ordering": {
-                  "by": "",
-                  "direction": ""
-                }
-              }
-            );
-            setUserConfigQueryInput(userConfig);
-          }        
         }
-      });
-  }, { enabled: !!tableName });
+      })
+  });
+}
+
+/**
+ * @param {*} {
+ *   hasuraProps, 
+ *   systemProps,
+ *   columns,
+ *   tableName,
+ *   userConfig,
+ *   setUserConfig,
+ *   userConfigQueryInput,
+ *   setUserConfigQueryInput,
+ *   hasuraHeaders 
+ * }
+ * @return {*}  {*}
+ */
+function BaseTableData({
+  hasuraProps, 
+  systemProps,
+  columns,
+  tableName,
+  userConfig,
+  setUserConfig,
+  userConfigQueryInput,
+  setUserConfigQueryInput,
+  hasuraHeaders 
+}: any): any {
+  const { t } = useTranslation();
+  enum dataState { LOADING, READY }
+
+  // Add state deciding whether to show loader or table
+  const [tableState, setTableState] = useState({
+    data: undefined,
+    columns: [{}],
+    columnsReady: false,
+    dataState: dataState.LOADING,
+  });
+
+  parseTableData(
+    true, 
+    systemProps.mediaDisplaySetting, 
+    hasuraProps, 
+    `{ ${tableName} { ${columns} }}`, 
+    userConfig, 
+    setUserConfigQueryInput,
+    setTableState,
+    dataState,
+    tableName,
+    null,
+    hasuraHeaders
+  );
 
   const [selectionType, setSelectionType] = useState('checkbox');
 
@@ -211,19 +294,20 @@ function BaseTableData({
             }}
             dataSource={tableState.data}
             columns={tableState.columns}
-            onChange={ function(pagination, filters, sorter: SorterResult<RecordType> | SorterResult<RecordType>[]) {
-              // Get the current table configuration
-              const tableConfig = userConfig.baseTables.filter((baseTable: any) => baseTable.name == tableName)[0];
-              // Remove the table configuration
-              userConfig.baseTables = userConfig.baseTables.filter((baseTable: any) => baseTable.name != tableName);
-              
-              // Set the ordering
-              tableConfig.ordering.by = (sorter as SorterResult<RecordType>).field;
-              tableConfig.ordering.direction = (sorter as SorterResult<RecordType>).order;
+            onChange={ function(pagination, filters, sorter: SorterResult<RecordType> | SorterResult<RecordType>[], extra: any) {
+              if (extra.action == 'sort') {
+                // Get the current table configuration
+                const baseTableConfig = userConfig.baseTables.filter((baseTable: any) => baseTable.name == tableName)[0];
+                let indexOfBaseTable = userConfig.baseTables.indexOf(baseTableConfig);
 
-              // Push the updated table configuration to the user's configuration
-              userConfig.baseTables.push(tableConfig);
-              setUserConfigQueryInput(userConfig);
+                // Udate the ordering
+                baseTableConfig.ordering.by = (sorter as SorterResult<RecordType>).field;
+                baseTableConfig.ordering.direction = (sorter as SorterResult<RecordType>).order;
+
+                // Update the base table configuration
+                userConfig.baseTables[indexOfBaseTable] = baseTableConfig;
+                setUserConfigQueryInput(userConfig);
+              }
             }}
           />
         ) : (
