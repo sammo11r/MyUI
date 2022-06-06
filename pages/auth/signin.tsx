@@ -42,7 +42,7 @@ export default function SignIn() {
         data-testid="form-element"
         name="basic"
         labelCol={{
-          span: 16,
+          span: 24,
         }}
         wrapperCol={{
           span: 24,
@@ -52,8 +52,10 @@ export default function SignIn() {
       >
         <Form.Item
           data-testid="form-title"
+          style={{
+            textAlign: "center"
+          }}
           wrapperCol={{
-            offset: 10,
             span: 24,
           }}
         >
@@ -90,9 +92,12 @@ export default function SignIn() {
 
         <Form.Item
           data-testid="submit-form"
+          style={{
+            textAlign: "center",
+            margin: 10
+          }}
           wrapperCol={{
-            offset: 10,
-            span: 16,
+            span: 24,
           }}
         >
           <Button type="primary" htmlType="submit" data-testid="submit-button">
