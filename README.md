@@ -6,9 +6,7 @@ Boilerplate author: Nishad Guha (n.guha1@student.tue.nl)
 
 ## Automated Project Setup
 
-Run the command `make setup` in the project directory. This will build and run the docker containers, install frontend dependencies, create the database connection in Hasura as well as apply the migrations. Please select the created database in the last step when the Hasura CLI asks you to select which database you want to apply the migrations to.
-
-Happy developing!
+Run the command `make setup` in the project directory. This will build and run the docker containers, install frontend dependencies, create the database connection in Hasura as well as apply all the migrations.
 
 ## Manual Steps to start a new project
 
