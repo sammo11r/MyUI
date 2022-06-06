@@ -49,7 +49,7 @@ export default function EditModeSider({
           e.dataTransfer.setData("text/plain", elementType[type])
         }}
       > 
-        {icon}
+        {icon} 
         {text}
       </div>
     )

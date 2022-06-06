@@ -82,7 +82,7 @@ export default function EditElementModal({state, setState}: any): JSX.Element {
    */
   const checkFormat = (_: any, value: string) => {
     if (elementTypeTextRef() == "gridview") {
-      // Only validate the input for an gridview
+      // Validate the input for an gridview
       if (value == undefined) {
         // Input is empty, throw no error such that the user can modify the element later
         return Promise.resolve();
@@ -96,6 +96,11 @@ export default function EditElementModal({state, setState}: any): JSX.Element {
         return Promise.resolve();
       }
       return Promise.reject(new Error(t(`dashboard.queryinput.warning`)));
+    } else {
+      // Validate the input for a text input
+      if (value.includes('\"') || value.includes('\\')) {
+        return Promise.reject(new Error(t(`dashboard.textinput.warning`)));
+      }   
     }
     return Promise.resolve();
   };

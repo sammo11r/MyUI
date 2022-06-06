@@ -78,6 +78,9 @@
     },
     "queryinput": {
       "warning": "The input does not seem a valid GraphQL query"
+    },
+    "textiput": {
+      "warning": "These characters are not allowed"
     }
   },
   "basetable": {
