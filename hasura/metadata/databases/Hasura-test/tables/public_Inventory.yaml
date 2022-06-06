@@ -1,13 +1,6 @@
 table:
   schema: public
   name: Inventory
-object_relationships:
-  - name: Product
-    using:
-      foreign_key_constraint_on: product
-  - name: Store
-    using:
-      foreign_key_constraint_on: store
 insert_permissions:
   - role: editor
     permission:
