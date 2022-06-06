@@ -9,5 +9,6 @@ services:
     volumes:
       - ./pages:/app/pages:ro
       - ./components:/app/components:ro
+      - ./styles:/app/styles:ro
     # env_file:
     #   - ./.env

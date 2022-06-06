@@ -1,8 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { useQuery } from "react-query";
+
 import BaseTableData from "./BaseTableData";
 import Loader from "../components/Loader"
-import { useSession } from "next-auth/react";
 
 /**
  * @param {*} {
@@ -23,31 +23,20 @@ function BaseTable({
   userConfig,
   setUserConfig,
   userConfigQueryInput,
-  setUserConfigQueryInput
-}: any) {
-  enum columnStates {
-    LOADING,
-    READY,
-  }
+  setUserConfigQueryInput,
+  hasuraHeaders
+}: any): any {
+  enum columnStates { LOADING, READY }
 
   // Add state deciding whether to show loader or table
-  const [columnState, setColumnState] = React.useState({
+  const [columnState, setColumnState] = useState({
     columns: [{}],
     columnState: columnStates.LOADING,
   });
 
-  // Fetching session token from the current session
-  const { data: session } = useSession();
-
-  const jwt = session!.token;
-
-  const hasuraHeaders = {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${jwt}`, // Adding auth header instead of using the admin secret
-  } as HeadersInit;
-
   let tableName = name;
 
+  // Get the columns of the base table
   useQuery(["columnQuery", name], async () => {
     setColumnState({ columns: [{}], columnState: columnStates.LOADING });
     let result = await fetch(hasuraProps.hasuraEndpoint as RequestInfo, {

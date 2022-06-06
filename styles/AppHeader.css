@@ -8,20 +8,18 @@
   color: white;
 }
 
-.header-settings {
-  position: relative;
-  top: 16;
-  float: right;
-  right: 20;
-  font-size: 30px;
-  color: white;
+@media (prefers-reduced-motion: no-preference) {
+  .gear {
+    animation: gear-spin infinite 10s linear;
+  }
 }
 
-.header-user-profile {
-  position: relative;
-  top: 16;
-  float: right;
-  left: 50;
-  font-size: 30px;
-  color: white;
+@keyframes gear-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }
