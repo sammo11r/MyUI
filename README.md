@@ -4,11 +4,7 @@ This is the project for MyUI - a contextual UI generation tool. This is part of 
 
 Boilerplate author: Nishad Guha (n.guha1@student.tue.nl)
 
-## Automated Project Setup
-
-Run the command `make setup` in the project directory. This will build and run the docker containers, install frontend dependencies, create the database connection in Hasura as well as apply all the migrations.
-
-## Manual Steps to start a new project
+## Steps to start a new project
 
 1. Clone this repository
 2. `cd` into the project folder

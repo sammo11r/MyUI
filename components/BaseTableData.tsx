@@ -86,7 +86,7 @@ export function parseTableData(
         ;
       })
       .then((res) => {
-        if (res && res.length != 0) {
+        if (res) {
           let columnNames: string[] = [];
           let orderedColumn: string|null = null;
           let orderDirection: string|null = null;
@@ -211,10 +211,6 @@ export function parseTableData(
             columnsReady: true,
             dataState: dataState.READY,
           });
-        } else {
-          // The table is empty, show the error
-          setTableState({data: null, columns: null, columnsReady: true, dataState: dataState.READY});
-          return null;
         }
       })
   });

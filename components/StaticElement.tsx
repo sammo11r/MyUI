@@ -16,7 +16,9 @@ function convertText(text: string): JSX.Element {
   } else if (text.endsWith('.mp4') || text.endsWith('.mp3')) {
     return (
       // Display the video
-      <video height={"100%"} width={"100%"} src={text} controls/>
+      <video height={"100%"} width={"100%"} controls>
+        <source src={text} type="video/mp4" />
+      </video>
     );
   } else {
     return (
