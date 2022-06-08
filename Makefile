@@ -23,6 +23,15 @@ help: ## This help.
 .DEFAULT_GOAL := help
 
 # DOCKER TASKS
+setup:
+	@echo "Creating application and setting up database ..."
+	docker-compose -f docker-compose.yml -f docker-compose-dev.yml up -d --build \
+	&& sleep 3 \
+	&& npm i --force --silent \
+	&& yarn install --ignore-engines --silent \
+	&& cd hasura && hasura metadata apply \
+	&& hasura migrate apply --up all --all-databases
+
 run-dev:
 	@echo "Starting development environment ..."
 	docker-compose -f docker-compose.yml -f docker-compose-dev.yml up -d
@@ -50,9 +59,6 @@ stop: ## Stop running containers
 down: ## Stop and remove running containers
 	@echo "Stopping and removing containers ..."
 	docker-compose down
-
-up: 
-	docker-compose up -d
 
 test: ## Stop and remove running containers
 	@echo "Running all unit tests ..."
