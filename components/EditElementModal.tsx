@@ -1,84 +1,88 @@
-import React, { useState } from "react";
+import React from "react";
 import { Form, Input, Modal } from "antd";
 import { InfoCircleOutlined } from "@ant-design/icons";
-import { useTranslation } from "next-i18next";
 
-import { elementType } from "../pages";
+import { elementType } from "../const/enum";
 
 /**
+ *
+ *
  * @export
- * @param {*} {state, setState}
+ * @param {*} {state, setState, t}
  * @return {*}  {JSX.Element}
  */
-export default function EditElementModal({state, setState}: any): JSX.Element {
+export default function EditElementModal({
+  state,
+  setState,
+  t,
+}: any): JSX.Element {
   const { TextArea } = Input;
-  const { t } = useTranslation();
-  const [form] = Form.useForm();
+  const [editElementForm] = Form.useForm();
 
-  const onFinish = (values: {field: string}) => {
+  const onFinish = (values: { field: string }) => {
     switch (state.element.type) {
       case elementType.GRIDVIEW:
         try {
           // Remove all line breaks from the query input as this cannot be saved in the configuration
           state.element.query = values.field.replace(/(\r\n|\n|\r)/gm, "");
           break;
-        } catch (error) { 
+        } catch (error) {
           // If the input is empty, catch the error
-          break 
+          break;
         }
       case elementType.STATIC:
         // Remove all line breaks from the text input as this cannot be saved in the configuration
         state.element.text = values.field.replace(/(\r\n|\n|\r)/gm, "");
         break;
     }
-    
-    hideModal()
-  }
+
+    hideModal();
+  };
 
   /**
    * Hide the modal by setting the visible state to false
    *
    */
   const hideModal = () => {
-    setState({visible: false, element: {}})
-  }
+    setState({ visible: false, element: {} });
+  };
 
   /**
    * Define the content of the element
    *
-   * @return {*} 
+   * @return {*}
    */
   const elementContent = () => {
     switch (state.element.type) {
       case elementType.GRIDVIEW:
-        return state.element.query
+        return state.element.query;
       case elementType.STATIC:
-        return state.element.text
+        return state.element.text;
     }
-  }
+  };
 
   /**
    * Define which text type the element holds
    *
-   * @return {*} 
+   * @return {*}
    */
   const elementTypeTextRef = () => {
     switch (state.element.type) {
       case elementType.GRIDVIEW:
-        return "gridview"
+        return "gridview";
       case elementType.STATIC:
-        return "static"
+        return "static";
       default:
-        return "unknown"
+        return "unknown";
     }
-  }
-  
+  };
+
   /**
    * Validate the gridview input format on change
    *
    * @param {*} _
    * @param {string} value
-   * @return {*} 
+   * @return {*}
    */
   const checkFormat = (_: any, value: string) => {
     if (elementTypeTextRef() == "gridview") {
@@ -88,8 +92,9 @@ export default function EditElementModal({state, setState}: any): JSX.Element {
         return Promise.resolve();
       }
       // Check if the input contains the required brackets and word 'query'
-      const containsQuery = value.includes('query');
-      const containsBrackets = (value.split("{").length - 1 >= 2) && (value.split("}").length - 1 >= 2);
+      const containsQuery = value.includes("query");
+      const containsBrackets =
+        value.split("{").length - 1 >= 2 && value.split("}").length - 1 >= 2;
 
       if (containsQuery && containsBrackets) {
         // The input is valid
@@ -98,25 +103,21 @@ export default function EditElementModal({state, setState}: any): JSX.Element {
       return Promise.reject(new Error(t(`dashboard.queryinput.warning`)));
     } else {
       // Validate the input for a text input
-      if (value.includes('\"') || value.includes('\\')) {
+      if (value.includes('"') || value.includes("\\")) {
         return Promise.reject(new Error(t(`dashboard.textinput.warning`)));
-      }   
+      }
     }
     return Promise.resolve();
   };
 
-  return(
+  return (
     <Modal
       title={t(`dashboard.element.${elementTypeTextRef()}.type`)}
       visible={state.visible}
-      onOk={form.submit}
+      onOk={editElementForm.submit}
       onCancel={hideModal}
     >
-      <Form
-        form={form}
-        layout="vertical"
-        onFinish={onFinish}
-      >
+      <Form form={editElementForm} layout="vertical" onFinish={onFinish}>
         <Form.Item
           name={"field"}
           label={t(`dashboard.element.${elementTypeTextRef()}.label`)}
@@ -131,7 +132,7 @@ export default function EditElementModal({state, setState}: any): JSX.Element {
             },
           ]}
         >
-          <TextArea rows={10}/>
+          <TextArea rows={10} />
         </Form.Item>
       </Form>
     </Modal>

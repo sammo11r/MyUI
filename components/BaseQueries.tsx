@@ -2,12 +2,12 @@ import { useQuery } from "react-query";
 
 // Define the default UI configuration
 const defaultConfiguration = {
-  "dashboards": [],
-  "uiPreferences": {
-    "language": "en"
+  dashboards: [],
+  uiPreferences: {
+    language: "en",
   },
-  "baseTables": []
-}
+  baseTables: [],
+};
 
 /**
  * Retrieve configuration file
@@ -20,7 +20,7 @@ const defaultConfiguration = {
  * @param {*} setDashboardNames
  * @param {*} setUserConfig
  * @param {*} router
- * @return {*} 
+ * @return {*}
  */
 export function configurationQuery(
   userId: number,
@@ -34,39 +34,46 @@ export function configurationQuery(
   // Get the router variables
   const { pathname, asPath, query } = router;
 
-  const { isSuccess: isSuccessConfig, data: configuration } = useQuery(["configurationQuery", userId], async () => {
-    let result = await fetch(hasuraProps.hasuraEndpoint as RequestInfo, {
-      method: "POST",
-      headers: hasuraHeadersVersioning,
-      body: JSON.stringify({
-        query: `query getConfigurationFromUser { user_versioned_config(where: {user_id: {_eq: ${userId}}}, order_by: {date: desc}, limit: 1) { config }}`,
-      }),
-    })
-      .then((userConfig) => userConfig.json())
-      .then((userConfig) => {
-        // Check if the user has a user configuration saved in the database
-        if (userConfig.data.user_versioned_config.length == 0) {
-          // No user configuration found for this user
-          // Set the default empty user's configuration
-          userConfig = defaultConfiguration;
-          setUserConfigQueryInput(userConfig);
-        } else {
-          // Get the user's configuration        
-          userConfig = userConfig.data.user_versioned_config[0].config;
-          // Undo escaping of double quotes
-          userConfig = JSON.parse(userConfig.replace('\"', '"'));
-        }
-        // Get the dashboard names to display on the sidebar
-        const dashboards = userConfig.dashboards;
-        let dashboardNames = dashboards.map((dashboard: any) => dashboard.name);
-        setDashboardNames(dashboardNames);
-        setUserConfig(userConfig);
+  const { isSuccess: isSuccessConfig, data: configuration } = useQuery(
+    ["configurationQuery", userId],
+    async () => {
+      let result = await fetch(hasuraProps.hasuraEndpoint as RequestInfo, {
+        method: "POST",
+        headers: hasuraHeadersVersioning,
+        body: JSON.stringify({
+          query: `query getConfigurationFromUser { user_versioned_config(where: {user_id: {_eq: ${userId}}}, order_by: {date: desc}, limit: 1) { config }}`,
+        }),
+      })
+        .then((userConfig) => userConfig.json())
+        .then((userConfig) => {
+          // Check if the user has a user configuration saved in the database
+          if (userConfig.data.user_versioned_config.length == 0) {
+            // No user configuration found for this user
+            // Set the default empty user's configuration
+            userConfig = defaultConfiguration;
+            setUserConfigQueryInput(userConfig);
+          } else {
+            // Get the user's configuration
+            userConfig = userConfig.data.user_versioned_config[0].config;
+            // Undo escaping of double quotes
+            userConfig = JSON.parse(userConfig.replace('"', '"'));
+          }
+          // Get the dashboard names to display on the sidebar
+          const dashboards = userConfig.dashboards;
+          let dashboardNames = dashboards.map(
+            (dashboard: any) => dashboard.name
+          );
+          setDashboardNames(dashboardNames);
+          setUserConfig(userConfig);
 
-        // Push the language locale - needed to retrieve the correct language on startup
-        router.push({ pathname, query }, asPath, { locale: userConfig.uiPreferences.language })
-      });
-    return result;
-  });
+          // Push the language locale - needed to retrieve the correct language on startup
+          router.push({ pathname, query }, asPath, {
+            locale: userConfig.uiPreferences.language,
+          });
+        });
+      return result;
+    }
+  );
 
   return { isSuccessConfig, configuration };
 }
@@ -88,24 +95,30 @@ export function updateUserConfiguration(
   setUserConfigQueryInput: any,
   userConfigQueryInput: any
 ) {
-  useQuery(["updateUserConfiguration", userId, userConfigQueryInput], async () => {
-    if (userConfigQueryInput != undefined) {
-      console.log('User configuration file is updated...');
-      // Escape double quotes
-      let newUserConfig = JSON.stringify(userConfigQueryInput).replace(/"/g, "\\\"");
+  useQuery(
+    ["updateUserConfiguration", userId, userConfigQueryInput],
+    async () => {
+      if (userConfigQueryInput != undefined) {
+        console.log("User configuration file is updated...");
+        // Escape double quotes
+        let newUserConfig = JSON.stringify(userConfigQueryInput).replace(
+          /"/g,
+          '\\"'
+        );
 
-      let result = await fetch(hasuraProps.hasuraEndpoint as RequestInfo, {
-        method: "POST",
-        headers: hasuraHeadersVersioning,
-        body: JSON.stringify({
-          query: `mutation insertUserConfig { insert_user_versioned_config_one(object: {config: "${newUserConfig}", user_id: ${userId}}) { config }}`,
-        }),
-      })
+        let result = await fetch(hasuraProps.hasuraEndpoint as RequestInfo, {
+          method: "POST",
+          headers: hasuraHeadersVersioning,
+          body: JSON.stringify({
+            query: `mutation insertUserConfig { insert_user_versioned_config_one(object: {config: "${newUserConfig}", user_id: ${userId}}) { config }}`,
+          }),
+        });
 
-      // Clear the query input state variable
-      setUserConfigQueryInput(undefined);
+        // Clear the query input state variable
+        setUserConfigQueryInput(undefined);
+      }
     }
-  });
+  );
 }
 
 /**
@@ -116,7 +129,7 @@ export function updateUserConfiguration(
  * @param {*} hasuraHeaders
  * @param {*} setSiderState
  * @param {*} siderMenuState
- * @return {*} 
+ * @return {*}
  */
 export function tableQuery(
   hasuraProps: any,

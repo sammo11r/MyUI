@@ -47,8 +47,10 @@ export default NextAuth({
 
         // Modify IP address to forward to docker container
         // eslint-disable-next-line max-len
-        ipAddress = ipAddress.substring(0, ipAddress.lastIndexOf(".") + 1) + (parseInt(ipAddress.substring(ipAddress.length - 1)) + 1).toString();
-        
+        ipAddress =
+          ipAddress.substring(0, ipAddress.lastIndexOf(".") + 1) +
+          (parseInt(ipAddress.substring(ipAddress.length - 1)) + 1).toString();
+
         // GET request to REST endpoint of Hasura to fetch all users
         const res = await fetch(`http://${ipAddress}:8080/api/rest/users`, {
           method: "GET",
@@ -97,8 +99,8 @@ export default NextAuth({
     secret: process.env.JWT_SECRET,
     /**
      * Create Hasura-specific JWT token
-     * @param param0 
-     * @returns 
+     * @param param0
+     * @returns
      */
     encode: async ({ secret, token }) => {
       // Initialize Hasura-specific JWT claims
@@ -117,8 +119,8 @@ export default NextAuth({
 
         // Return allowed roles
         return allowedRoles;
-      }
-    
+      };
+
       const jwtClaims = {
         // @ts-ignore
         sub: token!.id !== undefined ? token!.id.toString() : token!.sub,
@@ -132,20 +134,27 @@ export default NextAuth({
       } as JWT;
 
       // JWT tokens are only valid if encoded/signed
-      const encodedToken = jwt.sign(jwtClaims, secret, { algorithm: "HS256", expiresIn: "12h" });
-    
+      const encodedToken = jwt.sign(jwtClaims, secret, {
+        algorithm: "HS256",
+        expiresIn: "12h",
+      });
+
       return encodedToken as Awaitable<string>;
     },
     /**
      * Decode\Verify Hasura-specific JWT token
      * @param params
-     * @returns 
+     * @returns
      */
     decode: async ({ secret, token }: JWTDecodeParams) => {
       // Token needs to be decoded to be "verified"
-      const decodedToken = jwt.verify(token as string, secret as Secret, {
-        algorithms: ["HS256"],
-      } as VerifyOptions);
+      const decodedToken = jwt.verify(
+        token as string,
+        secret as Secret,
+        {
+          algorithms: ["HS256"],
+        } as VerifyOptions
+      );
 
       return decodedToken as Awaitable<JWT>;
     },

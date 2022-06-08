@@ -1,37 +1,29 @@
-import React, { useState } from "react"
+import React from "react";
 import { Button, Layout } from "antd";
-import {
-  TableOutlined,
-  BorderOutlined
-} from "@ant-design/icons";
-import { useTranslation } from "next-i18next";
+import { TableOutlined, BorderOutlined } from "@ant-design/icons";
 
-import { elementType } from "../pages";
+import { elementType } from "../const/enum";
 
 const { Sider } = Layout;
 
 /**
  * @export
- * @param {*} userConfig
- * @param {*} setUserConfig
- * @param {*} userConfigQueryInput
- * @param {*} setUserConfigQueryInput
- * @param {*} dashboardState
- * @param {*} setDashboardState
- * @return {*} 
+ * @param {*} {
+ *   userConfig,
+ *   dashboardState,
+ *   loadings,
+ *   saveDashboardChanges,
+ *   t
+ * }
+ * @return {*}  {*}
  */
 export default function EditModeSider({
   userConfig,
-  setUserConfig,
-  userConfigQueryInput,
-  setUserConfigQueryInput,
   dashboardState,
-  setDashboardState,
   loadings,
-  saveDashboardChanges
+  saveDashboardChanges,
+  t,
 }: any): any {
-  const { t } = useTranslation();
-  
   /**
    * Define a draggable element for the sider
    *
@@ -40,29 +32,46 @@ export default function EditModeSider({
    * @param {*} icon
    * @return {*}  {JSX.Element}
    */
-  const draggableElement = (type: elementType, text: string, icon: any): JSX.Element => {
+  const draggableElement = (
+    type: elementType,
+    text: string,
+    icon: any
+  ): JSX.Element => {
     return (
       <div
         className="droppable-element"
         draggable={true}
-        onDragStart={e => {
-          e.dataTransfer.setData("text/plain", elementType[type])
+        onDragStart={(e) => {
+          e.dataTransfer.setData("text/plain", elementType[type]);
         }}
-      > 
-        {icon} 
+      >
+        {icon}
         {text}
       </div>
-    )
-  }
+    );
+  };
 
   // Render the sider with the draggable elements
   return (
     <Sider theme="light">
-      {draggableElement(elementType.STATIC, t("dashboard.element.static.type"), <BorderOutlined/>)}
-      {draggableElement(elementType.GRIDVIEW, t("dashboard.element.gridview.type"), <TableOutlined/>)}
-      <Button type="primary" loading={loadings} onClick={() => saveDashboardChanges(userConfig, dashboardState)} style={{width:"100%"}}>
+      {draggableElement(
+        elementType.STATIC,
+        t("dashboard.element.static.type"),
+        <BorderOutlined />
+      )}
+      {draggableElement(
+        elementType.GRIDVIEW,
+        t("dashboard.element.gridview.type"),
+        <TableOutlined />
+      )}
+      <Button
+        type="primary"
+        loading={loadings}
+        onClick={() => saveDashboardChanges(userConfig, dashboardState)}
+        style={{ width: "100%" }}
+      >
         {t("dashboard.save")}
       </Button>
     </Sider>
-  )
+  );
 }

@@ -1,18 +1,17 @@
 import React, { useState } from "react";
-import { useQuery } from "react-query";
-import { useSession } from "next-auth/react";
-import {
-  Form,
-  Input,
-  Modal
-} from "antd";
+import { Form, Input, Modal } from "antd";
 import "antd/dist/antd.css";
-import { InfoCircleOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
-import { useTranslation } from "next-i18next";
+import {
+  InfoCircleOutlined,
+  ExclamationCircleOutlined,
+} from "@ant-design/icons";
 
 const { confirm } = Modal;
 
-export enum modalTypes { ADD, REMOVE }
+export enum modalTypes {
+  ADD,
+  REMOVE,
+}
 
 /**
  * Check if a new dashboard name is valid
@@ -21,7 +20,7 @@ export enum modalTypes { ADD, REMOVE }
  * @param {*} dashboardNames
  * @param {string} dashboardAddKey
  * @param {string} dashboardRemoveKey
- * @return {*} 
+ * @return {*}
  */
 const isValidDashboardName = (
   name: string,
@@ -35,17 +34,22 @@ const isValidDashboardName = (
     (type == modalTypes.ADD && dashboardNames.includes(name)) ||
     // If type is REMOVE, name must be included
     (type == modalTypes.REMOVE && !dashboardNames.includes(name));
-  return !(nameInList || name == dashboardAddKey || name == dashboardRemoveKey || name == undefined)
-}
+  return !(
+    nameInList ||
+    name == dashboardAddKey ||
+    name == dashboardRemoveKey ||
+    name == undefined
+  );
+};
 
 /**
  * @param {string} name
  * @param {*} dashboardNames
- * @return {*} 
+ * @return {*}
  */
 function addDashboard(name: string, dashboardNames: any): any {
   dashboardNames.push(name);
-  return dashboardNames
+  return dashboardNames;
 }
 
 /**
@@ -53,8 +57,8 @@ function addDashboard(name: string, dashboardNames: any): any {
  * @param {*} dashboardNames
  */
 function removeDashboard(name: string, dashboardNames: any[]) {
-  dashboardNames = dashboardNames.filter((item: string) => name != item)
-  return dashboardNames
+  dashboardNames = dashboardNames.filter((item: string) => name != item);
+  return dashboardNames;
 }
 
 /**
@@ -88,39 +92,48 @@ export default function ManageDashboardsModal({
   displayDashboard,
   setWorkspaceState,
   workspaceState,
-  workspaceStates
+  workspaceStates,
+  t,
 }: any): JSX.Element {
-  const { t } = useTranslation();
   const [hasError, setError] = useState(false);
-  const [form] = Form.useForm();
+  const [manageDashboardForm] = Form.useForm();
 
   const hideModal = () => {
     // Reset the text field and hide the modal
-    form.resetFields();
+    manageDashboardForm.resetFields();
     setVisible(false);
     setError(false);
-  }
+  };
 
   /**
    * @param {string} newDashboardNames
    */
-  const showDeleteConfirm = (newDashboardNames: string, userConfig: any, name: string) => {
+  const showDeleteConfirm = (
+    newDashboardNames: string,
+    userConfig: any,
+    name: string
+  ) => {
     confirm({
       title: t("dashboard.modal.removewarning.title"),
       icon: <ExclamationCircleOutlined />,
-      content:  t("dashboard.modal.removewarning.description"),
+      content: t("dashboard.modal.removewarning.description"),
       okText: t("dashboard.modal.removewarning.confirmText"),
-      okType: 'danger',
+      okType: "danger",
       cancelText: t("dashboard.modal.removewarning.cancelText"),
       onOk() {
         setDashboardNames(newDashboardNames);
         // Remove the dashboard from the user configuration
-        userConfig.dashboards = userConfig.dashboards.filter((dashboard: any) => dashboard.name !== name)
+        userConfig.dashboards = userConfig.dashboards.filter(
+          (dashboard: any) => dashboard.name !== name
+        );
         setUserConfigQueryInput(userConfig);
 
         if (workspaceState.name == name) {
           // If the deleted dashboard was currently displayed, set the working space back to empty
-          setWorkspaceState({displaying: workspaceStates.EMPTY, name: "none",})
+          setWorkspaceState({
+            displaying: workspaceStates.EMPTY,
+            name: "none",
+          });
         }
 
         hideModal();
@@ -132,23 +145,28 @@ export default function ManageDashboardsModal({
    * @param {object} values
    */
   const onFinish = (values: object) => {
-    let name: string = Object.values(values)[0]
+    let name: string = Object.values(values)[0];
     // Check if the given name is valid
-    if (isValidDashboardName(name, dashboardNames, dashboardAddKey, dashboardRemoveKey, modalType)) {
-
+    if (
+      isValidDashboardName(
+        name,
+        dashboardNames,
+        dashboardAddKey,
+        dashboardRemoveKey,
+        modalType
+      )
+    ) {
       let newDashboardNames: any;
       // Finish functionality depends on modal type
       switch (modalType) {
-        case (modalTypes.ADD):
+        case modalTypes.ADD:
           newDashboardNames = addDashboard(name, dashboardNames);
 
           // Push the new dashboard to the user configuration
-          userConfig.dashboards.push(
-            {
-              "name": name,
-              "dashboardElements": []
-            }
-          );
+          userConfig.dashboards.push({
+            name: name,
+            dashboardElements: [],
+          });
 
           setDashboardNames(newDashboardNames);
           setUserConfigQueryInput(userConfig);
@@ -156,13 +174,13 @@ export default function ManageDashboardsModal({
           displayDashboard(name, userConfig);
           hideModal();
           break;
-        case (modalTypes.REMOVE):
+        case modalTypes.REMOVE:
           newDashboardNames = removeDashboard(name, dashboardNames);
           // Show confirmation modal
-          showDeleteConfirm(newDashboardNames, userConfig, name)
+          showDeleteConfirm(newDashboardNames, userConfig, name);
           break;
         default:
-          newDashboardNames = []
+          newDashboardNames = [];
       }
     } else {
       // Name is invalid, show error message on input
@@ -173,10 +191,10 @@ export default function ManageDashboardsModal({
   let modalTypeTextRef;
   switch (modalType) {
     case modalTypes.ADD:
-      modalTypeTextRef = "add"
+      modalTypeTextRef = "add";
       break;
     case modalTypes.REMOVE:
-      modalTypeTextRef = "remove"
+      modalTypeTextRef = "remove";
       break;
   }
 
@@ -184,14 +202,10 @@ export default function ManageDashboardsModal({
     <Modal
       title={t(`dashboard.modal.${modalTypeTextRef}.title`)}
       visible={isVisible}
-      onOk={form.submit}
+      onOk={manageDashboardForm.submit}
       onCancel={hideModal}
     >
-      <Form
-        form={form}
-        layout="vertical"
-        onFinish={onFinish}
-      >
+      <Form form={manageDashboardForm} layout="vertical" onFinish={onFinish}>
         <Form.Item
           label={t(`dashboard.modal.${modalTypeTextRef}.name`)}
           name="name"

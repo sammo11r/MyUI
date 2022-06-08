@@ -53,7 +53,7 @@ export default function SignIn() {
         <Form.Item
           data-testid="form-title"
           style={{
-            textAlign: "center"
+            textAlign: "center",
           }}
           wrapperCol={{
             span: 24,
@@ -94,7 +94,7 @@ export default function SignIn() {
           data-testid="submit-form"
           style={{
             textAlign: "center",
-            margin: 10
+            margin: 10,
           }}
           wrapperCol={{
             span: 24,

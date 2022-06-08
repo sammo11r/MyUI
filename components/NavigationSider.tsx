@@ -1,16 +1,13 @@
 import React from "react";
 import "antd/dist/antd.css";
 import { Layout, Menu } from "antd";
-import { sideBarItemTypes } from "../pages/index";
+import { sideBarItemTypes } from "../const/enum";
 import {
   TableOutlined,
   PicCenterOutlined,
   PlusCircleOutlined,
-  MinusCircleOutlined
+  MinusCircleOutlined,
 } from "@ant-design/icons";
-import { useTranslation } from "next-i18next";
-
-import { elementType } from "../pages";
 
 const { Sider } = Layout;
 const dashboardAddKey = "dashboardAdd";
@@ -38,9 +35,13 @@ let storedSideBarItems: any;
  * @param {string[]} tableNames
  * @param {string[]} dashboardNames
  * @param {*} t
- * @return {*} 
+ * @return {*}
  */
-function getSideBarItems(tableNames: string[], dashboardNames: string[], t: any) {
+function getSideBarItems(
+  tableNames: string[],
+  dashboardNames: string[],
+  t: any
+) {
   // Due to queries doing wonky stuff and executing 4 times,
   // later calls to this function might end up with undefined names, hence save copy
   if (!tableNames) return storedSideBarItems;
@@ -56,13 +57,26 @@ function getSideBarItems(tableNames: string[], dashboardNames: string[], t: any)
       t("dashboard.sidebar"),
       sideBarItemTypes.DASHBOARD,
       <PicCenterOutlined />,
-      dashboardNames.map((name: string) => getItem(name, `${name}`, null, null))
-        .concat(
-          [
-            { ...getItem(t("dashboard.new"), dashboardAddKey, <PlusCircleOutlined />, null) },
-            { ...getItem(t("dashboard.delete"), dashboardRemoveKey, <MinusCircleOutlined />, null) }
-          ]
-        )
+      dashboardNames
+        .map((name: string) => getItem(name, `${name}`, null, null))
+        .concat([
+          {
+            ...getItem(
+              t("dashboard.new"),
+              dashboardAddKey,
+              <PlusCircleOutlined />,
+              null
+            ),
+          },
+          {
+            ...getItem(
+              t("dashboard.delete"),
+              dashboardRemoveKey,
+              <MinusCircleOutlined />,
+              null
+            ),
+          },
+        ])
     ),
   ];
   storedSideBarItems = dashboardItems;
@@ -76,9 +90,10 @@ function getSideBarItems(tableNames: string[], dashboardNames: string[], t: any)
  *   selectedKeys,
  *   openKeys,
  *   baseTableOnClick,
- *   dashboardOnClick
+ *   dashboardOnClick,
+ *   t
  * }
- * @return {*} 
+ * @return {*}
  */
 function NavigationSider({
   baseTableNames,
@@ -86,9 +101,9 @@ function NavigationSider({
   selectedKeys,
   openKeys,
   baseTableOnClick,
-  dashboardOnClick
-}: any) {
-  const { t } = useTranslation();
+  dashboardOnClick,
+  t,
+}: any): any {
   return (
     <Sider width={200} className="site-layout-background" data-testid="sider">
       <Menu
@@ -118,5 +133,5 @@ function NavigationSider({
   );
 }
 
-export default NavigationSider
-export { dashboardAddKey, dashboardRemoveKey }
+export default NavigationSider;
+export { dashboardAddKey, dashboardRemoveKey };
