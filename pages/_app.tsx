@@ -64,7 +64,7 @@ function Auth({ children }: Props): JSX.Element {
   // If the session is still loading, display a loader
   if (status === "loading") {
     return (
-      <div style={{width: '100vw', height: '100vh'}}>
+      <div style={{ width: "100vw", height: "100vh" }}>
         <Loader />
       </div>
     );

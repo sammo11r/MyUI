@@ -1,11 +1,9 @@
-import React, { useState, useEffect } from "react";
-import { Modal }  from "antd";
-import { useTranslation } from "next-i18next";
+import React from "react";
+import { Modal } from "antd";
 import GridLayout from "react-grid-layout";
 import { Responsive, WidthProvider } from "react-grid-layout";
 
-import { workspaceStates } from "../pages";
-import { elementType } from "../pages";
+import { workspaceStates, elementType } from "../const/enum";
 import { DeleteOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
 import GridView from "./GridView";
 import StaticElement from "./StaticElement";
@@ -18,35 +16,29 @@ const ResponsiveReactGridLayout = WidthProvider(Responsive);
  * @param {*} {
  *   hasuraProps,
  *   systemProps,
- *   name,
  *   mode,
  *   userConfig,
- *   setUserConfig,
  *   dashboardState,
  *   setDashboardState,
  *   setEditElementModalState,
- *   userConfigQueryInput,
- *   setUserConfigQueryInput ,
- *   hasuraHeaders
+ *   setUserConfigQueryInput,
+ *   hasuraHeaders,
+ *   t
  * }
  * @return {*}  {JSX.Element}
  */
 export default function Dashboard({
   hasuraProps,
   systemProps,
-  name,
   mode,
   userConfig,
-  setUserConfig,
   dashboardState,
   setDashboardState,
   setEditElementModalState,
-  userConfigQueryInput,
   setUserConfigQueryInput,
-  hasuraHeaders
+  hasuraHeaders,
+  t,
 }: any): JSX.Element {
-  const { t } = useTranslation()
-
   /**
    * Edit an element on the dashboard
    *
@@ -57,10 +49,10 @@ export default function Dashboard({
     if (mode !== workspaceStates.EDIT_DASHBOARD) {
       return;
     }
-    event.preventDefault()
-    const element = dashboardState.dashboard.dashboardElements[index]
-    setEditElementModalState({ visible: true, element: element })
-  }
+    event.preventDefault();
+    const element = dashboardState.dashboard.dashboardElements[index];
+    setEditElementModalState({ visible: true, element: element });
+  };
 
   /**
    * Delete an element from the dashboard
@@ -68,10 +60,10 @@ export default function Dashboard({
    * @param {number} index
    */
   const deleteElement = (index: number) => {
-    const newDashboard = dashboardState.dashboard
-    newDashboard.dashboardElements.splice(index, 1)
-    setDashboardState({ dashboard: newDashboard })
-  }
+    const newDashboard = dashboardState.dashboard;
+    newDashboard.dashboardElements.splice(index, 1);
+    setDashboardState({ dashboard: newDashboard });
+  };
 
   /**
    * Show the confirmation modal
@@ -82,15 +74,15 @@ export default function Dashboard({
     confirm({
       title: t("dashboard.element.removewarning.title"),
       icon: <ExclamationCircleOutlined />,
-      content:  t("dashboard.element.removewarning.description"),
+      content: t("dashboard.element.removewarning.description"),
       okText: t("dashboard.element.removewarning.confirmText"),
-      okType: 'danger',
+      okType: "danger",
       cancelText: t("dashboard.element.removewarning.cancelText"),
-      onOk() { 
-        deleteElement(index); 
+      onOk() {
+        deleteElement(index);
       },
     });
-  }
+  };
 
   /**
    * Render dashboard elements
@@ -98,6 +90,11 @@ export default function Dashboard({
    * @param {*} element
    * @param {*} hasuraProps
    * @param {number} index
+   * @param {*} systemProps
+   * @param {*} userConfig
+   * @param {*} setUserConfigQueryInput
+   * @param {*} dashboardState
+   * @param {*} t
    * @return {*}  {JSX.Element}
    */
   function renderDashboardElement(
@@ -106,35 +103,42 @@ export default function Dashboard({
     index: number,
     systemProps: any,
     userConfig: any,
-    setUserConfig: any,
     setUserConfigQueryInput: any,
-    dashboardState: any
+    dashboardState: any,
+    t: any
   ): JSX.Element {
     let rendered_element = <p>{t("dashboard.element.unknown")}</p>;
     // Render element based on type
     switch (element.type) {
       case elementType.GRIDVIEW:
-        rendered_element = <GridView 
-          query={element.query}
-          hasuraProps={hasuraProps}
-          systemProps={systemProps}
-          userConfig={userConfig}
-          setUserConfig={setUserConfig}
-          setUserConfigQueryInput={setUserConfigQueryInput} 
-          name={element.name}
-          dashboardName={dashboardState.dashboard.name}
-          hasuraHeaders={hasuraHeaders}
-          style={{ height: "100%", width: "100%", overflow: "auto" }} 
-        />;
+        rendered_element = (
+          <GridView
+            query={element.query}
+            hasuraProps={hasuraProps}
+            systemProps={systemProps}
+            userConfig={userConfig}
+            setUserConfigQueryInput={setUserConfigQueryInput}
+            name={element.name}
+            dashboardName={dashboardState.dashboard.name}
+            hasuraHeaders={hasuraHeaders}
+            t={t}
+            style={{ height: "100%", width: "100%", overflow: "auto" }}
+          />
+        );
         break;
       case elementType.STATIC:
-        rendered_element = <StaticElement text={element.text} style={{ height: "100%", width: "100%" }} />;
+        rendered_element = (
+          <StaticElement
+            text={element.text}
+            style={{ height: "100%", width: "100%" }}
+          />
+        );
         break;
     }
     return (
       <div
         key={element.name}
-        style={{ 
+        style={{
           outline: "2px solid #ebf2ff",
         }}
         onDoubleClick={(e) => editElement(e, index)}
@@ -145,16 +149,19 @@ export default function Dashboard({
           h: element.h,
         }}
       >
-        {mode === workspaceStates.EDIT_DASHBOARD ? <DeleteOutlined
-          style={{ // TODO: move style to css file, as none of it depends on state
-            position: "absolute",
-            zIndex: "10",
-            fontSize: "20px",
-            right: "5px",
-            top: "5px"
-          }}
-          onClick={(e) => showDeleteConfirm(index)}
-        /> : null}
+        {mode === workspaceStates.EDIT_DASHBOARD ? (
+          <DeleteOutlined
+            style={{
+              // TODO: move style to css file, as none of it depends on state
+              position: "absolute",
+              zIndex: "10",
+              fontSize: "20px",
+              right: "5px",
+              top: "5px",
+            }}
+            onClick={(e) => showDeleteConfirm(index)}
+          />
+        ) : null}
         {rendered_element}
       </div>
     );
@@ -174,7 +181,7 @@ export default function Dashboard({
       newDashboard.dashboardElements[i].h = layout[i].h;
     }
     setDashboardState({ dashboard: newDashboard });
-  }
+  };
 
   /**
    * Add new elements to the dashboard configuration once dropped in the working area
@@ -183,31 +190,37 @@ export default function Dashboard({
    * @param {GridLayout.Layout} layoutItem
    * @param {DragEvent} event
    */
-  const onDrop = (layout: GridLayout.Layout[], layoutItem: GridLayout.Layout, event: DragEvent) => {
-    const typeString = event.dataTransfer?.getData("text/plain") as keyof typeof elementType;
+  const onDrop = (
+    layout: GridLayout.Layout[],
+    layoutItem: GridLayout.Layout,
+    event: DragEvent
+  ) => {
+    const typeString = event.dataTransfer?.getData(
+      "text/plain"
+    ) as keyof typeof elementType;
     if (elementType[typeString] === undefined) {
-      return
+      return;
     }
 
     // Define the element
     let element = {
       // Give the element a unique name
-      name: crypto.randomUUID(), 
+      name: crypto.randomUUID(),
       x: layoutItem["x"],
       y: layoutItem["y"],
       w: layoutItem["w"],
       h: layoutItem["h"],
       type: elementType[typeString],
-      text: t("dashboard.element.new.text")
-    }
+      text: t("dashboard.element.new.text"),
+    };
 
     // Add new element to dashboard
-    const newDashboard = dashboardState.dashboard
-    newDashboard.dashboardElements.push(element)
-    setDashboardState({ dashboard: newDashboard })
-    
+    const newDashboard = dashboardState.dashboard;
+    newDashboard.dashboardElements.push(element);
+    setDashboardState({ dashboard: newDashboard });
+
     // Open editmenu for newly created element
-    setEditElementModalState({ visible: true, element: element })
+    setEditElementModalState({ visible: true, element: element });
   };
 
   return (
@@ -227,20 +240,35 @@ export default function Dashboard({
       onDragStop={saveChange}
       onResizeStop={saveChange}
       style={{ height: "100%" }}
-      // Setting the layout prop is necessary in order to rerender 
+      // Setting the layout prop is necessary in order to rerender
       // the elements in the correct position after deleting
       layouts={{
-        bp: dashboardState.dashboard.dashboardElements
-          .map((element: any, index: number) => {
-            return { i: index, x: element.x, y: element.y, w: element.w, h: element.h }
-          })
+        bp: dashboardState.dashboard.dashboardElements.map(
+          (element: any, index: number) => {
+            return {
+              i: index,
+              x: element.x,
+              y: element.y,
+              w: element.w,
+              h: element.h,
+            };
+          }
+        ),
       }}
     >
-      {
-        dashboardState.dashboard
-          .dashboardElements
-          .map((element: any, index: number) => renderDashboardElement(element, hasuraProps, index, systemProps, userConfig, setUserConfig, setUserConfigQueryInput, dashboardState))
-      }
+      {dashboardState.dashboard.dashboardElements.map(
+        (element: any, index: number) =>
+          renderDashboardElement(
+            element,
+            hasuraProps,
+            index,
+            systemProps,
+            userConfig,
+            setUserConfigQueryInput,
+            dashboardState,
+            t
+          )
+      )}
     </ResponsiveReactGridLayout>
   );
 }

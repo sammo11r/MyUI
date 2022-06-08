@@ -33,7 +33,7 @@
         "tooltip": "Geef hier de naam van het dashboard dat u wilt verwijderen",
         "error": "Dit is geen geldig dashboard"
       },
-      "removewarning":{
+      "removewarning": {
         "title": "Weet je zeker dat je dit dashboard wilt verwijderen?",
         "description": "Als je een dashboard verwijdert, is deze niet meer toegankelijk. Deze actie kan niet ongedaan gemaakt worden.",
         "confirmText": "Ja",

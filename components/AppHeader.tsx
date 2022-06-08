@@ -8,45 +8,49 @@ import {
 } from "@ant-design/icons";
 import { Content, Header } from "antd/lib/layout/layout";
 import { signOut } from "next-auth/react";
-import { useTranslation } from "next-i18next";
 import i18next from "i18next";
-import type { RadioChangeEvent } from 'antd';
-import { useRouter } from 'next/router';
+import type { RadioChangeEvent } from "antd";
+import { useRouter } from "next/router";
 
-import { workspaceStates } from "../pages/index";
+import { workspaceStates } from "../const/enum";
 
 /**
  * Update the language in i18next
- * 
+ *
  * @param {string} lan
- * @return {*} 
+ * @return {*}
  */
 function languageUpdate(lan: string) {
   i18next.init();
   i18next.changeLanguage(lan, (err) => {
-    if (err) return console.log('Something went wrong while loading the language', err);
+    if (err)
+      return console.log(
+        "Something went wrong while loading the language",
+        err
+      );
   });
 }
 
 /**
- * @param {*} { 
+ * @export
+ * @param {*} {
  *   userConfig,
  *   setUserConfig,
- *   userConfigQueryInput,
- *   setUserConfigQueryInput
+ *   setUserConfigQueryInput,
+ *   workspaceState,
+ *   toggleEditMode,
+ *   t
  * }
- * @return {*} 
+ * @return {*}  {JSX.Element}
  */
 export default function AppHeader({
   userConfig,
   setUserConfig,
-  userConfigQueryInput,
   setUserConfigQueryInput,
   workspaceState,
-  toggleEditMode
+  toggleEditMode,
+  t,
 }: any): JSX.Element {
-  const { t } = useTranslation();
-
   const router = useRouter();
   const { pathname, asPath, query } = router;
 
@@ -62,7 +66,7 @@ export default function AppHeader({
     setUserConfigQueryInput(userConfig);
 
     // Push the changes
-    router.push({ pathname, query }, asPath, { locale: localeValue })
+    router.push({ pathname, query }, asPath, { locale: localeValue });
   };
 
   // Define the default user menu configuration
@@ -86,13 +90,24 @@ export default function AppHeader({
             <div>
               <span>{t("logout.language")}</span>
               <div>
-                <Radio.Group defaultValue={userConfig ? userConfig.uiPreferences.language : 'en'} onChange={changeLocale}>
+                <Radio.Group
+                  defaultValue={
+                    userConfig ? userConfig.uiPreferences.language : "en"
+                  }
+                  onChange={changeLocale}
+                >
                   <Space direction="vertical">
-                    <Radio.Button value='en'>
-                      {t("logout.english")} <span role="img" aria-label="enFlag">🇺🇸</span>
+                    <Radio.Button value="en">
+                      {t("logout.english")}{" "}
+                      <span role="img" aria-label="enFlag">
+                        🇺🇸
+                      </span>
                     </Radio.Button>
-                    <Radio.Button value='nl'>
-                      {t("logout.dutch")}  <span role="img" aria-label="nlFLag">🇳🇱</span>
+                    <Radio.Button value="nl">
+                      {t("logout.dutch")}{" "}
+                      <span role="img" aria-label="nlFLag">
+                        🇳🇱
+                      </span>
                     </Radio.Button>
                   </Space>
                 </Radio.Group>
@@ -108,34 +123,34 @@ export default function AppHeader({
   /**
    * Display the gear if the user has a dashboard in the working area
    *
-   * @return {*} 
+   * @return {*}
    */
   const displayGear = () => {
     switch (workspaceState.displaying) {
       case workspaceStates.DISPLAY_DASHBOARD:
       case workspaceStates.EDIT_DASHBOARD:
-        return true
+        return true;
       default:
-        return false
+        return false;
     }
-  }
+  };
 
   /**
    * Rotate the gear if the user is currently in edit mode
    *
-   * @return {*} 
+   * @return {*}
    */
   const rotateGear = () => {
     if (workspaceState.displaying === workspaceStates.EDIT_DASHBOARD) {
-      return "gear"
+      return "gear";
     }
-    return ""
-  }
+    return "";
+  };
 
   return (
     <Header className="header">
       <Content className="header-logo">MyUI</Content>
-      {displayGear() ?
+      {displayGear() ? (
         <SettingFilled
           className={rotateGear()}
           data-testid="header-settings-element"
@@ -148,8 +163,10 @@ export default function AppHeader({
             fontSize: "30px",
             color: "white",
           }}
-        /> : <></>
-      }
+        />
+      ) : (
+        <></>
+      )}
 
       <Dropdown
         overlay={userMenu}

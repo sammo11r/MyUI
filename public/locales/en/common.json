@@ -33,7 +33,7 @@
         "tooltip": "Enter the name of the dashboard to remove here",
         "error": "This is not a valid dashboard"
       },
-      "removewarning":{
+      "removewarning": {
         "title": "Are you sure you want to delete this dashboard?",
         "description": "If you remove a dashboard, it will be deleted and it will no longer be accessible. This action cannot be undone!",
         "confirmText": "Yes",

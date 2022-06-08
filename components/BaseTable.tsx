@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { useQuery } from "react-query";
 
-import BaseTableData from "./BaseTableData";
-import Loader from "../components/Loader"
+import Loader from "../components/Loader";
+import TableData from "../components/TableData";
+import { columnStates } from "../const/enum";
 
 /**
  * @param {*} {
@@ -10,24 +11,21 @@ import Loader from "../components/Loader"
  *   systemProps,
  *   name,
  *   userConfig,
- *   setUserConfig,
- *   userConfigQueryInput,
- *   setUserConfigQueryInput
+ *   setUserConfigQueryInput,
+ *   hasuraHeaders,
+ *   t
  * }
- * @return {*} 
+ * @return {*}  {*}
  */
 function BaseTable({
   hasuraProps,
   systemProps,
   name,
   userConfig,
-  setUserConfig,
-  userConfigQueryInput,
   setUserConfigQueryInput,
-  hasuraHeaders
+  hasuraHeaders,
+  t,
 }: any): any {
-  enum columnStates { LOADING, READY }
-
   // Add state deciding whether to show loader or table
   const [columnState, setColumnState] = useState({
     columns: [{}],
@@ -62,18 +60,20 @@ function BaseTable({
     <>
       {columnState.columnState == columnStates.READY ? (
         // If there is data, display table
-        <BaseTableData
-          key={`table-${tableName}`}
-          tableName={tableName}
-          columns={columnState.columns}
+        <TableData
           hasuraProps={hasuraProps}
-          hasuraHeaders={hasuraHeaders}
+          query={`{ ${tableName} { ${columnState.columns} }}`}
+          style={null}
           systemProps={systemProps}
           userConfig={userConfig}
-          setUserConfig={setUserConfig}
-          userConfigQueryInput={userConfigQueryInput}
           setUserConfigQueryInput={setUserConfigQueryInput}
-        />
+          name={name}
+          dashboardName={null}
+          hasuraHeaders={hasuraHeaders}
+          t={t}
+          isBaseTable={true}
+          tableName={name}
+        ></TableData>
       ) : (
         <Loader />
       )}
