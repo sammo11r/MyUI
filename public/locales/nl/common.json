@@ -76,10 +76,13 @@
       "savetext": "Opslaan",
       "discardtext": "Niet opslaan"
     },
+    "queryerror": {
+      "timelimit": "De data kon niet binnen uw tijdslimiet opgehaald worden! Om dit te voorkomen kunt u het volgende proberen:\n- Verander de hoeveelheid opgehaalde data in uw persoonlijke instelling\n- Vraag de systeembeheerder om uw tijdslimiet te verhogen"
+    },
     "queryinput": {
       "warning": "De input lijkt geen geldige GraphQL query"
     },
-    "textiput": {
+    "textinput": {
       "warning": "Deze karakters zijn niet toegestaan"
     }
   },

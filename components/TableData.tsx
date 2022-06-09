@@ -68,6 +68,20 @@ export default function TableData({
     dataState: columnStates.LOADING,
   });
 
+  /**
+   * Alert the user of ways to prevent timeout errors when one occurs
+   *
+   * @param {Array} errors
+   * @return {*}
+   */
+  const timeLimit = (errors: Array<any>): any => {
+    errors.forEach(function (error) {
+      if (error.message && error.message == "The operation exceeded the time limit allowed for this project") {
+        alert(t(`dashboard.queryerror.timelimit`))
+      }
+    })
+  }
+
   // Query the table data
   useQuery(["tableQuery", query, tableName], async () => {
     let result = await fetch(hasuraProps.hasuraEndpoint as RequestInfo, {
@@ -88,6 +102,10 @@ export default function TableData({
             columnsReady: true,
             dataState: columnStates.READY,
           });
+          // Inform the user of ways to prevent timeout errors if applicable
+          if (res && res.errors) {
+            timeLimit(res.errors)
+          }
           return null;
         }
         // If the table is not a base table, get the table name from the data and return the reponse
