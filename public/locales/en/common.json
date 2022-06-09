@@ -76,10 +76,13 @@
       "savetext": "Save changes",
       "discardtext": "Discard changes"
     },
+    "queryerror": {
+      "timelimit": "The query exceeded the time limit! To prevent this, you can:\n- Change the amount of retrieved rows in your personal configuration\n- Request a higher time limit from the server administrator"
+    },
     "queryinput": {
       "warning": "The input does not seem a valid GraphQL query"
     },
-    "textiput": {
+    "textinput": {
       "warning": "These characters are not allowed"
     }
   },
