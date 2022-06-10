@@ -297,6 +297,15 @@ export default function TableData({
     }
   };
 
+  // Display the amount of retrieved rows and columns in the table's footer
+  const setFooter = () => {
+    if (tableState.data) {
+      const rows = tableState.data.length
+      const columns = tableState.columns.length
+      return `${t("table.rowCount")}: ${rows} | ${t("table.columnCount")}: ${columns}`
+    }
+  }
+
   type RecordType = {
     field: string;
     order: string;
@@ -318,6 +327,7 @@ export default function TableData({
             key={name}
             dataSource={tableState.data}
             columns={tableState.columns}
+            footer={setFooter}
             onChange={function (
               pagination,
               filters,
