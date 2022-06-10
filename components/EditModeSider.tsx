@@ -38,7 +38,7 @@ export default function EditModeSider({
     icon: any
   ): JSX.Element => {
     return (
-      <div
+      <Button
         className="droppable-element"
         draggable={true}
         onDragStart={(e) => {
@@ -47,7 +47,7 @@ export default function EditModeSider({
       >
         {icon}
         {text}
-      </div>
+      </Button>
     );
   };
 

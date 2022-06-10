@@ -7,6 +7,8 @@ import moment from "moment";
 import Loader from "../components/Loader";
 import { columnStates } from "../const/enum";
 
+import AddDeleteRowMenu from "../components/AddDeleteRowMenu";
+
 /**
  * Replace null values by a replacement string
  *
@@ -58,6 +60,7 @@ export default function TableData({
   dashboardName,
   style,
   t,
+  columns
 }: any): any {
   const mediaDisplaySetting = systemProps.mediaDisplaySetting;
   // State deciding whether to show loader or table for grid views and base tables
@@ -285,16 +288,13 @@ export default function TableData({
   });
 
   const [selectionType, setSelectionType] = useState("checkbox");
+  const [selectedRow, setSelectedRow] = useState(['']);
 
   const rowSelection: any = {
     // Get selected rows on
     onChange: (selectedRowKeys: any, selectedRows: any) => {
-      console.log(
-        `selectedRowKeys: ${selectedRowKeys}`,
-        "selectedRows: ",
-        selectedRows
-      );
-    },
+      setSelectedRow(selectedRows);
+    }
   };
 
   type RecordType = {
@@ -308,6 +308,7 @@ export default function TableData({
         // If data is ready, show the user
         tableState.data ? (
           // If there is data, display table
+          <>
           <Table
             rowSelection={{
               type: selectionType,
@@ -379,6 +380,14 @@ export default function TableData({
               }
             }}
           />
+          <AddDeleteRowMenu
+            hasuraProps={hasuraProps}
+            columns={tableState.columns}
+            tableName={tableName}
+            selectedRow={selectedRow}
+          >
+          </AddDeleteRowMenu>
+        </>
         ) : (
           // If table is empty, warn the user
           <p>{t("basetable.warning")}</p>

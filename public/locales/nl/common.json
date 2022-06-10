@@ -89,5 +89,17 @@
   "basetable": {
     "sidebar": "Basistabellen",
     "warning": "Er is geen data beschikbaar"
+  },
+  "table": {
+    "addRow": "Voeg een rij toe",
+    "submit": "Toepassen",
+    "discard": "Weggooien",
+    "addMessage": "Voeg een rij toe aan de tabel door hier te klikken",
+    "required": "Dit veld is verplicht",
+    "deleteYes": "Ja",
+    "deleteNo": "Nee",
+    "deleteRow": "Verwijder een rij",
+    "deleteMessage": "Weet je zeker dat je de rij wilt verwijderen?"
   }
+
 }
