@@ -38,7 +38,8 @@ const isValidDashboardName = (
     nameInList ||
     name == dashboardAddKey ||
     name == dashboardRemoveKey ||
-    name == undefined
+    name == undefined ||
+    name.trim().length == 0
   );
 };
 
