@@ -3,6 +3,7 @@ import { Form, Input, Modal } from "antd";
 import { InfoCircleOutlined } from "@ant-design/icons";
 
 import { elementType } from "../const/enum";
+import { isAllowed } from "../const/inputSanitizer";
 
 /**
  *
@@ -90,11 +91,14 @@ export default function EditElementModal({
       if (value == undefined) {
         // Input is empty, throw no error such that the user can modify the element later
         return Promise.resolve();
+      } else if (!isAllowed(value)) {
+        // Input contains illegal characters
+        return Promise.reject(new Error(t(`dashboard.queryinput.warning`)));
       }
       // Check if the input contains the required brackets and word 'query'
       const containsQuery = value.includes("query");
       const containsBrackets =
-        value.split("{").length - 1 >= 2 && value.split("}").length - 1 >= 2;
+        value.split("{").length > 2 && value.split("}").length > 2;
 
       if (containsQuery && containsBrackets) {
         // The input is valid
@@ -103,7 +107,7 @@ export default function EditElementModal({
       return Promise.reject(new Error(t(`dashboard.queryinput.warning`)));
     } else {
       // Validate the input for a text input
-      if (value.includes('"') || value.includes("\\")) {
+      if (!isAllowed(value)) {
         return Promise.reject(new Error(t(`dashboard.textinput.warning`)));
       }
     }
