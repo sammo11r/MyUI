@@ -89,5 +89,17 @@
   "basetable": {
     "sidebar": "Base tables",
     "warning": "There is no data available"
+  },
+  "table": {
+    "addRow": "Add a row",
+    "submit": "Submit",
+    "discard": "Discard",
+    "addMessage": "Add a row to the table by clicking here",
+    "required": "This is a required field",
+    "deleteYes": "Yes",
+    "deleteNo": "No",
+    "deleteRow": "Delete a row",
+    "deleteMessage": "Are you sure you want to delete the selected rows?"
   }
+
 }
