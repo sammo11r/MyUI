@@ -6,6 +6,8 @@ import {
   ExclamationCircleOutlined,
 } from "@ant-design/icons";
 
+import { isAllowed } from "../const/inputSanitizer";
+
 const { confirm } = Modal;
 
 export enum modalTypes {
@@ -38,8 +40,7 @@ const isValidDashboardName = (
     nameInList ||
     name == dashboardAddKey ||
     name == dashboardRemoveKey ||
-    name == undefined ||
-    name.trim().length == 0
+    !isAllowed(name)
   );
 };
 
@@ -158,6 +159,7 @@ export default function ManageDashboardsModal({
       )
     ) {
       let newDashboardNames: any;
+      name = name.trim()
       // Finish functionality depends on modal type
       switch (modalType) {
         case modalTypes.ADD:
