@@ -99,7 +99,9 @@
     "deleteYes": "Yes",
     "deleteNo": "No",
     "deleteRow": "Delete a row",
-    "deleteMessage": "Are you sure you want to delete the selected rows?"
+    "deleteMessage": "Are you sure you want to delete the selected rows?",
+    "columnCount": "Retrieved columns",
+    "rowCount": "Retrieved rows"
   }
 
 }

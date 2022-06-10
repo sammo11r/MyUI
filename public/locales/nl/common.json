@@ -99,7 +99,9 @@
     "deleteYes": "Ja",
     "deleteNo": "Nee",
     "deleteRow": "Verwijder een rij",
-    "deleteMessage": "Weet je zeker dat je de rij wilt verwijderen?"
+    "deleteMessage": "Weet je zeker dat je de geselecteerde rijen wilt verwijderen?",
+    "columnCount": "Opgehaalde kolommen",
+    "rowCount": "Opgehaalde rijen"
   }
 
 }
