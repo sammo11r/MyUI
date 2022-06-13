@@ -26,7 +26,7 @@ function convertText(text: string): JSX.Element {
   } else {
     return (
       // Display the text
-      <p style={{ height: "100%", width: "100%", overflow: "auto" }}>{text}</p>
+      <p className="dashboard-text">{text}</p>
     );
   }
 }
