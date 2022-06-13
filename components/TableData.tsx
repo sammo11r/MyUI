@@ -1,33 +1,22 @@
 import React, { useState } from "react";
-import { Table } from "antd";
+import { Alert, Form, Popconfirm, Table, Typography } from "antd";
 import { SorterResult } from "antd/lib/table/interface";
-import { useQuery } from "react-query";
-import moment from "moment";
+import {
+  CloseOutlined,
+  EditOutlined,
+  EllipsisOutlined,
+  SaveOutlined,
+} from "@ant-design/icons";
 
 import Loader from "../components/Loader";
 import { columnStates } from "../const/enum";
-
 import AddDeleteRowMenu from "../components/AddDeleteRowMenu";
-
-/**
- * Replace null values by a replacement string
- *
- * @param {string} columnA
- * @param {string} columnB
- * @param {string} replacement
- * @return {*}
- */
-function replaceNull(columnA: any, columnB: any, replacement: any): any {
-  if (columnA == null) {
-    columnA = replacement;
-  }
-
-  if (columnB == null) {
-    columnB = replacement;
-  }
-
-  return { columnA, columnB };
-}
+import EditableCell from "../components/EditableCell";
+import {
+  checkEditPermissions,
+  updateRowQuery,
+} from "../components/EditRowsQueries";
+import { queryTableData } from "../components/TableDataQuery";
 
 /**
  * @export
@@ -43,7 +32,10 @@ function replaceNull(columnA: any, columnB: any, replacement: any): any {
  *   name,
  *   dashboardName,
  *   style,
- *   t
+ *   t,
+ *   gridViewToggle,
+ *   setGridViewToggle,
+ *   columns,
  * }
  * @return {*}  {*}
  */
@@ -60,7 +52,9 @@ export default function TableData({
   dashboardName,
   style,
   t,
-  columns
+  gridViewToggle,
+  setGridViewToggle,
+  columns,
 }: any): any {
   const mediaDisplaySetting = systemProps.mediaDisplaySetting;
   // State deciding whether to show loader or table for grid views and base tables
@@ -71,240 +65,204 @@ export default function TableData({
     dataState: columnStates.LOADING,
   });
 
+  const [editable, setEditable] = useState(false);
+  const [alert, setAlert] = useState(false);
+  const [alertText, setAlertText] = useState(false);
+  const [editRowQueryInput, setEditRowQueryInput] = useState<string>();
+  const [tableNameState, setTableNameState] = useState(tableName);
+
+  const [editRowForm] = Form.useForm();
+  const [editingKey, setEditingKey] = useState("");
+  const isEditing = (record: any) => record.key === editingKey;
+
+  const cancelEdit = () => {
+    setEditingKey("");
+  };
+
   /**
-   * Alert the user of ways to prevent timeout errors when one occurs
-   *
-   * @param {Array} errors
-   * @return {*}
+   * @param {*} record
    */
-  const timeLimit = (errors: Array<any>): any => {
-    errors.forEach(function (error) {
-      if (error.message && error.message == "The operation exceeded the time limit allowed for this project") {
-        alert(t(`dashboard.queryerror.timelimit`))
+  const saveEdit = async (record: any, query: any) => {
+    try {
+      const input = await editRowForm.validateFields();
+      let queryInput: any = {};
+
+      // Compare updated input vs the old input
+      for (const key in record) {
+        // Check if the input value for the column has changed
+        if (record[key] != input[key] && input[key] != undefined) {
+          queryInput[key] = input[key];
+        }
       }
-    })
-  }
 
-  // Query the table data
-  useQuery(["tableQuery", query, tableName], async () => {
-    let result = await fetch(hasuraProps.hasuraEndpoint as RequestInfo, {
-      method: "POST",
-      headers: hasuraHeaders,
-      body: JSON.stringify({
-        query: query,
-      }),
-    })
-      .then((res) => res.json())
-      .then((res) => {
-        // Succesful GraphQL query results have a 'data' field
-        if (!res || !res.data) {
-          // Hasura returned an error, set table state
-          setTableState({
-            data: undefined,
-            columns: [],
-            columnsReady: true,
-            dataState: columnStates.READY,
-          });
-          // Inform the user of ways to prevent timeout errors if applicable
-          if (res && res.errors) {
-            timeLimit(res.errors)
-          }
-          return null;
-        }
-        // If the table is not a base table, get the table name from the data and return the reponse
-        if (!isBaseTable) {
-          return res.data[Object.keys(res.data)[0]]; // TODO: how do we handle multiple tables?
-        }
-        // Return query data
-        return res.data[tableName];
-      })
-      .then((res) => {
-        if (res && res.length != 0) {
-          let columnNames: string[] = [];
-          let orderedColumn: string | null = null;
-          let orderDirection: string | null = null;
-          let tableConfig;
-          let dashboardConfig;
-
-          if (isBaseTable) {
-            // If the query is called for a basetable, search for the basetable configuration
-            tableConfig = userConfig.baseTables.filter(
-              (baseTable: any) => baseTable.name == tableName
-            )[0];
-
-            if (tableConfig !== undefined) {
-              // If the table is defined, get the ordering for this table
-              orderedColumn = tableConfig.ordering.by;
-              orderDirection = tableConfig.ordering.direction;
-            } else {
-              // If the base table does not exist in the configuration, add it
-              userConfig.baseTables.push({
-                name: tableName,
-                columnNames: columnNames,
-                ordering: {
-                  by: "",
-                  direction: "",
-                },
-              });
-              setUserConfigQueryInput(userConfig);
-            }
-          } else {
-            // If the query is called for a dashboard element, search for the dashboard grid view element configuration
-            dashboardConfig = userConfig.dashboards.filter(
-              (dashboard: any) => dashboard.name == dashboardName
-            )[0];
-            let indexOfDashboard =
-              userConfig.dashboards.indexOf(dashboardConfig);
-            tableConfig = dashboardConfig.dashboardElements.filter(
-              (element: any) => element.name == tableName
-            )[0];
-            let indexOfElement =
-              dashboardConfig.dashboardElements.indexOf(tableConfig);
-
-            if (tableConfig !== undefined) {
-              if (tableConfig.ordering == undefined) {
-                // If the table did not have an ordering yet, set the default ordering
-                tableConfig["ordering"] = {
-                  by: "",
-                  direction: "",
-                };
-                // Update the user configuration state variable
-                userConfig.dashboards[indexOfDashboard].dashboardElements[
-                  indexOfElement
-                ] = tableConfig;
-              } else {
-                // Get the ordering for this table
-                orderedColumn = tableConfig.ordering.by;
-                orderDirection = tableConfig.ordering.direction;
-              }
-            }
-          }
-
-          // Retrieve column names from the table
-          let extractedColumns = Object.keys(res[0]).map(
-            (columnName, index) => {
-              columnNames.push(columnName);
-              return {
-                title: columnName,
-                dataIndex: columnName,
-                key: columnName + index, // Make sure the key is unique
-                sorter: (a: any, b: any) => {
-                  // Define possible date formats
-                  var formats = [moment.ISO_8601, "MM/DD/YYYY  :)  HH*mm*ss"];
-
-                  // Check the type of the column to determine the ordering
-                  if (
-                    typeof a[columnName] == "number" &&
-                    typeof a[columnName] == "number"
-                  ) {
-                    // Replace null number columns by a big number to make ordering possible
-                    const { columnA, columnB } = replaceNull(
-                      a[columnName],
-                      b[columnName],
-                      999999
-                    );
-                    // Order numbers in numerical order
-                    return columnA - columnB;
-                  } else if (moment(a[columnName], formats, true).isValid()) {
-                    // Replace null date columns by a future date to make ordering possible
-                    const { columnA, columnB } = replaceNull(
-                      a[columnName],
-                      b[columnName],
-                      "2092-05-31"
-                    );
-                    // Order dates in chronological order
-                    let dateA: any = new Date(columnA);
-                    let dateB: any = new Date(columnB);
-                    return dateA - dateB;
-                  } else {
-                    // Replace null string columns by a 'z' to make ordering possible
-                    const { columnA, columnB } = replaceNull(
-                      a[columnName],
-                      b[columnName],
-                      "z"
-                    );
-                    // Order text in alphabetical order
-                    return columnA.localeCompare(columnB);
-                  }
-                },
-                showSorterTooltip: false,
-                // Set the default sorting according to the configuration
-                defaultSortOrder:
-                  columnName == orderedColumn ? orderDirection : null,
-                render: (row: any) => {
-                  // Check if the row contains an image
-                  if (
-                    typeof row == "string" &&
-                    mediaDisplaySetting == "MEDIA" &&
-                    (row.endsWith(".png") ||
-                      row.endsWith(".jpeg") ||
-                      row.endsWith(".jpg") ||
-                      row.endsWith(".gif"))
-                  ) {
-                    // Row contains image, so display it as an image
-                    return <img src={row} width="auto" height="240" />;
-                  } else if (
-                    typeof row == "string" &&
-                    mediaDisplaySetting == "MEDIA" &&
-                    (row.endsWith(".mp4") || row.endsWith(".mp3"))
-                  ) {
-                    // Row contains video, so display it as a video
-                    return (
-                      <video width="auto" height="240" controls>
-                        <source src={row} type="video/mp4" />
-                      </video>
-                    );
-                  } else {
-                    // Row contains text, display it as a normal string
-                    return row;
-                  }
-                },
-              };
-            }
-          );
-
-          // Give every row a unique key
-          res.forEach(function (row: any, index: number) {
-            row.key = index;
-          });
-
-          setTableState({
-            data: res,
-            columns: extractedColumns,
-            columnsReady: true,
-            dataState: columnStates.READY,
-          });
+      // Check if there are any changes in the input
+      if (Object.keys(queryInput).length > 0) {
+        let updateQuery;
+        // Construct query
+        if (isBaseTable) {
+          updateQuery = `mutation update { update_${tableName} ( where: {`;
         } else {
-          // The table is empty, show the error
-          setTableState({
-            data: undefined,
-            columns: [],
-            columnsReady: true,
-            dataState: columnStates.READY,
-          });
-          return null;
+          // If the table is a gridview, retriee the table name from the query
+          let tableName = query
+            .substring(query.indexOf("{") + 1, query.lastIndexOf("{"))
+            .replace(/\s/g, "");
+          updateQuery = `mutation update { update_${tableName} ( where: {`;
         }
-      });
+
+        // Define search parameters for entity
+        for (const key in record) {
+          if (key != "key" && record[key] !== null) {
+            updateQuery += `${key}: {_eq: "${record[key]}"},`;
+          }
+        }
+
+        updateQuery = updateQuery.slice(0, -1) + `} _set: {`; // Remove last comma
+
+        // Define new values
+        for (const key in queryInput) {
+          updateQuery += `${key}: "${input[key]}",`;
+        }
+
+        updateQuery =
+          updateQuery.slice(0, -1) +
+          `}) { returning { ${Object.keys(record)[0]} }}}`; // Remove last comma
+        setEditRowQueryInput(updateQuery);
+      } else {
+        setEditingKey(""); // Close edit menu
+      }
+    } catch (errInfo) {
+      console.log("Validate Failed:", errInfo);
+    }
+  };
+
+  /**
+   * Set default values of the edit
+   *
+   * @param {*} record
+   */
+  const edit = (record: any) => {
+    editRowForm.setFieldsValue(record);
+    setEditingKey(record.key);
+  };
+
+  console.log(alert)
+
+  updateRowQuery({
+    editRowQueryInput,
+    hasuraProps,
+    hasuraHeaders,
+    editRowForm,
+    setEditingKey,
+    setTableNameState,
+    setEditRowQueryInput,
+    setAlert,
+    setAlertText,
+    gridViewToggle, 
+    setGridViewToggle,
+    t,
   });
 
+  // Check the edit permission for this table
+  checkEditPermissions({
+    isBaseTable,
+    hasuraProps,
+    hasuraHeaders,
+    setEditable,
+    name,
+  });
+
+  queryTableData({
+    query,
+    tableNameState,
+    hasuraProps,
+    hasuraHeaders,
+    setTableState,
+    columnStates,
+    isBaseTable,
+    tableName,
+    dashboardName,
+    userConfig,
+    setUserConfigQueryInput,
+    mediaDisplaySetting,
+    gridViewToggle, 
+    t,
+  });
+
+  const mergedColumns = tableState.columns.map((col: any) => {
+    if (!col.editable) {
+      return col;
+    }
+
+    return {
+      ...col,
+      onCell: (record: any) => ({
+        record,
+        inputType: typeof col.dataIndex == "string" ? "text" : "number", //TODO
+        dataIndex: col.dataIndex,
+        title: col.title,
+        editing: isEditing(record),
+      }),
+    };
+  });
+
+  // If at least one column is editable by the logged in user
+  // Show the action panel with the edit button
+  if (editable) {
+    mergedColumns.push({
+      title: <EllipsisOutlined />,
+      dataIndex: "operation",
+      render: (_: any, record: any): JSX.Element => {
+        const userIsEditing = isEditing(record);
+        return userIsEditing ? (
+          <span>
+            <Typography.Link
+              onClick={() => saveEdit(record, query)}
+              style={{
+                marginRight: 8,
+              }}
+            >
+              <SaveOutlined />
+            </Typography.Link>
+            <Popconfirm
+              title={t(`table.cancelConfirmation`)}
+              cancelText={t(`table.cancel`)}
+              onConfirm={cancelEdit}
+            >
+              <CloseOutlined />
+            </Popconfirm>
+          </span>
+        ) : (
+          <Typography.Link
+            disabled={editingKey !== ""}
+            onClick={() => edit(record)}
+          >
+            <EditOutlined />
+          </Typography.Link>
+        );
+      },
+    });
+  }
+
   const [selectionType, setSelectionType] = useState("checkbox");
-  const [selectedRow, setSelectedRow] = useState(['']);
+  const [selectedRow, setSelectedRow] = useState([""]);
 
   const rowSelection: any = {
     // Get selected rows on
     onChange: (selectedRowKeys: any, selectedRows: any) => {
       setSelectedRow(selectedRows);
-    }
+    },
   };
 
   // Display the amount of retrieved rows and columns in the table's footer
   const setFooter = () => {
     if (tableState.data) {
-      const rows = tableState.data.length
-      const columns = tableState.columns.length
-      return `${t("table.rowCount")}: ${rows} | ${t("table.columnCount")}: ${columns}`
+      const rows = tableState.data.length;
+      const columns = tableState.columns.length;
+      return `${t("table.rowCount")}: ${rows} | ${t(
+        "table.columnCount"
+      )}: ${columns}`;
     }
-  }
+  };
 
   type RecordType = {
     field: string;
@@ -313,91 +271,113 @@ export default function TableData({
 
   return (
     <div style={style}>
+      {alert ? (
+        <Alert
+          message="Hasura error"
+          description={alertText}
+          type="warning"
+          showIcon
+          closable
+          onClose={() => setAlert(false)}
+        />
+      ) : (
+        <></>
+      )}
       {tableState.dataState == columnStates.READY ? (
         // If data is ready, show the user
         tableState.data ? (
           // If there is data, display table
           <>
-          <Table
-            rowSelection={{
-              type: selectionType,
-              ...rowSelection,
-            }}
-            size="small"
-            key={name}
-            dataSource={tableState.data}
-            columns={tableState.columns}
-            footer={setFooter}
-            onChange={function (
-              pagination,
-              filters,
-              sorter: SorterResult<RecordType> | SorterResult<RecordType>[],
-              extra: any
-            ) {
-              if (extra.action == "sort") {
-                if (isBaseTable) {
-                  // Get the current table configuration
-                  const baseTableConfig = userConfig.baseTables.filter(
-                    (baseTable: any) => baseTable.name == tableName
-                  )[0];
-                  let indexOfBaseTable =
-                    userConfig.baseTables.indexOf(baseTableConfig);
+            <Form form={editRowForm} component={false}>
+              <Table
+                rowSelection={{
+                  type: selectionType,
+                  ...rowSelection,
+                }}
+                components={{
+                  body: {
+                    cell: EditableCell,
+                  },
+                }}
+                size="small"
+                key={name}
+                dataSource={tableState.data}
+                columns={mergedColumns}
+                footer={setFooter}
+                rowClassName="editable-row"
+                pagination={{
+                  onChange: cancelEdit,
+                }}
+                onChange={function (
+                  pagination,
+                  filters,
+                  sorter: SorterResult<RecordType> | SorterResult<RecordType>[],
+                  extra: any
+                ) {
+                  if (extra.action == "sort") {
+                    if (isBaseTable) {
+                      // Get the current table configuration
+                      const baseTableConfig = userConfig.baseTables.filter(
+                        (baseTable: any) => baseTable.name == tableName
+                      )[0];
+                      let indexOfBaseTable =
+                        userConfig.baseTables.indexOf(baseTableConfig);
 
-                  // Udate the ordering
-                  baseTableConfig.ordering.by = (
-                    sorter as SorterResult<RecordType>
-                  ).field;
-                  baseTableConfig.ordering.direction = (
-                    sorter as SorterResult<RecordType>
-                  ).order;
+                      // Udate the ordering
+                      baseTableConfig.ordering.by = (
+                        sorter as SorterResult<RecordType>
+                      ).field;
+                      baseTableConfig.ordering.direction = (
+                        sorter as SorterResult<RecordType>
+                      ).order;
 
-                  // Update the base table configuration
-                  userConfig.baseTables[indexOfBaseTable] = baseTableConfig;
-                } else {
-                  // Get the current table configuration
-                  let currentDashboardConfig = userConfig.dashboards.filter(
-                    (dashboard: any) => dashboard.name == dashboardName
-                  )[0];
-                  let indexOfDashboard = userConfig.dashboards.indexOf(
-                    currentDashboardConfig
-                  );
-                  let tableConfig =
-                    currentDashboardConfig.dashboardElements.filter(
-                      (element: any) => element.name == name
-                    )[0];
-                  let indexOfElement =
-                    currentDashboardConfig.dashboardElements.indexOf(
-                      tableConfig
-                    );
+                      // Update the base table configuration
+                      userConfig.baseTables[indexOfBaseTable] = baseTableConfig;
+                    } else {
+                      // Get the current table configuration
+                      let currentDashboardConfig = userConfig.dashboards.filter(
+                        (dashboard: any) => dashboard.name == dashboardName
+                      )[0];
+                      let indexOfDashboard = userConfig.dashboards.indexOf(
+                        currentDashboardConfig
+                      );
+                      let tableConfig =
+                        currentDashboardConfig.dashboardElements.filter(
+                          (element: any) => element.name == name
+                        )[0];
+                      let indexOfElement =
+                        currentDashboardConfig.dashboardElements.indexOf(
+                          tableConfig
+                        );
 
-                  // Update the ordering if the table configuration is defined
-                  // If the table configuration is not defined, do not update orderings yet, as the user is still in edit mode with an unsaved table
-                  if (tableConfig !== undefined) {
-                    tableConfig.ordering.by = (
-                      sorter as SorterResult<RecordType>
-                    ).field;
-                    tableConfig.ordering.direction = (
-                      sorter as SorterResult<RecordType>
-                    ).order;
+                      // Update the ordering if the table configuration is defined
+                      // If the table configuration is not defined, do not update orderings yet, as the user is still in edit mode with an unsaved table
+                      if (tableConfig !== undefined) {
+                        tableConfig.ordering.by = (
+                          sorter as SorterResult<RecordType>
+                        ).field;
+                        tableConfig.ordering.direction = (
+                          sorter as SorterResult<RecordType>
+                        ).order;
 
-                    // Update the base table configuration
-                    userConfig.dashboards[indexOfDashboard].dashboardElements[
-                      indexOfElement
-                    ] = tableConfig;
+                        // Update the base table configuration
+                        userConfig.dashboards[
+                          indexOfDashboard
+                        ].dashboardElements[indexOfElement] = tableConfig;
+                      }
+                    }
+                    setUserConfigQueryInput(userConfig);
                   }
-                }
-                setUserConfigQueryInput(userConfig);
-              }
-            }}
-          />
-          <AddDeleteRowMenu
-            hasuraProps={hasuraProps}
-            columns={tableState.columns}
-            tableName={tableName}
-            selectedRow={selectedRow}
-          >
-          </AddDeleteRowMenu>
-        </>
+                }}
+              />
+            </Form>
+            <AddDeleteRowMenu
+              hasuraProps={hasuraProps}
+              columns={tableState.columns}
+              tableName={tableName}
+              selectedRow={selectedRow}
+            ></AddDeleteRowMenu>
+          </>
         ) : (
           // If table is empty, warn the user
           <p>{t("basetable.warning")}</p>
@@ -408,4 +388,4 @@ export default function TableData({
       )}
     </div>
   );
-}
+};

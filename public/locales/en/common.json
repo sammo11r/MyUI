@@ -101,7 +101,11 @@
     "deleteRow": "Delete a row",
     "deleteMessage": "Are you sure you want to delete the selected rows?",
     "columnCount": "Retrieved columns",
-    "rowCount": "Retrieved rows"
+    "rowCount": "Retrieved rows",
+    "cancelConfirmation": "Do you want to discard your changes?",
+    "cancel": "Cancel",
+    "editError": "You are not allowed to edit this column",
+    "foreignKey": "Foreign key violation",
+    "empty": "can not be empty"
   }
-
 }

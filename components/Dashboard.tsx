@@ -23,7 +23,9 @@ const ResponsiveReactGridLayout = WidthProvider(Responsive);
  *   setEditElementModalState,
  *   setUserConfigQueryInput,
  *   hasuraHeaders,
- *   t
+ *   gridViewToggle, 
+ *   setGridViewToggle,
+ *   t,
  * }
  * @return {*}  {JSX.Element}
  */
@@ -37,6 +39,8 @@ export default function Dashboard({
   setEditElementModalState,
   setUserConfigQueryInput,
   hasuraHeaders,
+  gridViewToggle, 
+  setGridViewToggle,
   t,
 }: any): JSX.Element {
   /**
@@ -98,6 +102,8 @@ export default function Dashboard({
    * @return {*}  {JSX.Element}
    */
   function renderDashboardElement(
+    gridViewToggle: any, 
+    setGridViewToggle: any,
     element: any,
     hasuraProps: any,
     index: number,
@@ -113,6 +119,8 @@ export default function Dashboard({
       case elementType.GRIDVIEW:
         rendered_element = (
           <GridView
+            gridViewToggle={gridViewToggle}
+            setGridViewToggle={setGridViewToggle}
             query={element.query}
             hasuraProps={hasuraProps}
             systemProps={systemProps}
@@ -259,6 +267,8 @@ export default function Dashboard({
       {dashboardState.dashboard.dashboardElements.map(
         (element: any, index: number) =>
           renderDashboardElement(
+            gridViewToggle, 
+            setGridViewToggle,
             element,
             hasuraProps,
             index,

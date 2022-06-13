@@ -13,7 +13,9 @@ import { columnStates } from "../const/enum";
  *   userConfig,
  *   setUserConfigQueryInput,
  *   hasuraHeaders,
- *   t
+ *   gridViewToggle, 
+ *   setGridViewToggle,
+ *   t,
  * }
  * @return {*}  {*}
  */
@@ -24,6 +26,8 @@ function BaseTable({
   userConfig,
   setUserConfigQueryInput,
   hasuraHeaders,
+  gridViewToggle, 
+  setGridViewToggle,
   t,
 }: any): any {
   // Add state deciding whether to show loader or table
@@ -73,6 +77,8 @@ function BaseTable({
           t={t}
           isBaseTable={true}
           tableName={name}
+          gridViewToggle={gridViewToggle}
+          setGridViewToggle={setGridViewToggle}
         ></TableData>
       ) : (
         <Loader />

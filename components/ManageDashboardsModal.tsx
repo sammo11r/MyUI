@@ -159,7 +159,7 @@ export default function ManageDashboardsModal({
       )
     ) {
       let newDashboardNames: any;
-      name = name.trim()
+      name = name.trim();
       // Finish functionality depends on modal type
       switch (modalType) {
         case modalTypes.ADD:
