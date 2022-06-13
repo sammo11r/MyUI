@@ -10,7 +10,7 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 make: *** No rule to make target `all'.  Stop.
 
 
-# Make data base, printed on Thu Jun  9 00:16:30 2022
+# Make data base, printed on Mon Jun 13 11:23:17 2022
 
 # Variables
 
@@ -51,7 +51,7 @@ __CFBundleIdentifier = com.microsoft.VSCode
 # environment
 INFOPATH = /opt/homebrew/share/info:
 # environment
-VSCODE_IPC_HOOK_EXTHOST = /var/folders/1t/022gjvrs19d96n9yf0f1zmkw0000gn/T/vscode-ipc-4837c4d6-f17b-402b-ab5d-3d8110feecd0.sock
+VSCODE_IPC_HOOK_EXTHOST = /var/folders/1t/022gjvrs19d96n9yf0f1zmkw0000gn/T/vscode-ipc-2e7af6b1-0819-4ab1-ad89-a90844f2d0c2.sock
 # environment
 VSCODE_CWD = /Users/nishadguha/Desktop/SEP/Projects/my-ui
 # environment
@@ -65,7 +65,7 @@ ELECTRON_RUN_AS_NODE = 1
 # default
 .FEATURES := target-specific order-only second-expansion else-if archives jobserver check-symlink
 # environment
-SSH_AUTH_SOCK = /private/tmp/com.apple.launchd.16fCg5gnki/Listeners
+SSH_AUTH_SOCK = /private/tmp/com.apple.launchd.rt52dXFSYK/Listeners
 # automatic
 %F = $(notdir $%)
 # environment
@@ -89,7 +89,7 @@ MAKEFILEPATH := /Applications/Xcode.app/Contents/Developer/Makefiles
 # environment
 VSCODE_CLI = 1
 # environment
-VSCODE_CODE_CACHE_PATH = /Users/nishadguha/Library/Application Support/Code/CachedData/c3511e6c69bb39013c4a4b7b9566ec1ca73fc4d5
+VSCODE_CODE_CACHE_PATH = /Users/nishadguha/Library/Application Support/Code/CachedData/4af164ea3a06f701fe3e89a2bcbb421d2026b68f
 # environment
 LOGNAME = nishadguha
 # environment
@@ -127,7 +127,7 @@ USER = nishadguha
 # default
 MAKECMDGOALS := all
 # environment
-TERM_SESSION_ID = w0t0p0:894F9E20-4CE7-4FB4-9248-A8C5FCE397A2
+TERM_SESSION_ID = w0t0p0:07A8848C-B504-442B-9148-12200B185263
 # environment
 LESS = -R
 # automatic
@@ -145,7 +145,7 @@ TMPDIR = /var/folders/1t/022gjvrs19d96n9yf0f1zmkw0000gn/T/
 # automatic
 *F = $(notdir $*)
 # environment
-VSCODE_IPC_HOOK = /Users/nishadguha/Library/Application Support/Code/1.67.2-main.sock
+VSCODE_IPC_HOOK = /Users/nishadguha/Library/Application Support/Code/1.68.0-main.sock
 # makefile
 MAKEFLAGS = Rrqp
 # environment
@@ -157,7 +157,7 @@ TERM_PROGRAM_VERSION = 3.4.9
 # environment
 NVM_DIR = /Users/nishadguha/.nvm
 # environment
-XPC_SERVICE_NAME = application.com.microsoft.VSCode.34351195.34351201.53E1E68F-9B87-46CB-8A45-C1DE5D92CC15
+XPC_SERVICE_NAME = application.com.microsoft.VSCode.37636947.37636953.B053F279-F48B-407E-9D8D-A99D0EB7BBEB
 # environment
 LC_TERMINAL_VERSION = 3.4.9
 # environment
@@ -167,7 +167,7 @@ HOMEBREW_PREFIX = /opt/homebrew
 # automatic
 +F = $(notdir $+)
 # environment
-ITERM_SESSION_ID = w0t0p0:894F9E20-4CE7-4FB4-9248-A8C5FCE397A2
+ITERM_SESSION_ID = w0t0p0:07A8848C-B504-442B-9148-12200B185263
 # environment
 HOMEBREW_REPOSITORY = /opt/homebrew
 # environment
@@ -201,7 +201,7 @@ CONDA_PREFIX = /opt/homebrew/Caskroom/miniforge/base
 # environment
 TERM = xterm-256color
 # environment
-VSCODE_PID = 7667
+VSCODE_PID = 73113
 # environment
 _CE_CONDA = 
 # environment
@@ -215,7 +215,7 @@ NVM_RC_VERSION =
 
 # Directories
 
-# . (device 16777231, inode 33055760): 46 files, no impossibilities.
+# . (device 16777234, inode 33055760): 46 files, no impossibilities.
 
 # 46 files, no impossibilities in 1 directories.
 
@@ -229,9 +229,23 @@ stop:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  commands to execute (from `Makefile', line 47):
+#  commands to execute (from `Makefile', line 56):
 	@echo "Stopping containers ..."
 	docker-compose stop
+	
+
+setup:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  commands to execute (from `Makefile', line 27):
+	@echo "Creating application and setting up database ..."
+	docker-compose -f docker-compose.yml -f docker-compose-dev.yml up -d --build \
+	&& sleep 3 \
+	&& npm i --force --silent \
+	&& yarn install --ignore-engines --silent \
+	&& cd hasura && hasura metadata apply \
+	&& hasura migrate apply --up all --all-databases
 	
 
 # Not a target:
@@ -248,19 +262,11 @@ all:
 #  Modification time never checked.
 #  File has not been updated.
 
-up:
-#  Implicit rule search has not been done.
-#  Modification time never checked.
-#  File has not been updated.
-#  commands to execute (from `Makefile', line 55):
-	docker-compose up -d
-	
-
 squash-migrations:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  commands to execute (from `Makefile', line 70):
+#  commands to execute (from `Makefile', line 76):
 	@echo "Squashing migrations..."
 	cd hasura && npx hasura-cli migrate squash --admin-secret myadminsecretkey --name "$(name)" --from $(from) --database-name Hasura-test
 	
@@ -274,7 +280,7 @@ squash-migrations:
 # Not a target:
 Makefile:
 #  Implicit rule search has been done.
-#  Last modified 2022-06-09 00:16:07
+#  Last modified 2022-06-10 16:46:06
 #  File has been updated.
 #  Successfully updated.
 # variable set hash-table stats:
@@ -284,7 +290,7 @@ run-migrations:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  commands to execute (from `Makefile', line 66):
+#  commands to execute (from `Makefile', line 72):
 	@echo "Running all database migrations..."
 	cd hasura && hasura migrate apply --up all
 	
@@ -293,7 +299,7 @@ test:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  commands to execute (from `Makefile', line 58):
+#  commands to execute (from `Makefile', line 64):
 	@echo "Running all unit tests ..."
 	yarn jest --passWithNoTests --silent
 	
@@ -302,7 +308,7 @@ console:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  commands to execute (from `Makefile', line 62):
+#  commands to execute (from `Makefile', line 68):
 	@echo "Starting hasura console..." 
 	cd hasura && npx hasura-cli console --admin-secret "myadminsecretkey"
 	
@@ -313,6 +319,7 @@ help:
 #  File does not exist.
 #  File has not been updated.
 #  commands to execute (from `Makefile', line 21):
+ 
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 	
 
@@ -320,8 +327,7 @@ build-dev:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  commands to execute (from `Makefile', line 35):
- 
+#  commands to execute (from `Makefile', line 44):
 	@echo "Creating development environment ..."
 	docker-compose -f docker-compose.yml -f docker-compose-dev.yml up -d --build
 	
@@ -330,7 +336,7 @@ build-prod:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  commands to execute (from `Makefile', line 39):
+#  commands to execute (from `Makefile', line 48):
 	@echo "Creating production environment ..."
 	docker-compose -f docker-compose.yml -f docker-compose-prod.yml up -d --build
 	
@@ -345,7 +351,7 @@ restart:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  commands to execute (from `Makefile', line 43):
+#  commands to execute (from `Makefile', line 52):
 	@echo "Restarting environment ..."
 	docker-compose restart
 	
@@ -354,7 +360,7 @@ run-dev:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  commands to execute (from `Makefile', line 27):
+#  commands to execute (from `Makefile', line 36):
 	@echo "Starting development environment ..."
 	docker-compose -f docker-compose.yml -f docker-compose-dev.yml up -d
 	
@@ -363,7 +369,7 @@ run-prod:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  commands to execute (from `Makefile', line 31):
+#  commands to execute (from `Makefile', line 40):
 	@echo "Starting production environment ..."
 	docker-compose -f docker-compose.yml -f docker-compose-prod.yml up -d
 	
@@ -372,7 +378,7 @@ down:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  commands to execute (from `Makefile', line 51):
+#  commands to execute (from `Makefile', line 60):
 	@echo "Stopping and removing containers ..."
 	docker-compose down
 	
@@ -390,6 +396,6 @@ down:
 # strcache size: total = 4096 / max = 4096 / min = 4096 / avg = 4096
 # strcache free: total = 4087 / max = 4087 / min = 4087 / avg = 4087
 
-# Finished Make data base on Thu Jun  9 00:16:30 2022
+# Finished Make data base on Mon Jun 13 11:23:17 2022
 
  

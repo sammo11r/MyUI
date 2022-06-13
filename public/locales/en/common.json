@@ -102,6 +102,8 @@
     "deleteMessage": "Are you sure you want to delete the selected rows?",
     "columnCount": "Retrieved columns",
     "rowCount": "Retrieved rows",
+    "addRowNotification": "Row added! Please refresh the page to see your changes.",
+    "deleteRowNotification": "Row deleted! Please refresh the page to see your changes.",
     "cancelConfirmation": "Do you want to discard your changes?",
     "cancel": "Cancel",
     "editError": "You are not allowed to edit this column",

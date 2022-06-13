@@ -32,6 +32,7 @@ import { queryTableData } from "../components/TableDataQuery";
  *   name,
  *   dashboardName,
  *   style,
+ *   encrypt,
  *   t,
  *   gridViewToggle,
  *   setGridViewToggle,
@@ -51,6 +52,7 @@ export default function TableData({
   name,
   dashboardName,
   style,
+  encrypt,
   t,
   gridViewToggle,
   setGridViewToggle,
@@ -109,6 +111,14 @@ export default function TableData({
           updateQuery = `mutation update { update_${tableName} ( where: {`;
         }
 
+        if (tableName == 'users' && queryInput.hasOwnProperty('password')) {
+          await encrypt({
+            password: queryInput['password'],
+          }).then((res: any) => {
+            queryInput['password'] = res.encryptedPassword;
+          });
+        }
+
         // Define search parameters for entity
         for (const key in record) {
           if (key != "key" && record[key] !== null) {
@@ -120,7 +130,7 @@ export default function TableData({
 
         // Define new values
         for (const key in queryInput) {
-          updateQuery += `${key}: "${input[key]}",`;
+          updateQuery += `${key}: "${queryInput[key]}",`;
         }
 
         updateQuery =
@@ -144,8 +154,6 @@ export default function TableData({
     editRowForm.setFieldsValue(record);
     setEditingKey(record.key);
   };
-
-  console.log(alert)
 
   updateRowQuery({
     editRowQueryInput,
@@ -256,6 +264,7 @@ export default function TableData({
   // Display the amount of retrieved rows and columns in the table's footer
   const setFooter = () => {
     if (tableState.data) {
+      // @ts-ignore
       const rows = tableState.data.length;
       const columns = tableState.columns.length;
       return `${t("table.rowCount")}: ${rows} | ${t(
@@ -376,6 +385,10 @@ export default function TableData({
               columns={tableState.columns}
               tableName={tableName}
               selectedRow={selectedRow}
+              encrypt={encrypt}
+              setAlert={setAlert}
+              setAlertText={setAlertText}
+              t={t}
             ></AddDeleteRowMenu>
           </>
         ) : (
