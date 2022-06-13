@@ -13,6 +13,8 @@ import i18next from "i18next";
 import type { RadioChangeEvent } from "antd";
 import { useRouter } from "next/router";
 
+import { Image } from 'antd';
+
 import { workspaceStates } from "../const/enum";
 import { ItemType } from "antd/lib/menu/hooks/useItems";
 
@@ -165,7 +167,7 @@ export default function AppHeader({
 
   return (
     <Header className="header">
-      <Content className="header-logo">MyUI</Content>
+      <Content className="header-logo"><img src="https://media.discordapp.net/attachments/969210304007385098/985886674447917086/unknown2.png" alt="MyUI logo" className="logo"/></Content>
       {displayGear() ? (
         <SettingFilled
           className={rotateGear()}

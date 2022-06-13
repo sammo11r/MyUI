@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import { Form, Input, Modal } from "antd";
+import { Form, Input, Modal, Button } from "antd";
 import "antd/dist/antd.css";
 import {
   InfoCircleOutlined,
   ExclamationCircleOutlined,
+  UploadOutlined
 } from "@ant-design/icons";
 
 import { isAllowed } from "../const/inputSanitizer";
@@ -96,10 +97,12 @@ export default function ManageDashboardsModal({
   workspaceState,
   workspaceStates,
   t,
+  saveDashboardChanges,
 }: any): JSX.Element {
   const [hasError, setError] = useState(false);
   const [manageDashboardForm] = Form.useForm();
 
+  // Close the modal
   const hideModal = () => {
     // Reset the text field and hide the modal
     manageDashboardForm.resetFields();
@@ -143,11 +146,35 @@ export default function ManageDashboardsModal({
     });
   };
 
+  // Define variables for uploading a dashboard
+  var update;
+  const defaultDashboard = {"dashboard":{"name":"","dashboardElements":[]}}
+  const [uploadState, setUploadState] = useState(defaultDashboard);
+
+  /**
+   * Handle the uploading of a dahsboard JSON
+   * 
+   * @param e 
+   * @return {} 
+   */
+  const handleChange = (e: any) => {
+    const fileReader = new FileReader();
+    fileReader.readAsText(e.target.files[0], "UTF-8");
+    fileReader.onload = e => {
+      // @ts-ignore
+      update = e.target.result;
+      // @ts-ignore
+      const obj = JSON.parse(update);
+      setUploadState(obj);
+    };
+  };
+
   /**
    * @param {object} values
    */
   const onFinish = (values: object) => {
-    let name: string = Object.values(values)[0];
+    let name = Object.values(values)[0];
+
     // Check if the given name is valid
     if (
       isValidDashboardName(
@@ -163,6 +190,7 @@ export default function ManageDashboardsModal({
       // Finish functionality depends on modal type
       switch (modalType) {
         case modalTypes.ADD:
+          uploadState.dashboard.name = name;
           newDashboardNames = addDashboard(name, dashboardNames);
 
           // Push the new dashboard to the user configuration
@@ -173,9 +201,15 @@ export default function ManageDashboardsModal({
 
           setDashboardNames(newDashboardNames);
           setUserConfigQueryInput(userConfig);
+
           // Display the newly created dashboard in the working space
           displayDashboard(name, userConfig);
           hideModal();
+          saveDashboardChanges(userConfig, uploadState);
+          setUploadState(defaultDashboard);
+
+          //@ts-ignore
+          (document.getElementsByClassName("upload-json") as HTMLInputElement)[0].value = null;
           break;
         case modalTypes.REMOVE:
           newDashboardNames = removeDashboard(name, dashboardNames);
@@ -222,6 +256,19 @@ export default function ManageDashboardsModal({
         >
           <Input />
         </Form.Item>
+        {modalTypeTextRef == "add" ? (
+          <Form.Item
+            label={t('dashboard.modal.add.config')}
+            tooltip={{
+              title: t('dashboard.modal.add.popup'),
+              icon: <InfoCircleOutlined />,
+            }}
+          >
+            <input type="file" accept=".json" onChange={handleChange} className="upload-json" />
+          </Form.Item>
+        ) : (
+          <></>
+        )}
       </Form>
     </Modal>
   );

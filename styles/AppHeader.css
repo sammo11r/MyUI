@@ -1,11 +1,20 @@
 .header-logo {
   float: left;
   width: 10%;
+  height: 100%;
   min-height: 10px;
   font-size: 30px;
   font-style: italic;
   font-family: cursive;
   color: white;
+}
+
+.logo {
+  height: 50%;
+}
+
+.ant-layout-header {
+  padding-left: 25px !important;
 }
 
 @media (prefers-reduced-motion: no-preference) {

@@ -25,12 +25,15 @@
     "new": "Add",
     "delete": "Delete",
     "save": "Save",
+    "downloadDashboard": "Download",
     "modal": {
       "add": {
         "title": "Add a new dashboard",
         "name": "Name",
         "tooltip": "The name of the dashboard should be unique",
-        "error": "Sorry, you cannot use this name"
+        "error": "Sorry, you cannot use this name",
+        "config": "Insert a dashboard via a dashboard configuration file",
+        "popup": "Insert a dashboard configuration file using the JSON format"
       },
       "remove": {
         "title": "Remove a dashboard",
@@ -115,4 +118,5 @@
     "foreignKey": "Foreign key violation",
     "empty": "can not be empty"
   }
+
 }

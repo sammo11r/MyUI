@@ -1,13 +1,12 @@
 import { signIn, getSession, getCsrfToken } from "next-auth/react";
 import { Form, Input, Button, Row } from "antd";
-import { Typography } from "antd";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { useTranslation } from "next-i18next";
 
 import "antd/dist/antd.css";
 import React from "react";
 
-const { Title } = Typography;
+import { Image } from 'antd';
 
 /**
  * Export sign in
@@ -56,10 +55,10 @@ export default function SignIn() {
             textAlign: "center",
           }}
           wrapperCol={{
-            span: 24,
+            span: 24, 
           }}
         >
-          <Title>MyUI</Title>
+          <img src="https://media.discordapp.net/attachments/967745638047580184/984971934582321262/unknown.png" alt="MyUI logo" />
         </Form.Item>
 
         <Form.Item
