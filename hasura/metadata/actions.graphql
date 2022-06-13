@@ -12,4 +12,3 @@ input SampleInput {
 type SampleOutput {
   accessToken: String!
 }
-

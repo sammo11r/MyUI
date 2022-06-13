@@ -32,4 +32,7 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
-/.vscode
+/.vscode/
+
+package-lock.json
+yarn.lock

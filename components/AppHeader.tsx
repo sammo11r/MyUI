@@ -5,6 +5,7 @@ import {
   UserOutlined,
   SettingFilled,
   ArrowRightOutlined,
+  ControlOutlined
 } from "@ant-design/icons";
 import { Content, Header } from "antd/lib/layout/layout";
 import { signOut } from "next-auth/react";
@@ -13,6 +14,7 @@ import type { RadioChangeEvent } from "antd";
 import { useRouter } from "next/router";
 
 import { workspaceStates } from "../const/enum";
+import { ItemType } from "antd/lib/menu/hooks/useItems";
 
 /**
  * Update the language in i18next
@@ -35,8 +37,10 @@ function languageUpdate(lan: string) {
  * @export
  * @param {*} {
  *   userConfig,
+ *   userRoles
  *   setUserConfig,
  *   setUserConfigQueryInput,
+ *   setGlobalSettingsModalState,
  *   workspaceState,
  *   toggleEditMode,
  *   t
@@ -45,8 +49,10 @@ function languageUpdate(lan: string) {
  */
 export default function AppHeader({
   userConfig,
+  userRoles,
   setUserConfig,
   setUserConfigQueryInput,
+  setGlobalSettingsModalState,
   workspaceState,
   toggleEditMode,
   t,
@@ -84,6 +90,16 @@ export default function AppHeader({
           onClick: () => signOut({ callbackUrl: "/" }),
           key: 0,
         },
+        userRoles.includes("admin") ? {
+          label: (
+            <Space>
+              {t("globalSettings.modalTitle")}
+              <ControlOutlined />
+            </Space>
+          ),
+          onClick: () => setGlobalSettingsModalState(true),
+          key: 1,
+        } : null as ItemType,
         // Change language buttons
         {
           label: (
@@ -114,7 +130,7 @@ export default function AppHeader({
               </div>
             </div>
           ),
-          key: 1,
+          key: 2,
         },
       ]}
     />

@@ -13,7 +13,9 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - ./src:/app/src:ro
+      - ./pages:/app/pages
+      - ./config:/app/config
+      - ./public/locales:/app/public/locales
     # env_file:
   #   #   - ./.env
   postgres:

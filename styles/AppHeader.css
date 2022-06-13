@@ -23,3 +23,7 @@
     transform: rotate(360deg);
   }
 }
+
+.settings-modal {
+  flex-direction: row;
+}

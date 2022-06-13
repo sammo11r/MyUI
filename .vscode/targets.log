@@ -16,6 +16,7 @@ make: *** No rule to make target `all'.  Stop.
 
 # automatic
 <D = $(patsubst %/,%,$(dir $<))
+ 
 # automatic
 ?F = $(notdir $?)
 # environment
@@ -51,7 +52,11 @@ __CFBundleIdentifier = com.microsoft.VSCode
 # environment
 INFOPATH = /opt/homebrew/share/info:
 # environment
+<<<<<<< HEAD
+VSCODE_IPC_HOOK_EXTHOST = /var/folders/1t/022gjvrs19d96n9yf0f1zmkw0000gn/T/vscode-ipc-c9a2ea26-1ad6-4262-874e-d40d84217eda.sock
+=======
 VSCODE_IPC_HOOK_EXTHOST = /var/folders/1t/022gjvrs19d96n9yf0f1zmkw0000gn/T/vscode-ipc-2e7af6b1-0819-4ab1-ad89-a90844f2d0c2.sock
+>>>>>>> 78410923adcf61ea19326e958c50063ff63885b8
 # environment
 VSCODE_CWD = /Users/nishadguha/Desktop/SEP/Projects/my-ui
 # environment
@@ -65,7 +70,11 @@ ELECTRON_RUN_AS_NODE = 1
 # default
 .FEATURES := target-specific order-only second-expansion else-if archives jobserver check-symlink
 # environment
+<<<<<<< HEAD
+SSH_AUTH_SOCK = /private/tmp/com.apple.launchd.eDiuIah0JA/Listeners
+=======
 SSH_AUTH_SOCK = /private/tmp/com.apple.launchd.rt52dXFSYK/Listeners
+>>>>>>> 78410923adcf61ea19326e958c50063ff63885b8
 # automatic
 %F = $(notdir $%)
 # environment
@@ -127,7 +136,11 @@ USER = nishadguha
 # default
 MAKECMDGOALS := all
 # environment
+<<<<<<< HEAD
+TERM_SESSION_ID = w0t0p0:78711FD4-C7CC-4C19-86D7-F4DC02F0527E
+=======
 TERM_SESSION_ID = w0t0p0:07A8848C-B504-442B-9148-12200B185263
+>>>>>>> 78410923adcf61ea19326e958c50063ff63885b8
 # environment
 LESS = -R
 # automatic
@@ -153,11 +166,16 @@ MFLAGS = -Rrqp
 # automatic
 *D = $(patsubst %/,%,$(dir $*))
 # environment
+ 
 TERM_PROGRAM_VERSION = 3.4.9
 # environment
 NVM_DIR = /Users/nishadguha/.nvm
 # environment
+<<<<<<< HEAD
+XPC_SERVICE_NAME = application.com.microsoft.VSCode.34351195.34351201.4959139A-77AE-4171-A0C5-3B9F408381FC
+=======
 XPC_SERVICE_NAME = application.com.microsoft.VSCode.37636947.37636953.B053F279-F48B-407E-9D8D-A99D0EB7BBEB
+>>>>>>> 78410923adcf61ea19326e958c50063ff63885b8
 # environment
 LC_TERMINAL_VERSION = 3.4.9
 # environment
@@ -167,7 +185,11 @@ HOMEBREW_PREFIX = /opt/homebrew
 # automatic
 +F = $(notdir $+)
 # environment
+<<<<<<< HEAD
+ITERM_SESSION_ID = w0t0p0:78711FD4-C7CC-4C19-86D7-F4DC02F0527E
+=======
 ITERM_SESSION_ID = w0t0p0:07A8848C-B504-442B-9148-12200B185263
+>>>>>>> 78410923adcf61ea19326e958c50063ff63885b8
 # environment
 HOMEBREW_REPOSITORY = /opt/homebrew
 # environment
@@ -201,7 +223,11 @@ CONDA_PREFIX = /opt/homebrew/Caskroom/miniforge/base
 # environment
 TERM = xterm-256color
 # environment
+<<<<<<< HEAD
+VSCODE_PID = 5005
+=======
 VSCODE_PID = 73113
+>>>>>>> 78410923adcf61ea19326e958c50063ff63885b8
 # environment
 _CE_CONDA = 
 # environment
@@ -215,9 +241,13 @@ NVM_RC_VERSION =
 
 # Directories
 
+<<<<<<< HEAD
+# . (device 16777231, inode 33055760): 47 files, no impossibilities.
+=======
 # . (device 16777234, inode 33055760): 46 files, no impossibilities.
+>>>>>>> 78410923adcf61ea19326e958c50063ff63885b8
 
-# 46 files, no impossibilities in 1 directories.
+# 47 files, no impossibilities in 1 directories.
 
 # Implicit Rules
 
@@ -280,7 +310,11 @@ squash-migrations:
 # Not a target:
 Makefile:
 #  Implicit rule search has been done.
+<<<<<<< HEAD
+#  Last modified 2022-06-09 01:57:39
+=======
 #  Last modified 2022-06-10 16:46:06
+>>>>>>> 78410923adcf61ea19326e958c50063ff63885b8
 #  File has been updated.
 #  Successfully updated.
 # variable set hash-table stats:
@@ -344,6 +378,7 @@ build-prod:
 # Not a target:
 .DEFAULT:
 #  Implicit rule search has not been done.
+ 
 #  Modification time never checked.
 #  File has not been updated.
 
@@ -396,6 +431,10 @@ down:
 # strcache size: total = 4096 / max = 4096 / min = 4096 / avg = 4096
 # strcache free: total = 4087 / max = 4087 / min = 4087 / avg = 4087
 
+<<<<<<< HEAD
+# Finished Make data base on Thu Jun  9 20:36:51 2022
+=======
 # Finished Make data base on Mon Jun 13 11:23:17 2022
+>>>>>>> 78410923adcf61ea19326e958c50063ff63885b8
 
  
