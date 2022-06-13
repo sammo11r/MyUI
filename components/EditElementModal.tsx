@@ -3,7 +3,7 @@ import { Form, Input, Modal } from "antd";
 import { InfoCircleOutlined } from "@ant-design/icons";
 
 import { elementType } from "../const/enum";
-import { isAllowed } from "../const/inputSanitizer";
+import { isAllowed, parse, stringify } from "../const/inputSanitizer";
 
 /**
  *
@@ -23,17 +23,12 @@ export default function EditElementModal({
   const onFinish = (values: { field: string }) => {
     switch (state.element.type) {
       case elementType.GRIDVIEW:
-        try {
-          // Remove all line breaks from the query input as this cannot be saved in the configuration
-          state.element.query = values.field.replace(/(\r\n|\n|\r)/gm, "");
-          break;
-        } catch (error) {
-          // If the input is empty, catch the error
-          break;
-        }
+        // Stringify the query input, so it can be saved in the configuration
+        state.element.query = stringify(values.field)
+        break;
       case elementType.STATIC:
-        // Remove all line breaks from the text input as this cannot be saved in the configuration
-        state.element.text = values.field.replace(/(\r\n|\n|\r)/gm, "");
+        // Stringify the text input, so it can be saved in the configuration
+        state.element.text = stringify(values.field)
         break;
     }
 
@@ -56,9 +51,9 @@ export default function EditElementModal({
   const elementContent = () => {
     switch (state.element.type) {
       case elementType.GRIDVIEW:
-        return state.element.query;
+        return parse(state.element.query)
       case elementType.STATIC:
-        return state.element.text;
+        return parse(state.element.text)
     }
   };
 
@@ -87,8 +82,8 @@ export default function EditElementModal({
    */
   const checkFormat = (_: any, value: string) => {
     if (elementTypeTextRef() == "gridview") {
-      // Validate the input for an gridview
-      if (value == undefined) {
+      // Validate the input for a gridview
+      if (value == "") {
         // Input is empty, throw no error such that the user can modify the element later
         return Promise.resolve();
       } else if (!isAllowed(value)) {

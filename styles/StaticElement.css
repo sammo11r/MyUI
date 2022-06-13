@@ -1,0 +1,7 @@
+.dashboard-text {
+  white-space: pre-line;
+  font-size: large;
+  height: 100%;
+  width: 100%;
+  overflow: auto;
+}

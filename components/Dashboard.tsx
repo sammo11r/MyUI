@@ -7,6 +7,7 @@ import { workspaceStates, elementType } from "../const/enum";
 import { DeleteOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
 import GridView from "./GridView";
 import StaticElement from "./StaticElement";
+import { parse, stringify } from "../const/inputSanitizer";
 
 const { confirm } = Modal;
 const ResponsiveReactGridLayout = WidthProvider(Responsive);
@@ -121,7 +122,7 @@ export default function Dashboard({
           <GridView
             gridViewToggle={gridViewToggle}
             setGridViewToggle={setGridViewToggle}
-            query={element.query}
+            query={parse(element.query)}
             hasuraProps={hasuraProps}
             systemProps={systemProps}
             userConfig={userConfig}
@@ -137,7 +138,7 @@ export default function Dashboard({
       case elementType.STATIC:
         rendered_element = (
           <StaticElement
-            text={element.text}
+            text={parse(element.text)}
             style={{ height: "100%", width: "100%" }}
           />
         );
@@ -160,7 +161,6 @@ export default function Dashboard({
         {mode === workspaceStates.EDIT_DASHBOARD ? (
           <DeleteOutlined
             style={{
-              // TODO: move style to css file, as none of it depends on state
               position: "absolute",
               zIndex: "10",
               fontSize: "20px",
@@ -219,7 +219,8 @@ export default function Dashboard({
       w: layoutItem["w"],
       h: layoutItem["h"],
       type: elementType[typeString],
-      text: t("dashboard.element.new.text"),
+      text: stringify(t("dashboard.element.new.text")),
+      query: "",
     };
 
     // Add new element to dashboard

@@ -55,8 +55,8 @@ export function configurationQuery(
           } else {
             // Get the user's configuration
             userConfig = userConfig.data.user_versioned_config[0].config;
-            // Undo escaping of double quotes
-            userConfig = JSON.parse(userConfig.replace('"', '"'));
+            // Undo escaping of characters
+            userConfig = JSON.parse(userConfig);
           }
           // Get the dashboard names to display on the sidebar
           const dashboards = userConfig.dashboards;
