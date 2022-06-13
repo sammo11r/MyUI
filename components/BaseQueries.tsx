@@ -3,7 +3,7 @@ import { useQuery } from "react-query";
 // Define the default UI configuration
 const defaultConfiguration = {
   dashboards: [],
-  uiPreferences: {
+  uiPreferences: { // @TODO this is hardcoded
     language: "en",
   },
   baseTables: [],

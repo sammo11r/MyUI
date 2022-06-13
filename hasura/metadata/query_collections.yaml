@@ -8,6 +8,5 @@
           		id
           		name
           		password
-          		role
           	}
           }

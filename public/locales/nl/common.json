@@ -25,12 +25,15 @@
     "new": "Voeg toe",
     "delete": "Verwijder",
     "save": "Opslaan",
+    "downloadDashboard": "Download",
     "modal": {
       "add": {
         "title": "Voeg een nieuwe dashboard toe",
         "name": "Naam",
         "tooltip": "De naam van het dashboard moet uniek zijn",
-        "error": "Sorry, je kunt deze naam niet gebruiken"
+        "error": "Sorry, je kunt deze naam niet gebruiken",
+        "config": "Voeg een dashboard toe via een dashboard configuratie bestand",
+        "popup": "Voer een dashboardconfiguratiebestand dat gebruik maakt van het JSON formaat"
       },
       "remove": {
         "title": "Verwijder een dashboard",
@@ -115,4 +118,5 @@
     "foreignKey": "Vreemde sleutel overtreding",
     "empty": "mag niet leeg zijn"
   }
+
 }

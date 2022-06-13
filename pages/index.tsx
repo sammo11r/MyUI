@@ -336,6 +336,7 @@ export default function App({ hasuraProps, systemProps }: any): any {
             workspaceState={workspaceState}
             workspaceStates={workspaceStates}
             t={t}
+            saveDashboardChanges={saveDashboardChanges}
           />
           {editElementModalState.visible ? (
             <EditElementModal
