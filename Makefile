@@ -48,6 +48,12 @@ build-prod: ## Run container in development mode
 	@echo "Creating production environment ..."
 	docker-compose -f docker-compose.yml -f docker-compose-prod.yml up -d --build
 
+rebuild: 
+	@echo "Restarting environment ..."
+	docker-compose down --remove-orphans \
+	&& sleep 2 \
+	&& docker-compose -f docker-compose.yml -f docker-compose-dev.yml up -d --build
+
 restart: 
 	@echo "Restarting environment ..."
 	docker-compose restart

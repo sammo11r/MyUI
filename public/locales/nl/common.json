@@ -1,4 +1,9 @@
 {
+  "globalSettings": {
+    "header": "URL Weergave Instelling",
+    "modalTitle": "Globale Instellingen",
+    "notification": "Instelling bijgewerkt! Herlaad de pagina om de wijzigingen te zien."
+  },
   "login": {
     "username": "Gebruikersnaam",
     "username_message": "Voer uw gebruikersnaam in!",

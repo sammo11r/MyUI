@@ -1,4 +1,9 @@
 {
+  "globalSettings": {
+    "header": "URL Display Setting",
+    "modalTitle": "Global Settings",
+    "notification": "Setting Updated! Please reload page to see the changes."
+  },
   "login": {
     "username": "Username",
     "username_message": "Please input your username!",

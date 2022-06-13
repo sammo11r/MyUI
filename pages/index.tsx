@@ -7,7 +7,8 @@ import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { i18n, useTranslation } from "next-i18next";
 import { useRouter } from "next/router";
 import jwtDecode from "jwt-decode";
-import bcrypt from "bcrypt";
+import yaml from "js-yaml";
+import * as fs from "fs";
 
 import AppHeader from "../components/AppHeader";
 import {
@@ -27,8 +28,10 @@ import {
   updateUserConfiguration,
   tableQuery,
 } from "../components/BaseQueries";
+import GlobalSettings from "../components/GlobalSettings";
 import { workspaceStates } from "../const/enum";
 import { encrypt } from "../utils/encryption";
+import { updateUserConfig } from "../utils/updateUserConfig";
 
 const { Content, Sider } = Layout;
 const { confirm } = Modal;
@@ -43,10 +46,14 @@ export default function App({ hasuraProps, systemProps }: any): any {
     visible: false,
     type: modalTypes.ADD,
   });
+  
+  const [globalSettingsModalState, setGlobalSettingsModalState] = useState(false);
+
   const [editElementModalState, setEditElementModalState] = useState({
     visible: false,
     element: {},
   });
+
   const router = useRouter();
 
   // Define state variables for the user configuration
@@ -111,6 +118,7 @@ export default function App({ hasuraProps, systemProps }: any): any {
   // @ts-ignore
   const jwtTokenDecoded = jwtDecode<JWTHasura>(jwt);
   const userId = parseInt(jwtTokenDecoded.sub);
+  const userRoles = jwtTokenDecoded["https://hasura.io/jwt/claims"]["x-hasura-allowed-roles"];
 
   // Get the configuration file of the currently loggged in user
   const { isSuccessConfig, configuration } = configurationQuery(
@@ -299,8 +307,10 @@ export default function App({ hasuraProps, systemProps }: any): any {
         <>
           <AppHeader
             userConfig={userConfig}
+            userRoles={userRoles}
             setUserConfig={setUserConfig}
             setUserConfigQueryInput={setUserConfigQueryInput}
+            setGlobalSettingsModalState={setGlobalSettingsModalState}
             workspaceState={workspaceState}
             toggleEditMode={toggleEditMode}
             t={t}
@@ -369,6 +379,13 @@ export default function App({ hasuraProps, systemProps }: any): any {
                   setGridViewToggle={setGridViewToggle}
                   t={t}
                 />
+                <GlobalSettings 
+                  globalSettingsModalState={globalSettingsModalState}
+                  setGlobalSettingsModalState={setGlobalSettingsModalState}
+                  updateUserConfig={updateUserConfig}
+                  systemProps={systemProps}
+                  t={t}
+                />
               </Content>
             </Layout>
           </Layout>
@@ -390,11 +407,7 @@ export async function getServerSideProps(context: any) {
       | RequestInfo
       | URL,
   };
-
-  const systemProps = {
-    mediaDisplaySetting: process.env.URL_DISPLAY_SETTING as String,
-  };
-
+  const systemProps = yaml.load(fs.readFileSync("/app/config/globalConfig.yaml", 'utf-8'));
   return {
     props: {
       hasuraProps,

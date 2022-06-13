@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useQuery } from "react-query";
+import { useSession } from "next-auth/react";
 
 import Loader from "../components/Loader";
 import TableData from "../components/TableData";
@@ -20,6 +21,7 @@ import { columnStates } from "../const/enum";
  * }
  * @return {*}  {*}
  */
+
 function BaseTable({
   hasuraProps,
   systemProps,
