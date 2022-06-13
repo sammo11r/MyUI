@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React from "react";
 import TableData from "../components/TableData";
 
 /**
  * @param {*} {
+ *   gridViewToggle, 
+ *   setGridViewToggle,
  *   hasuraProps,
  *   query,
  *   style,
@@ -12,11 +14,13 @@ import TableData from "../components/TableData";
  *   name,
  *   dashboardName,
  *   hasuraHeaders,
- *   t
+ *   t,
  * }
  * @return {*}  {*}
  */
 function GridView({
+  gridViewToggle, 
+  setGridViewToggle,
   hasuraProps,
   query,
   style,
@@ -42,6 +46,8 @@ function GridView({
       t={t}
       isBaseTable={false}
       tableName={name}
+      gridViewToggle={gridViewToggle}
+      setGridViewToggle={setGridViewToggle}
     ></TableData>
   );
 }

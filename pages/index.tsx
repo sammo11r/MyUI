@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { useQuery } from "react-query";
 import { useSession } from "next-auth/react";
 import { Layout, Modal, notification } from "antd";
 import { QuestionCircleOutlined } from "@ant-design/icons";
@@ -53,6 +52,8 @@ export default function App({ hasuraProps, systemProps }: any): any {
 
   // Define state variables that, once set, update the user configuration file
   const [userConfigQueryInput, setUserConfigQueryInput] = useState();
+
+  const [gridViewToggle, setGridViewToggle] = useState(false);
 
   const [dashboardNames, setDashboardNames] = useState<string[]>([]);
 
@@ -361,6 +362,8 @@ export default function App({ hasuraProps, systemProps }: any): any {
                   setEditElementModalState={setEditElementModalState}
                   setUserConfigQueryInput={setUserConfigQueryInput}
                   hasuraHeaders={hasuraHeaders}
+                  gridViewToggle={gridViewToggle}
+                  setGridViewToggle={setGridViewToggle}
                   t={t}
                 />
               </Content>

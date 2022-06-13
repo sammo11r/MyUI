@@ -16,7 +16,9 @@ import Dashboard from "./Dashboard";
  *   setDashboardState,
  *   setEditElementModalState,
  *   hasuraHeaders,
- *   t
+ *   gridViewToggle, 
+ *   setGridViewToggle,
+ *   t,
  * }
  * @return {*}  {*}
  */
@@ -31,6 +33,8 @@ function Workspace({
   setDashboardState,
   setEditElementModalState,
   hasuraHeaders,
+  gridViewToggle, 
+  setGridViewToggle,
   t,
 }: any): any {
   switch (workspaceState.displaying) {
@@ -44,6 +48,8 @@ function Workspace({
           setUserConfig={setUserConfig}
           setUserConfigQueryInput={setUserConfigQueryInput}
           hasuraHeaders={hasuraHeaders}
+          gridViewToggle={gridViewToggle}
+          setGridViewToggle={setGridViewToggle}
           t={t}
         />
       );
@@ -60,6 +66,8 @@ function Workspace({
           setEditElementModalState={setEditElementModalState}
           setUserConfigQueryInput={setUserConfigQueryInput}
           hasuraHeaders={hasuraHeaders}
+          gridViewToggle={gridViewToggle}
+          setGridViewToggle={setGridViewToggle}
           t={t}
         />
       );
