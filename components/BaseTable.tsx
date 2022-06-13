@@ -13,6 +13,7 @@ import { columnStates } from "../const/enum";
  *   userConfig,
  *   setUserConfigQueryInput,
  *   hasuraHeaders,
+ *   encrypt
  *   gridViewToggle, 
  *   setGridViewToggle,
  *   t,
@@ -26,6 +27,7 @@ function BaseTable({
   userConfig,
   setUserConfigQueryInput,
   hasuraHeaders,
+  encrypt,
   gridViewToggle, 
   setGridViewToggle,
   t,
@@ -74,6 +76,7 @@ function BaseTable({
           name={name}
           dashboardName={null}
           hasuraHeaders={hasuraHeaders}
+          encrypt={encrypt}
           t={t}
           isBaseTable={true}
           tableName={name}

@@ -63,7 +63,7 @@ export default NextAuth({
         // Filter through users to find matching username
         // @ts-ignore: Object is possibly 'null'. eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const user = usersData.users.filter(
-          (user: { id: number; name: string; password: string }) =>
+          (user: { id: number; name: string; password: string; role: string }) =>
             user.name === credentials.username
         );
 
@@ -109,11 +109,11 @@ export default NextAuth({
         let allowedRoles = [];
 
         // If user is admin, add admin role to allowed roles
-        if (token!.name === "admin") {
+        if (token!.role === "admin") {
           allowedRoles.push("admin", "editor", "user");
-        } else if (token!.name === "editor") {
+        } else if (token!.role === "editor") {
           allowedRoles.push("editor", "user");
-        } else if (token!.name === "user") {
+        } else if (token!.role === "user") {
           allowedRoles.push("user");
         }
 
@@ -125,12 +125,13 @@ export default NextAuth({
         // @ts-ignore
         sub: token!.id !== undefined ? token!.id.toString() : token!.sub,
         name: token!.name,
-        admin: token!.name === "admin",
+        admin: token!.role == "admin",
         iat: Date.now() / 1000,
         "https://hasura.io/jwt/claims": {
           "x-hasura-allowed-roles": generateAllowedRoles(token),
-          "x-hasura-default-role": token!.name,
+          "x-hasura-default-role": token!.role,
         },
+        role: token!.role,
       } as JWT;
 
       // JWT tokens are only valid if encoded/signed
@@ -170,6 +171,7 @@ export default NextAuth({
       if (user) {
         token.user = user;
         token.id = user.id;
+        token.role = user.role;
       }
       return token;
     },

@@ -1,7 +1,6 @@
 import React, { useState } from "react";
-import { Popover } from "antd";
+import { message, Popover } from "antd";
 import { useQuery } from "react-query";
-import { useTranslation } from "next-i18next";
 
 import { Button, Form, Input } from 'antd';
 import { PlusCircleOutlined, MinusCircleOutlined } from '@ant-design/icons';
@@ -19,10 +18,12 @@ function AddDeleteRowMenu({
     hasuraProps, 
     columns,
     tableName,
-    selectedRow
+    selectedRow,
+    encrypt,
+    setAlert,
+    setAlertText,
+    t
   }: any): any {
-    const { t } = useTranslation();
-
     columns = columns.map((item: any) => {
       var data = JSON.stringify(item);
       var parsedData = JSON.parse(data);
@@ -73,27 +74,53 @@ function AddDeleteRowMenu({
     // Update the base tables
     useQuery(["updateBaseTables", baseTableQueryInput, query], async () => {
         if (baseTableQueryInput != undefined) {
-        let result = await fetch(hasuraProps.hasuraEndpoint as RequestInfo, {
+        await fetch(hasuraProps.hasuraEndpoint as RequestInfo, {
             method: "POST",
             headers: hasuraHeaders,
             body: JSON.stringify({
             query: query,
             }),
         })
+        .then((res) => res.json())
+        .then((res) => {
+          // Check if there are errors thrown by Hasura
+          if (res.errors) {
+            // Get the error message
+            let errorMessage: string = res.errors[0].message;
+            setAlert(true);
+            setAlertText(errorMessage);
+          } else {
+            if (baseTableQueryInput == "Add") {
+              message.info(t("table.addRowNotification"))
+            } else {
+              message.warn(t("table.deleteRowNotification"))
+            }
+          }
+        });
         // Clear the query input state variable
         setBaseTableQueryInput(undefined);
         }
     })
 
     // Define the logic when 'submit' is clicked in the add row menu
-    const onFinish = (values: any) => {
+    const onFinish = async (values: any) => {
         onReset();
+
+        if (tableName === 'users') {
+          await encrypt({
+            password: values.values.password,
+          }).then((res: any) => {
+            values.values.password = res.encryptedPassword;
+          });
+        }
 
         // Add all values to an array
         const value = [];
         for (var key in values.values) {
           value.push(values.values[key]);
         }
+
+        const columns = Object.keys(values.values);
 
         // Define the variables needed for the mutation
         let name = 'insert_' + tableName;
@@ -115,7 +142,7 @@ function AddDeleteRowMenu({
         // Define, set and send the query
         const query = `mutation TableMutation { ${name}(objects: {${row}}) { returning { ${column} } } }`;
         setQuery(query);
-        setBaseTableQueryInput(query);
+        setBaseTableQueryInput("Add");
         hideAdd();
     };
 
@@ -163,7 +190,7 @@ function AddDeleteRowMenu({
         query += ' }';
 
         setQuery(query);
-        setBaseTableQueryInput(query);
+        setBaseTableQueryInput("Delete");
         hideDelete();
     }
     
@@ -232,5 +259,4 @@ function AddDeleteRowMenu({
     );
   }
   
-  export default AddDeleteRowMenu;
-  
+  export default AddDeleteRowMenu;  

@@ -7,6 +7,7 @@ import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { i18n, useTranslation } from "next-i18next";
 import { useRouter } from "next/router";
 import jwtDecode from "jwt-decode";
+import bcrypt from "bcrypt";
 
 import AppHeader from "../components/AppHeader";
 import {
@@ -27,6 +28,7 @@ import {
   tableQuery,
 } from "../components/BaseQueries";
 import { workspaceStates } from "../const/enum";
+import { encrypt } from "../utils/encryption";
 
 const { Content, Sider } = Layout;
 const { confirm } = Modal;
@@ -362,6 +364,7 @@ export default function App({ hasuraProps, systemProps }: any): any {
                   setEditElementModalState={setEditElementModalState}
                   setUserConfigQueryInput={setUserConfigQueryInput}
                   hasuraHeaders={hasuraHeaders}
+                  encrypt={encrypt}
                   gridViewToggle={gridViewToggle}
                   setGridViewToggle={setGridViewToggle}
                   t={t}
@@ -387,9 +390,11 @@ export async function getServerSideProps(context: any) {
       | RequestInfo
       | URL,
   };
+
   const systemProps = {
     mediaDisplaySetting: process.env.URL_DISPLAY_SETTING as String,
   };
+
   return {
     props: {
       hasuraProps,

@@ -40,6 +40,7 @@ export default function QueryInput({ hasuraProps }: any) {
     }
   );
 
+  // On Submit
   const onFinish = (values: any) => {
     setQueryString(values.query);
   };
