@@ -188,6 +188,8 @@ export default function App({ hasuraProps, systemProps }: any): any {
    * Enable the edit mode on a dashboard
    */
   const toggleEditMode = () => {
+    setGridViewToggle(!gridViewToggle);
+
     const newState =
       workspaceState.displaying === workspaceStates.DISPLAY_DASHBOARD
         ? workspaceStates.EDIT_DASHBOARD

@@ -99,6 +99,7 @@ export default function Dashboard({
    * @param {*} userConfig
    * @param {*} setUserConfigQueryInput
    * @param {*} dashboardState
+   * @param {*} mode
    * @param {*} t
    * @return {*}  {JSX.Element}
    */
@@ -112,6 +113,7 @@ export default function Dashboard({
     userConfig: any,
     setUserConfigQueryInput: any,
     dashboardState: any,
+    mode: any,
     t: any
   ): JSX.Element {
     let rendered_element = <p>{t("dashboard.element.unknown")}</p>;
@@ -130,6 +132,7 @@ export default function Dashboard({
             name={element.name}
             dashboardName={dashboardState.dashboard.name}
             hasuraHeaders={hasuraHeaders}
+            mode={mode}
             t={t}
             style={{ height: "100%", width: "100%", overflow: "auto" }}
           />
@@ -277,6 +280,7 @@ export default function Dashboard({
             userConfig,
             setUserConfigQueryInput,
             dashboardState,
+            mode,
             t
           )
       )}

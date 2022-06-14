@@ -1,5 +1,5 @@
-import { setDefaultResultOrder } from "dns";
 import { useQuery } from "react-query";
+import { workspaceStates } from "../const/enum";
 
 /**
  * @export
@@ -9,6 +9,7 @@ import { useQuery } from "react-query";
  *   hasuraHeaders,
  *   setEditable,
  *   name
+ *   mode
  * }
  */
 export function checkEditPermissions({
@@ -17,9 +18,11 @@ export function checkEditPermissions({
   hasuraHeaders,
   setEditable,
   name,
+  mode,
+  gridViewToggle,
 }: any) {
   // Check if the base table is editable by the logged-in user
-  useQuery(["accessQuery", name], async () => {
+  useQuery(["accessQuery", name, gridViewToggle], async () => {
     if (isBaseTable) {
       await fetch(hasuraProps.hasuraEndpoint as RequestInfo, {
         method: "POST",
@@ -41,7 +44,7 @@ export function checkEditPermissions({
         });
     } else {
       // Table is an editable grid view on a dashboard
-      setEditable(true);
+      setEditable(mode != workspaceStates.EDIT_DASHBOARD);
     }
   });
 }

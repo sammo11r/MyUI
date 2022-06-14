@@ -9,7 +9,7 @@ import {
 } from "@ant-design/icons";
 
 import Loader from "../components/Loader";
-import { columnStates } from "../const/enum";
+import { columnStates, workspaceStates } from "../const/enum";
 import AddDeleteRowMenu from "../components/AddDeleteRowMenu";
 import EditableCell from "../components/EditableCell";
 import {
@@ -37,6 +37,7 @@ import { queryTableData } from "../components/TableDataQuery";
  *   gridViewToggle,
  *   setGridViewToggle,
  *   columns,
+ *   mode
  * }
  * @return {*}  {*}
  */
@@ -57,6 +58,7 @@ export default function TableData({
   gridViewToggle,
   setGridViewToggle,
   columns,
+  mode
 }: any): any {
   const mediaDisplaySetting = systemProps.mediaDisplaySetting;
   // State deciding whether to show loader or table for grid views and base tables
@@ -177,6 +179,8 @@ export default function TableData({
     hasuraHeaders,
     setEditable,
     name,
+    mode,
+    gridViewToggle,
   });
 
   queryTableData({
@@ -380,7 +384,8 @@ export default function TableData({
                 }}
               />
             </Form>
-            <AddDeleteRowMenu
+            { mode != workspaceStates.EDIT_DASHBOARD ? ( 
+              <AddDeleteRowMenu
               hasuraProps={hasuraProps}
               columns={tableState.columns}
               tableName={tableName}
@@ -390,6 +395,7 @@ export default function TableData({
               setAlertText={setAlertText}
               t={t}
             ></AddDeleteRowMenu>
+            ) : ( <></> ) }
           </>
         ) : (
           // If table is empty, warn the user

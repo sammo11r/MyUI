@@ -33,6 +33,7 @@ function BaseTable({
   gridViewToggle, 
   setGridViewToggle,
   t,
+  mode
 }: any): any {
   // Add state deciding whether to show loader or table
   const [columnState, setColumnState] = useState({
@@ -84,6 +85,7 @@ function BaseTable({
           tableName={name}
           gridViewToggle={gridViewToggle}
           setGridViewToggle={setGridViewToggle}
+          mode={mode}
         ></TableData>
       ) : (
         <Loader />

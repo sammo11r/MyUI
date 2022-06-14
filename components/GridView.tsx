@@ -14,6 +14,7 @@ import TableData from "../components/TableData";
  *   name,
  *   dashboardName,
  *   hasuraHeaders,
+ *   mode,
  *   t,
  * }
  * @return {*}  {*}
@@ -30,6 +31,7 @@ function GridView({
   name,
   dashboardName,
   hasuraHeaders,
+  mode,
   t,
 }: any): any {
   return (
@@ -48,6 +50,7 @@ function GridView({
       tableName={name}
       gridViewToggle={gridViewToggle}
       setGridViewToggle={setGridViewToggle}
+      mode={mode}
     ></TableData>
   );
 }

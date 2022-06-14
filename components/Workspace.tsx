@@ -53,6 +53,7 @@ function Workspace({
           encrypt={encrypt}
           gridViewToggle={gridViewToggle}
           setGridViewToggle={setGridViewToggle}
+          mode={workspaceState.displaying}
           t={t}
         />
       );
