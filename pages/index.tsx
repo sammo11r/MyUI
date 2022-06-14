@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useSession } from "next-auth/react";
-import { Layout, Modal, notification } from "antd";
+import { Button, Layout, Modal, notification } from "antd";
 import { QuestionCircleOutlined } from "@ant-design/icons";
 import "antd/dist/antd.css";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
@@ -233,7 +233,14 @@ export default function App({ hasuraProps, systemProps }: any): any {
       confirm({
         title: t("dashboard.saveprompt.title"),
         icon: <QuestionCircleOutlined />,
-        content: t("dashboard.saveprompt.description"),
+        content: 
+          <div>
+            <h4>{t("dashboard.saveprompt.description")}</h4>
+            <Button onClick={() => {
+              setWorkspaceState({ displaying: workspaceStates.EDIT_DASHBOARD, name: workspaceState.name });
+              Modal.destroyAll();
+            }}>{t("table.cancel")}</Button>
+          </div>,
         okText: t("dashboard.saveprompt.savetext"),
         cancelText: t("dashboard.saveprompt.discardtext"),
         onOk() {

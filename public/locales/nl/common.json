@@ -80,7 +80,7 @@
     },
     "saveprompt": {
       "title": "Je hebt nog onopgeslagen veranderingen, wil je deze opslaan?",
-      "description": "Je hebt niet-opgeslagen wijzizigen. Als u op niet-opslaan drukt, worden je niet-opgeslagen wijzigingen verwijderd. Je kunt deze actie niet ongedaan maken.",
+      "description": "Je hebt niet-opgeslagen wijzigingen. Als je op niet-opslaan drukt, worden je niet-opgeslagen wijzigingen verwijderd. Je kunt deze actie niet ongedaan maken.",
       "savetext": "Opslaan",
       "discardtext": "Niet opslaan"
     },
