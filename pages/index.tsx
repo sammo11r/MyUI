@@ -46,7 +46,7 @@ export default function App({ hasuraProps, systemProps }: any): any {
     visible: false,
     type: modalTypes.ADD,
   });
-  
+
   const [globalSettingsModalState, setGlobalSettingsModalState] = useState(false);
 
   const [editElementModalState, setEditElementModalState] = useState({
@@ -195,6 +195,7 @@ export default function App({ hasuraProps, systemProps }: any): any {
         ? workspaceStates.EDIT_DASHBOARD
         : workspaceStates.DISPLAY_DASHBOARD;
 
+    console.log(newState);
     setWorkspaceState({ displaying: newState, name: workspaceState.name });
 
     // Auxiliary function used to check if to dashboards are equal
@@ -233,7 +234,7 @@ export default function App({ hasuraProps, systemProps }: any): any {
       confirm({
         title: t("dashboard.saveprompt.title"),
         icon: <QuestionCircleOutlined />,
-        content: 
+        content:
           <div>
             <h4>{t("dashboard.saveprompt.description")}</h4>
             <Button onClick={() => {
@@ -259,14 +260,21 @@ export default function App({ hasuraProps, systemProps }: any): any {
    */
   const saveDashboardChanges = (userConfig: any, dashboardState: any) => {
     setLoadings(true);
-    // Remove the old dashboard from the user config
-    let otherDashboards = userConfig.dashboards.filter(
-      (dashboard: any) => dashboard.name != dashboardState.dashboard.name
-    );
+    // Get the current table configuration
+    let currentDashboardConfig = userConfig.dashboards.filter((dashboard: any) => dashboard.name == dashboardState.dashboard.name)[0];
+    let indexOfDashboard = userConfig.dashboards.indexOf(currentDashboardConfig);
+    // Update the grid view configuration
+    userConfig.dashboards[indexOfDashboard] = dashboardState.dashboard;
 
-    // Add the edited dashboard to the user config
-    otherDashboards.push(dashboardState.dashboard);
-    userConfig.dashboards = otherDashboards;
+
+    // // Remove the old dashboard from the user config
+    // let otherDashboards = userConfig.dashboards.filter(
+    //   (dashboard: any) => dashboard.name != dashboardState.dashboard.name
+    // );
+
+    // // Add the edited dashboard to the user config
+    // otherDashboards.push(dashboardState.dashboard);
+    // userConfig.dashboards = otherDashboards;
 
     setUserConfigQueryInput(userConfig);
     setLoadings(false);
@@ -389,7 +397,7 @@ export default function App({ hasuraProps, systemProps }: any): any {
                   setGridViewToggle={setGridViewToggle}
                   t={t}
                 />
-                <GlobalSettings 
+                <GlobalSettings
                   globalSettingsModalState={globalSettingsModalState}
                   setGlobalSettingsModalState={setGlobalSettingsModalState}
                   updateUserConfig={updateUserConfig}
