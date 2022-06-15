@@ -184,7 +184,8 @@ export default function Dashboard({
    * @param {GridLayout.Layout[]} layout
    */
   const saveChange = (layout: GridLayout.Layout[]) => {
-    const newDashboard = dashboardState.dashboard;
+    // Make deep copy to prevent dashboardstate becoming a reference to the dashboard stored in userConfig
+    const newDashboard = structuredClone(dashboardState.dashboard);
     for (let i = 0; i < newDashboard.dashboardElements.length; i++) {
       newDashboard.dashboardElements[i].x = layout[i].x;
       newDashboard.dashboardElements[i].y = layout[i].y;

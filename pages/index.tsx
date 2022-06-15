@@ -195,7 +195,6 @@ export default function App({ hasuraProps, systemProps }: any): any {
         ? workspaceStates.EDIT_DASHBOARD
         : workspaceStates.DISPLAY_DASHBOARD;
 
-    console.log(newState);
     setWorkspaceState({ displaying: newState, name: workspaceState.name });
 
     // Auxiliary function used to check if to dashboards are equal
@@ -209,6 +208,7 @@ export default function App({ hasuraProps, systemProps }: any): any {
       const savedDashboardElements = userConfig.dashboards.filter(
         (dashboard: any) => dashboard.name == name
       )[0].dashboardElements;
+
       // Check if length equal
       if (savedDashboardElements.length !== editedDashboardElements.length)
         return true;
