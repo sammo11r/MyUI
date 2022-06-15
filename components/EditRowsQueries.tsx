@@ -8,15 +8,19 @@ import { workspaceStates } from "../const/enum";
  *   hasuraProps,
  *   hasuraHeaders,
  *   setEditable,
- *   name
+ *   setInsertable,
+ *   setDeletable,
+ *   name,
  *   mode
  * }
  */
-export function checkEditPermissions({
+export function checkPermissions({
   isBaseTable,
   hasuraProps,
   hasuraHeaders,
   setEditable,
+  setInsertable,
+  setDeletable,
   name,
   mode,
   gridViewToggle,
@@ -38,6 +42,18 @@ export function checkEditPermissions({
             setEditable(
               result.data.__type.fields.some(
                 (e: { name: string }) => e.name == "update_" + name
+              )
+            );
+            // Set the insertable state
+            setInsertable(
+              result.data.__type.fields.some(
+                (e: { name: string }) => e.name == "insert_" + name
+              )
+            );
+            // Set the deletable state
+            setDeletable(
+              result.data.__type.fields.some(
+                (e: { name: string }) => e.name == "delete_" + name
               )
             );
           }

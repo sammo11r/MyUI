@@ -13,7 +13,7 @@ import { columnStates, workspaceStates } from "../const/enum";
 import AddDeleteRowMenu from "../components/AddDeleteRowMenu";
 import EditableCell from "../components/EditableCell";
 import {
-  checkEditPermissions,
+  checkPermissions,
   updateRowQuery,
 } from "../components/EditRowsQueries";
 import { queryTableData } from "../components/TableDataQuery";
@@ -69,7 +69,11 @@ export default function TableData({
     dataState: columnStates.LOADING,
   });
 
+  // Define state variables for data modification actions
   const [editable, setEditable] = useState(false);
+  const [insertable, setInsertable] = useState(false);
+  const [deletable, setDeletable] = useState(false);
+
   const [alert, setAlert] = useState(false);
   const [alertText, setAlertText] = useState(false);
   const [editRowQueryInput, setEditRowQueryInput] = useState<string>();
@@ -173,11 +177,13 @@ export default function TableData({
   });
 
   // Check the edit permission for this table
-  checkEditPermissions({
+  checkPermissions({
     isBaseTable,
     hasuraProps,
     hasuraHeaders,
     setEditable,
+    setInsertable,
+    setDeletable,
     name,
     mode,
     gridViewToggle,
@@ -376,7 +382,7 @@ export default function TableData({
                           sorter as SorterResult<RecordType>
                         ).order;
 
-                        // Update the base table configuration
+                        // Update the grid view configuration
                         userConfig.dashboards[
                           indexOfDashboard
                         ].dashboardElements[indexOfElement] = tableConfig;
@@ -390,6 +396,7 @@ export default function TableData({
             {mode != workspaceStates.EDIT_DASHBOARD ? (
               <AddDeleteRowMenu
                 hasuraProps={hasuraProps}
+                hasuraHeaders={hasuraHeaders}
                 columns={tableState.columns}
                 tableName={tableName}
                 selectedRow={selectedRow}
@@ -400,6 +407,8 @@ export default function TableData({
                 setTableNameState={setTableNameState}
                 setGridViewToggle={setGridViewToggle}
                 gridViewToggle={gridViewToggle}
+                insertable={insertable}
+                deletable={deletable}
                 t={t}
               ></AddDeleteRowMenu>
             ) : (<></>)}

@@ -1,13 +1,16 @@
 import React, { useState } from "react";
-import { message, Popover } from "antd";
+import { message, Popover, Button, Form, Input } from "antd";
 import { useQuery } from "react-query";
-
-import { Button, Form, Input } from 'antd';
 import { PlusCircleOutlined, MinusCircleOutlined } from '@ant-design/icons';
+
+import {
+  checkPermissions,
+} from "../components/EditRowsQueries";
 
 /**
  * @param {*} {
  *   setTableNameState,
+ *   hasuraHeaders,
  *   setGridViewToggle,
  *   gridViewToggle, 
  *   hasuraProps,
@@ -18,12 +21,15 @@ import { PlusCircleOutlined, MinusCircleOutlined } from '@ant-design/icons';
  *   encrypt,
  *   setAlert,
  *   setAlertText,
+ *   insertable,
+ *   deletable
  *   t
  * }
  * @return {*}  {*}
  */
 function AddDeleteRowMenu({
   setTableNameState,
+  hasuraHeaders,
   setGridViewToggle,
   gridViewToggle, 
   hasuraProps,
@@ -34,6 +40,8 @@ function AddDeleteRowMenu({
   encrypt,
   setAlert,
   setAlertText,
+  insertable,
+  deletable,
   t
 }: any): any {
   columns = columns.map((item: any) => {
@@ -41,11 +49,6 @@ function AddDeleteRowMenu({
     var parsedData = JSON.parse(data);
     return parsedData.title;
   })
-
-  const hasuraHeaders = {
-    "Content-Type": "application/json",
-    "x-hasura-admin-secret": hasuraProps.hasuraSecret,
-  } as HeadersInit;
 
   // Define constants used for add and delete row menu
   const [clickedAdd, setClickedAdd] = useState(false);
@@ -212,6 +215,7 @@ function AddDeleteRowMenu({
 
   return (
     <>
+      {insertable ? ( 
       <Popover
         placement="topLeft"
         content={
@@ -247,7 +251,8 @@ function AddDeleteRowMenu({
         <Button>
           <PlusCircleOutlined />
         </Button>
-      </Popover>
+      </Popover> ) : ( <></> ) }
+      {deletable ? ( 
       <Popover
         placement="rightTop"
         content={
@@ -270,7 +275,7 @@ function AddDeleteRowMenu({
         <Button>
           <MinusCircleOutlined />
         </Button>
-      </Popover>
+      </Popover> ) : ( <></> ) }
     </>
   );
 }
