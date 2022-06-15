@@ -167,7 +167,7 @@ export default function TableData({
     setEditRowQueryInput,
     setAlert,
     setAlertText,
-    gridViewToggle, 
+    gridViewToggle,
     setGridViewToggle,
     t,
   });
@@ -196,7 +196,7 @@ export default function TableData({
     userConfig,
     setUserConfigQueryInput,
     mediaDisplaySetting,
-    gridViewToggle, 
+    gridViewToggle,
     t,
   });
 
@@ -256,12 +256,15 @@ export default function TableData({
   }
 
   const [selectionType, setSelectionType] = useState("checkbox");
+  const [selectedRowKeys, setSelectedRowKeys] = useState([""]);
   const [selectedRow, setSelectedRow] = useState([""]);
 
   const rowSelection: any = {
+    selectedRowKeys: selectedRowKeys,
     // Get selected rows on
     onChange: (selectedRowKeys: any, selectedRows: any) => {
       setSelectedRow(selectedRows);
+      setSelectedRowKeys(selectedRowKeys);
     },
   };
 
@@ -298,7 +301,7 @@ export default function TableData({
       )}
       {tableState.dataState == columnStates.READY ? (
         // If data is ready, show the user
-        tableState.data ? (
+        tableState.columns.length != 0 ? (
           // If there is data, display table
           <>
             <Form form={editRowForm} component={false}>
@@ -384,18 +387,22 @@ export default function TableData({
                 }}
               />
             </Form>
-            { mode != workspaceStates.EDIT_DASHBOARD ? ( 
+            {mode != workspaceStates.EDIT_DASHBOARD ? (
               <AddDeleteRowMenu
-              hasuraProps={hasuraProps}
-              columns={tableState.columns}
-              tableName={tableName}
-              selectedRow={selectedRow}
-              encrypt={encrypt}
-              setAlert={setAlert}
-              setAlertText={setAlertText}
-              t={t}
-            ></AddDeleteRowMenu>
-            ) : ( <></> ) }
+                hasuraProps={hasuraProps}
+                columns={tableState.columns}
+                tableName={tableName}
+                selectedRow={selectedRow}
+                setSelectedRowKeys={setSelectedRowKeys}
+                encrypt={encrypt}
+                setAlert={setAlert}
+                setAlertText={setAlertText}
+                setTableNameState={setTableNameState}
+                setGridViewToggle={setGridViewToggle}
+                gridViewToggle={gridViewToggle}
+                t={t}
+              ></AddDeleteRowMenu>
+            ) : (<></>)}
           </>
         ) : (
           // If table is empty, warn the user

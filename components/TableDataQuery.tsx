@@ -86,10 +86,10 @@ export function queryTableData({
       .then((res) => res.json())
       .then((res) => {
         // Succesful GraphQL query results have a 'data' field
-        if (!res || !res.data) {
+        if (res && res.errors) {
           // Hasura returned an error, set table state
           setTableState({
-            data: undefined,
+            data: res.errors,
             columns: [],
             columnsReady: true,
             dataState: columnStates.READY,
@@ -265,10 +265,26 @@ export function queryTableData({
             dataState: columnStates.READY,
           });
         } else {
-          // The table is empty, show the error
+          let columns: any = [];
+          
+          if (res != null) {
+            // Queried data is empty, show empty tamble with the column headers
+            // Retrieve the column names from the query
+            let columNames = query.slice(
+              query.lastIndexOf('{') + 1,
+              query.indexOf('}'),
+            );
+            // Put the names in an array
+            columNames = columNames.split(',');
+
+            columNames.forEach(function(name: string) {
+              columns.push({title: name, dataIndex: name, key: name})
+            });
+          }
+
           setTableState({
             data: undefined,
-            columns: [],
+            columns: columns,
             columnsReady: true,
             dataState: columnStates.READY,
           });
