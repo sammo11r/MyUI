@@ -24,6 +24,7 @@ export default function EditModeSider({
   saveDashboardChanges,
   t,
 }: any): any {
+  
   /**
    * Define a draggable element for the sider
    *
