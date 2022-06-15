@@ -266,16 +266,6 @@ export default function App({ hasuraProps, systemProps }: any): any {
     // Update the grid view configuration
     userConfig.dashboards[indexOfDashboard] = dashboardState.dashboard;
 
-
-    // // Remove the old dashboard from the user config
-    // let otherDashboards = userConfig.dashboards.filter(
-    //   (dashboard: any) => dashboard.name != dashboardState.dashboard.name
-    // );
-
-    // // Add the edited dashboard to the user config
-    // otherDashboards.push(dashboardState.dashboard);
-    // userConfig.dashboards = otherDashboards;
-
     setUserConfigQueryInput(userConfig);
     setLoadings(false);
     notification.open({
