@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Button, Layout, Popover, Form, Input } from "antd";
 import { TableOutlined, BorderOutlined, DownloadOutlined } from "@ant-design/icons";
 
-import { elementType } from "../const/enum";
+import { elementType } from "../consts/enum";
 
 const { Sider } = Layout;
 

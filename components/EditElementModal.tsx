@@ -2,8 +2,8 @@ import React from "react";
 import { Form, Input, Modal } from "antd";
 import { InfoCircleOutlined } from "@ant-design/icons";
 
-import { elementType } from "../const/enum";
-import { isAllowed, parse, stringify } from "../const/inputSanitizer";
+import { elementType } from "../consts/enum";
+import { isAllowed, parse, stringify } from "../consts/inputSanitizer";
 
 /**
  *

@@ -3,11 +3,11 @@ import { Modal } from "antd";
 import GridLayout from "react-grid-layout";
 import { Responsive, WidthProvider } from "react-grid-layout";
 
-import { workspaceStates, elementType } from "../const/enum";
+import { workspaceStates, elementType } from "../consts/enum";
 import { DeleteOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
 import GridView from "./GridView";
 import StaticElement from "./StaticElement";
-import { parse, stringify } from "../const/inputSanitizer";
+import { parse, stringify } from "../consts/inputSanitizer";
 
 const { confirm } = Modal;
 const ResponsiveReactGridLayout = WidthProvider(Responsive);

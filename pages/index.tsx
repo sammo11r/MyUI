@@ -29,9 +29,10 @@ import {
   tableQuery,
 } from "../components/BaseQueries";
 import GlobalSettings from "../components/GlobalSettings";
-import { workspaceStates } from "../const/enum";
+import { siderMenuState, workspaceStates } from "../consts/enum";
 import { encrypt } from "../utils/encryption";
 import { updateUserConfig } from "../utils/updateUserConfig";
+import { JWTHasura } from "../customTypes";
 
 const { Content, Sider } = Layout;
 const { confirm } = Modal;
@@ -47,7 +48,8 @@ export default function App({ hasuraProps, systemProps }: any): any {
     type: modalTypes.ADD,
   });
 
-  const [globalSettingsModalState, setGlobalSettingsModalState] = useState(false);
+  const [globalSettingsModalState, setGlobalSettingsModalState] =
+    useState(false);
 
   const [editElementModalState, setEditElementModalState] = useState({
     visible: false,
@@ -66,14 +68,15 @@ export default function App({ hasuraProps, systemProps }: any): any {
 
   const [dashboardNames, setDashboardNames] = useState<string[]>([]);
 
+  const [tableNames, setTableNames] = useState([]);
+
+  const [isSuccessConfig, setIsSuccessConfig] = useState(false);
+
+  const [isIntrospectionSuccess, setIsIntrospectionSuccess] = useState(false);
+
   const showModal = (type: modalTypes) => {
     setManageDashboardsModalState({ visible: true, type: type });
   };
-
-  enum siderMenuState {
-    READY,
-    LOADING,
-  }
 
   const [siderState, setSiderState] = useState({
     tableNames: [],
@@ -92,7 +95,7 @@ export default function App({ hasuraProps, systemProps }: any): any {
 
   // Fetching session token from the current session
   const { data: session } = useSession();
-  const jwt = session!.token;
+  const jwt = session!.token as string;
 
   const hasuraHeaders = {
     "Content-Type": "application/json",
@@ -104,32 +107,25 @@ export default function App({ hasuraProps, systemProps }: any): any {
     "x-hasura-admin-secret": hasuraProps.hasuraSecret, // Adding auth header instead of using the admin secret
   } as HeadersInit;
 
-  interface JWTHasura {
-    sub: string;
-    name: string;
-    admin: boolean;
-    iat: string;
-    "https://hasura.io/jwt/claims": {
-      "x-hasura-allowed-roles": Array<string>;
-      "x-hasura-default-role": string;
-    };
-  }
-
-  // @ts-ignore
   const jwtTokenDecoded = jwtDecode<JWTHasura>(jwt);
   const userId = parseInt(jwtTokenDecoded.sub);
-  const userRoles = jwtTokenDecoded["https://hasura.io/jwt/claims"]["x-hasura-allowed-roles"];
+  const userRoles =
+    jwtTokenDecoded["https://hasura.io/jwt/claims"]["x-hasura-allowed-roles"];
 
   // Get the configuration file of the currently loggged in user
-  const { isSuccessConfig, configuration } = configurationQuery(
-    userId,
-    hasuraProps,
-    hasuraHeadersVersioning,
-    setUserConfigQueryInput,
-    setDashboardNames,
-    setUserConfig,
-    router
-  );
+  if (isSuccessConfig === false) {
+    const userConfigurationQuery = configurationQuery(
+      userId,
+      hasuraHeadersVersioning,
+      setUserConfigQueryInput,
+      setDashboardNames,
+      setUserConfig,
+      router
+    );
+    userConfigurationQuery.then((res) =>
+      setIsSuccessConfig(res.isSuccessConfig)
+    );
+  }
 
   // Update the user configuration versioning table on modifications
   updateUserConfiguration(
@@ -141,12 +137,18 @@ export default function App({ hasuraProps, systemProps }: any): any {
   );
 
   // Get the all base tables from hasura
-  const { isSuccessTable, tableNames } = tableQuery(
-    hasuraProps,
-    hasuraHeaders,
-    setSiderState,
-    siderMenuState
-  );
+  if (isIntrospectionSuccess === false) {
+    const tableQueryResult = tableQuery(
+      hasuraHeaders,
+      setSiderState,
+      siderMenuState
+    );
+
+    tableQueryResult.then((res) => {
+      setTableNames(res.tableNames);
+      setIsIntrospectionSuccess(true);
+    });
+  }
 
   /**
    * Display a base table in the workspace
@@ -234,14 +236,22 @@ export default function App({ hasuraProps, systemProps }: any): any {
       confirm({
         title: t("dashboard.saveprompt.title"),
         icon: <QuestionCircleOutlined />,
-        content:
+        content: (
           <div>
             <h4>{t("dashboard.saveprompt.description")}</h4>
-            <Button onClick={() => {
-              setWorkspaceState({ displaying: workspaceStates.EDIT_DASHBOARD, name: workspaceState.name });
-              Modal.destroyAll();
-            }}>{t("table.cancel")}</Button>
-          </div>,
+            <Button
+              onClick={() => {
+                setWorkspaceState({
+                  displaying: workspaceStates.EDIT_DASHBOARD,
+                  name: workspaceState.name,
+                });
+                Modal.destroyAll();
+              }}
+            >
+              {t("table.cancel")}
+            </Button>
+          </div>
+        ),
         okText: t("dashboard.saveprompt.savetext"),
         cancelText: t("dashboard.saveprompt.discardtext"),
         onOk() {
@@ -415,7 +425,10 @@ export async function getServerSideProps(context: any) {
       | RequestInfo
       | URL,
   };
-  const systemProps = yaml.load(fs.readFileSync("/app/config/globalConfig.yaml", 'utf-8'));
+  // Read global config file
+  const systemProps = yaml.load(
+    fs.readFileSync("/app/config/globalConfig.yaml", "utf-8")
+  );
   return {
     props: {
       hasuraProps,

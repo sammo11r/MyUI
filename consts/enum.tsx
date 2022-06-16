@@ -19,3 +19,8 @@ export enum columnStates {
   LOADING,
   READY,
 }
+
+export enum siderMenuState {
+  READY,
+  LOADING,
+}

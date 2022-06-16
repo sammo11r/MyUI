@@ -1,6 +1,6 @@
 import React from "react";
 
-import { workspaceStates } from "../const/enum";
+import { workspaceStates } from "../consts/enum";
 import BaseTable from "./BaseTable";
 import Dashboard from "./Dashboard";
 

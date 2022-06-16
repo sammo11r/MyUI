@@ -11,3 +11,21 @@
           		role
           	}
           }
+      - name: Introspection Query
+        query: |
+          query LearnAboutSchema {
+          	__schema {
+          		queryType {
+          			fields {
+          				name
+          			}
+          		}
+          	}
+          }
+      - name: User config
+        query: |
+          query MyQuery ($userId: Int) {
+          	user_versioned_config(where: {user_id:{_eq:$userId}}, order_by: {date:desc}, limit: 1) {
+          		config
+          	}
+          }

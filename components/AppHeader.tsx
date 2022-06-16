@@ -15,7 +15,7 @@ import { useRouter } from "next/router";
 
 import { Image } from 'antd';
 
-import { workspaceStates } from "../const/enum";
+import { workspaceStates } from "../consts/enum";
 import { ItemType } from "antd/lib/menu/hooks/useItems";
 
 /**

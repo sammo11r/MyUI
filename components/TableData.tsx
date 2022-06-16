@@ -9,7 +9,7 @@ import {
 } from "@ant-design/icons";
 
 import Loader from "../components/Loader";
-import { columnStates, workspaceStates } from "../const/enum";
+import { columnStates, workspaceStates } from "../consts/enum";
 import AddDeleteRowMenu from "../components/AddDeleteRowMenu";
 import EditableCell from "../components/EditableCell";
 import {
@@ -17,6 +17,7 @@ import {
   updateRowQuery,
 } from "../components/EditRowsQueries";
 import { queryTableData } from "../components/TableDataQuery";
+import { PasswordEncryptRequest } from "../customTypes";
 
 /**
  * @export
@@ -117,7 +118,7 @@ export default function TableData({
         if (tableName == 'users' && queryInput.hasOwnProperty('password')) {
           await encrypt({
             password: queryInput['password'],
-          }).then((res: any) => {
+          } as PasswordEncryptRequest).then((res: any) => {
             queryInput['password'] = res.encryptedPassword;
           });
         }

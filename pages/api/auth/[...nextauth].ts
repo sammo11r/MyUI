@@ -46,7 +46,6 @@ export default NextAuth({
         var ipAddress = ip.address();
 
         // Modify IP address to forward to docker container
-        // eslint-disable-next-line max-len
         ipAddress =
           ipAddress.substring(0, ipAddress.lastIndexOf(".") + 1) +
           (parseInt(ipAddress.substring(ipAddress.length - 1)) + 1).toString();

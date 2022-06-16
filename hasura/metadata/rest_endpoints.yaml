@@ -1,6 +1,25 @@
 - definition:
     query:
       collection_name: allowed-queries
+      query_name: User config
+  url: config/:userId
+  methods:
+    - GET
+    - POST
+  name: User config
+  comment: Get user config
+- definition:
+    query:
+      collection_name: allowed-queries
+      query_name: Introspection Query
+  url: introspect
+  methods:
+    - GET
+  name: Introspection Query
+  comment: Get all table names
+- definition:
+    query:
+      collection_name: allowed-queries
       query_name: Users
   url: users
   methods:

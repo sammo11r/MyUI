@@ -7,6 +7,7 @@ import {
 } from "@ant-design/icons";
 import type { MenuProps } from "antd";
 import { Dropdown, Menu, message, Space } from "antd";
+import { UserConfigSetting } from "../customTypes";
 
 /**
  * @export
@@ -49,7 +50,7 @@ export default function GlobalSettings({
     // Update user config file
     updateUserConfig({
       mediaDisplaySetting: selectedSetting.toUpperCase(),
-    });
+    } as UserConfigSetting);
 
     // Notify the user
     message.info(t("globalSettings.notification"));
