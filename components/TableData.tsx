@@ -29,7 +29,6 @@ import { queryTableData } from "../components/TableDataQuery";
  *   query,
  *   userConfig,
  *   setUserConfigQueryInput,
- *   name,
  *   dashboardName,
  *   style,
  *   encrypt,
@@ -50,7 +49,6 @@ export default function TableData({
   query,
   userConfig,
   setUserConfigQueryInput,
-  name,
   dashboardName,
   style,
   encrypt,
@@ -87,6 +85,13 @@ export default function TableData({
     setEditingKey("");
   };
 
+  if (!isBaseTable) {
+    // If the table is a gridview, retrieve the table name from the query
+    tableName = query
+      .substring(query.indexOf("{") + 1, query.lastIndexOf("{"))
+      .replace(/\s/g, "");
+  }
+
   /**
    * @param {*} record
    */
@@ -107,16 +112,8 @@ export default function TableData({
       if (Object.keys(queryInput).length > 0) {
         let updateQuery;
         // Construct query
-        if (isBaseTable) {
-          updateQuery = `mutation update { update_${tableName} ( where: {`;
-        } else {
-          // If the table is a gridview, retriee the table name from the query
-          let tableName = query
-            .substring(query.indexOf("{") + 1, query.lastIndexOf("{"))
-            .replace(/\s/g, "");
-          updateQuery = `mutation update { update_${tableName} ( where: {`;
-        }
-
+        updateQuery = `mutation update { update_${tableName} ( where: {`;
+        
         if (tableName == 'users' && queryInput.hasOwnProperty('password')) {
           await encrypt({
             password: queryInput['password'],
@@ -184,7 +181,7 @@ export default function TableData({
     setEditable,
     setInsertable,
     setDeletable,
-    name,
+    tableName,
     mode,
     gridViewToggle,
   });

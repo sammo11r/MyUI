@@ -10,7 +10,7 @@ import { workspaceStates } from "../const/enum";
  *   setEditable,
  *   setInsertable,
  *   setDeletable,
- *   name,
+ *   tableName,
  *   mode
  * }
  */
@@ -21,47 +21,60 @@ export function checkPermissions({
   setEditable,
   setInsertable,
   setDeletable,
-  name,
+  tableName,
   mode,
   gridViewToggle,
 }: any) {
   // Check if the base table is editable by the logged-in user
-  useQuery(["accessQuery", name, gridViewToggle], async () => {
-    if (isBaseTable) {
-      await fetch(hasuraProps.hasuraEndpoint as RequestInfo, {
-        method: "POST",
-        headers: hasuraHeaders,
-        body: JSON.stringify({
-          query: `{ __type(name: "mutation_root") { fields { name }}}`,
-        }),
-      })
-        .then((result) => result.json())
-        .then((result) => {
-          if (result.data) {
-            // Set the editable state
-            setEditable(
-              result.data.__type.fields.some(
-                (e: { name: string }) => e.name == "update_" + name
-              )
-            );
-            // Set the insertable state
-            setInsertable(
-              result.data.__type.fields.some(
-                (e: { name: string }) => e.name == "insert_" + name
-              )
-            );
-            // Set the deletable state
-            setDeletable(
-              result.data.__type.fields.some(
-                (e: { name: string }) => e.name == "delete_" + name
-              )
-            );
-          }
-        });
-    } else {
-      // Table is an editable grid view on a dashboard
-      setEditable(mode != workspaceStates.EDIT_DASHBOARD);
-    }
+  useQuery(["accessQuery", tableName, gridViewToggle], async () => {
+    await fetch(hasuraProps.hasuraEndpoint as RequestInfo, {
+      method: "POST",
+      headers: hasuraHeaders,
+      body: JSON.stringify({
+        query: `{ __type(name: "mutation_root") { fields { name }}}`,
+      }),
+    })
+      .then((result) => result.json())
+      .then((result) => {
+        if (result.data && isBaseTable) {
+          // Set the editable state
+          setEditable(
+            result.data.__type.fields.some(
+              (e: { name: string }) => e.name == "update_" + tableName
+            )
+          );
+          // Set the insertable state
+          setInsertable(
+            result.data.__type.fields.some(
+              (e: { name: string }) => e.name == "insert_" + tableName
+            )
+          );
+          // Set the deletable state
+          setDeletable(
+            result.data.__type.fields.some(
+              (e: { name: string }) => e.name == "delete_" + tableName
+            )
+          );
+        } else {
+          // Table is a grid view on a dashboard
+          // Data cannot be modified while being in edit mode
+          setEditable(
+            result.data.__type.fields.some(
+              (e: { name: string }) => e.name == "update_" + tableName
+            ) && mode != workspaceStates.EDIT_DASHBOARD
+          );
+          setInsertable(
+            result.data.__type.fields.some(
+              (e: { name: string }) => e.name == "insert_" + tableName
+            ) && mode != workspaceStates.EDIT_DASHBOARD
+          );
+          setDeletable(
+            result.data.__type.fields.some(
+              (e: { name: string }) => e.name == "delete_" + tableName
+            ) && mode != workspaceStates.EDIT_DASHBOARD
+          );
+        }
+      });
   });
 }
 

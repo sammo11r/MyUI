@@ -131,7 +131,7 @@ function AddDeleteRowMenu({
   const onFinish = async (values: any) => {
     onReset();
 
-    if (tableName === 'users') {
+    if (tableName === 'users' && values.values.password) {
       await encrypt({
         password: values.values.password,
       }).then((res: any) => {

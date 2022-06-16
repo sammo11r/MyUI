@@ -76,7 +76,6 @@ function BaseTable({
           systemProps={systemProps}
           userConfig={userConfig}
           setUserConfigQueryInput={setUserConfigQueryInput}
-          name={name}
           dashboardName={null}
           hasuraHeaders={hasuraHeaders}
           encrypt={encrypt}

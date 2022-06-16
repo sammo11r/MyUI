@@ -42,7 +42,6 @@ function GridView({
       systemProps={systemProps}
       userConfig={userConfig}
       setUserConfigQueryInput={setUserConfigQueryInput}
-      name={name}
       dashboardName={dashboardName}
       hasuraHeaders={hasuraHeaders}
       t={t}
