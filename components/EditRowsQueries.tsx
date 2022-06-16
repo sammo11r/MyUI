@@ -1,5 +1,6 @@
 import { useQuery } from "react-query";
-import { workspaceStates } from "../const/enum";
+import { resourceLimits } from "worker_threads";
+import { workspaceStates } from "../consts/enum";
 
 /**
  * @export
@@ -36,43 +37,45 @@ export function checkPermissions({
     })
       .then((result) => result.json())
       .then((result) => {
-        if (result.data && isBaseTable) {
-          // Set the editable state
-          setEditable(
-            result.data.__type.fields.some(
-              (e: { name: string }) => e.name == "update_" + tableName
-            )
-          );
-          // Set the insertable state
-          setInsertable(
-            result.data.__type.fields.some(
-              (e: { name: string }) => e.name == "insert_" + tableName
-            )
-          );
-          // Set the deletable state
-          setDeletable(
-            result.data.__type.fields.some(
-              (e: { name: string }) => e.name == "delete_" + tableName
-            )
-          );
-        } else {
-          // Table is a grid view on a dashboard
-          // Data cannot be modified while being in edit mode
-          setEditable(
-            result.data.__type.fields.some(
-              (e: { name: string }) => e.name == "update_" + tableName
-            ) && mode != workspaceStates.EDIT_DASHBOARD
-          );
-          setInsertable(
-            result.data.__type.fields.some(
-              (e: { name: string }) => e.name == "insert_" + tableName
-            ) && mode != workspaceStates.EDIT_DASHBOARD
-          );
-          setDeletable(
-            result.data.__type.fields.some(
-              (e: { name: string }) => e.name == "delete_" + tableName
-            ) && mode != workspaceStates.EDIT_DASHBOARD
-          );
+        if (result.data && result.data.__type) {
+          if (isBaseTable) {
+            // Set the editable state
+            setEditable(
+              result.data.__type.fields.some(
+                (e: { name: string }) => e.name == "update_" + tableName
+              )
+            );
+            // Set the insertable state
+            setInsertable(
+              result.data.__type.fields.some(
+                (e: { name: string }) => e.name == "insert_" + tableName
+              )
+            );
+            // Set the deletable state
+            setDeletable(
+              result.data.__type.fields.some(
+                (e: { name: string }) => e.name == "delete_" + tableName
+              )
+            );
+          } else {
+            // Table is a grid view on a dashboard
+            // Data cannot be modified while being in edit mode
+            setEditable(
+              result.data.__type.fields.some(
+                (e: { name: string }) => e.name == "update_" + tableName
+              ) && mode != workspaceStates.EDIT_DASHBOARD
+            );
+            setInsertable(
+              result.data.__type.fields.some(
+                (e: { name: string }) => e.name == "insert_" + tableName
+              ) && mode != workspaceStates.EDIT_DASHBOARD
+            );
+            setDeletable(
+              result.data.__type.fields.some(
+                (e: { name: string }) => e.name == "delete_" + tableName
+              ) && mode != workspaceStates.EDIT_DASHBOARD
+            );
+          }
         }
       });
   });

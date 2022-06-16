@@ -1,7 +1,9 @@
 import * as fs from "fs";
 import YAML from "yaml";
+import { NextApiRequest, NextApiResponse } from "next";
+import { MessageResponse, ErrorMessageResponse } from "../../../customTypes";
 
-export default async function handler(req: any, res: any) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse<MessageResponse | ErrorMessageResponse>) {
   return new Promise<void>((resolve, reject) => {
     try {
       // Create yaml document
@@ -12,14 +14,14 @@ export default async function handler(req: any, res: any) {
       fs.writeFileSync("/app/config/globalConfig.yaml", doc.toString(), "utf8");
 
       // Send 200 response and resolve promise
-      res.status(200).json({ message: "UserConfig Updated!" });
+      res.status(200).json({ message: "UserConfig Updated!" } as MessageResponse);
       resolve();
     } catch (err) {
       // Log error in the backend container
       console.error(err);
 
       // Send 500 response and resolve promise
-      res.status(500).json({ message: "Error writing file" });
+      res.status(500).json({ message: "Error writing file" } as ErrorMessageResponse);
       resolve();
     }
   });

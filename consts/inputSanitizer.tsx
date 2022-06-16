@@ -14,7 +14,7 @@ export function isAllowed(str: string): boolean {
  * @param str The string to convert
  * @returns The string with all escape characters converted
  */
-export function stringify(str: string) {
+export function stringify(str: string): string {
   return str.replaceAll("\n", "[ENTER]")
 }
 
@@ -23,6 +23,6 @@ export function stringify(str: string) {
  * @param str The string to convert
  * @returns The string with all escape characters converted
  */
-export function parse(str: string) {
+export function parse(str: string): string {
   return str.replaceAll("[ENTER]", "\n")
 }

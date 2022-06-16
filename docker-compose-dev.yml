@@ -9,7 +9,7 @@ services:
     volumes:
       - ./pages:/app/pages:ro
       - ./components:/app/components:ro
-      - ./const:/app/const:ro
+      - ./consts:/app/consts:ro
       - ./styles:/app/styles:ro
     # env_file:
     #   - ./.env

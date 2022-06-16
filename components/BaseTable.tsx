@@ -4,7 +4,7 @@ import { useSession } from "next-auth/react";
 
 import Loader from "../components/Loader";
 import TableData from "../components/TableData";
-import { columnStates } from "../const/enum";
+import { columnStates } from "../consts/enum";
 
 /**
  * @param {*} {

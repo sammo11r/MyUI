@@ -1,8 +1,11 @@
+import { NextApiResponse } from "next";
+import { PasswordEncryptRequest } from "../customTypes";
+
 /**
  * Make a call to the backend to encrpyt the password
  * @param password
  */
- export const encrypt = async (password: any) => {
+ export const encrypt = async (password: PasswordEncryptRequest) => {
     const rawResponse = await fetch("http://localhost:3000/api/encrypt", {
       method: "POST",
       headers: {

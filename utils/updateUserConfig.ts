@@ -1,8 +1,10 @@
+import { UserConfigSetting } from '../customTypes';
+
 /**
  * Make a call to the backend to update the user configuration file
  * @param userConfig The user configuration object
  */
- export const updateUserConfig = async (userConfig: any) => {
+ export const updateUserConfig = async (userConfig: UserConfigSetting) => {
     const rawResponse = await fetch("http://localhost:3000/api/configWriter", {
       method: "POST",
       headers: {

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { message, Popover, Button, Form, Input } from "antd";
 import { useQuery } from "react-query";
 import { PlusCircleOutlined, MinusCircleOutlined } from '@ant-design/icons';
+import { PasswordEncryptRequest } from "../customTypes";
 
 import {
   checkPermissions,
@@ -49,6 +50,16 @@ function AddDeleteRowMenu({
     var parsedData = JSON.parse(data);
     return parsedData.title;
   })
+
+  const columnsFiltered = columns.filter((item: string) => {
+    return !item.endsWith('_at');
+  })
+
+  let columnsUnfiltered: any;
+  if (tableName === 'users') {
+    columnsUnfiltered = columns;
+    columns = columnsFiltered;
+  }
 
   // Define constants used for add and delete row menu
   const [clickedAdd, setClickedAdd] = useState(false);
@@ -146,7 +157,6 @@ function AddDeleteRowMenu({
     }
 
     const columns = Object.keys(values.values);
-
     // Define the variables needed for the mutation
     let name = 'insert_' + tableName;
     let column = columns[0];
@@ -172,6 +182,10 @@ function AddDeleteRowMenu({
     const value = [];
     for (var key in selectedRow) {
       value.push(selectedRow[key]);
+    }
+
+    if (tableName === 'users') {
+      columns = columnsUnfiltered;
     }
 
     // Define the variables needed for the mutation

@@ -1,7 +1,7 @@
 import React from "react";
 import "antd/dist/antd.css";
 import { Layout, Menu } from "antd";
-import { sideBarItemTypes } from "../const/enum";
+import { sideBarItemTypes } from "../consts/enum";
 import {
   TableOutlined,
   PicCenterOutlined,

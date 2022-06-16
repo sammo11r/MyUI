@@ -7,7 +7,7 @@ import {
   UploadOutlined
 } from "@ant-design/icons";
 
-import { isAllowed } from "../const/inputSanitizer";
+import { isAllowed } from "../consts/inputSanitizer";
 
 const { confirm } = Modal;
 
