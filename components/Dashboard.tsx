@@ -143,6 +143,7 @@ export default function Dashboard({
           <StaticElement
             text={parse(element.text)}
             style={{ height: "100%", width: "100%" }}
+            mediaDisplaySetting={systemProps.mediaDisplaySetting}
           />
         );
         break;
