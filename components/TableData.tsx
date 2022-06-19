@@ -68,6 +68,10 @@ export default function TableData({
     dataState: columnStates.LOADING,
   });
 
+  const [selectionType, setSelectionType] = useState("checkbox");
+  const [selectedRowKeys, setSelectedRowKeys] = useState([""]);
+  const [selectedRow, setSelectedRow] = useState([""]);
+
   // Define state variables for data modification actions
   const [editable, setEditable] = useState(false);
   const [insertable, setInsertable] = useState(false);
@@ -202,7 +206,7 @@ export default function TableData({
     mediaDisplaySetting,
     gridViewToggle,
     t,
-  });
+  });  
 
   const mergedColumns = tableState.columns.map((col: any) => {
     if (!col.editable) {
@@ -213,7 +217,7 @@ export default function TableData({
       ...col,
       onCell: (record: any) => ({
         record,
-        inputType: typeof col.dataIndex == "string" ? "text" : "number", //TODO
+        inputType: "text",
         dataIndex: col.dataIndex,
         title: col.title,
         editing: isEditing(record),
@@ -258,10 +262,6 @@ export default function TableData({
       },
     });
   }
-
-  const [selectionType, setSelectionType] = useState("checkbox");
-  const [selectedRowKeys, setSelectedRowKeys] = useState([""]);
-  const [selectedRow, setSelectedRow] = useState([""]);
 
   const rowSelection: any = {
     selectedRowKeys: selectedRowKeys,
@@ -320,7 +320,7 @@ export default function TableData({
                   },
                 }}
                 size="small"
-                key={name}
+                key={tableName}
                 dataSource={tableState.data}
                 columns={mergedColumns}
                 footer={setFooter}

@@ -33,6 +33,7 @@ function GridView({
   hasuraHeaders,
   mode,
   t,
+  encrypt
 }: any): any {
   return (
     <TableData
@@ -44,6 +45,7 @@ function GridView({
       setUserConfigQueryInput={setUserConfigQueryInput}
       dashboardName={dashboardName}
       hasuraHeaders={hasuraHeaders}
+      encrypt={encrypt}
       t={t}
       isBaseTable={false}
       tableName={name}

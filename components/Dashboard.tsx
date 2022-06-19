@@ -27,6 +27,7 @@ const ResponsiveReactGridLayout = WidthProvider(Responsive);
  *   gridViewToggle, 
  *   setGridViewToggle,
  *   t,
+ *   encrypt
  * }
  * @return {*}  {JSX.Element}
  */
@@ -43,6 +44,7 @@ export default function Dashboard({
   gridViewToggle, 
   setGridViewToggle,
   t,
+  encrypt
 }: any): JSX.Element {
   /**
    * Edit an element on the dashboard
@@ -114,7 +116,8 @@ export default function Dashboard({
     setUserConfigQueryInput: any,
     dashboardState: any,
     mode: any,
-    t: any
+    t: any,
+    encrypt: any
   ): JSX.Element {
     let rendered_element = <p>{t("dashboard.element.unknown")}</p>;
     // Render element based on type
@@ -134,6 +137,7 @@ export default function Dashboard({
             hasuraHeaders={hasuraHeaders}
             mode={mode}
             t={t}
+            encrypt={encrypt}
             style={{ height: "100%", width: "100%", overflow: "auto" }}
           />
         );
@@ -283,7 +287,8 @@ export default function Dashboard({
             setUserConfigQueryInput,
             dashboardState,
             mode,
-            t
+            t,
+            encrypt
           )
       )}
     </ResponsiveReactGridLayout>

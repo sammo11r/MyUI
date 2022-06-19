@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useQuery } from "react-query";
-import { useSession } from "next-auth/react";
 
 import Loader from "../components/Loader";
 import TableData from "../components/TableData";
@@ -41,8 +40,6 @@ function BaseTable({
     columnState: columnStates.LOADING,
   });
 
-  let tableName = name;
-
   // Get the columns of the base table
   useQuery(["columnQuery", name], async () => {
     setColumnState({ columns: [{}], columnState: columnStates.LOADING });
@@ -50,7 +47,7 @@ function BaseTable({
       method: "POST",
       headers: hasuraHeaders,
       body: JSON.stringify({
-        query: `query Columns { __type(name: "${tableName}") { fields { name }}}`,
+        query: `query Columns { __type(name: "${name}") { fields { name }}}`,
       }),
     })
       .then((names) => names.json())
@@ -62,21 +59,20 @@ function BaseTable({
       });
 
     setColumnState({ columns: result, columnState: columnStates.READY });
-    return result;
+    setGridViewToggle(!gridViewToggle);
   });
 
   return (
     <>
       {columnState.columnState == columnStates.READY ? (
-        // If there is data, display table
         <TableData
           hasuraProps={hasuraProps}
-          query={`{ ${tableName} { ${columnState.columns} }}`}
+          query={`{ ${name} { ${columnState.columns} }}`}
           style={null}
           systemProps={systemProps}
           userConfig={userConfig}
           setUserConfigQueryInput={setUserConfigQueryInput}
-          dashboardName={null}
+          dashboardName={''}
           hasuraHeaders={hasuraHeaders}
           encrypt={encrypt}
           t={t}

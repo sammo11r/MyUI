@@ -73,6 +73,7 @@ function Workspace({
           gridViewToggle={gridViewToggle}
           setGridViewToggle={setGridViewToggle}
           t={t}
+          encrypt={encrypt}
         />
       );
     case workspaceStates.EMPTY:
