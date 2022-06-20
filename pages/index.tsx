@@ -313,6 +313,7 @@ export default function App({ hasuraProps, systemProps }: any): any {
         dashboardOnClick={(name: string) => {
           displayDashboard(name, userConfig);
         }}
+        selectedKeys={dashboardState.dashboard.name}
         t={t}
       />
     );
