@@ -203,12 +203,13 @@ export default function ManageDashboardsModal({
 
           setDashboardNames(newDashboardNames);
           setUserConfigQueryInput(userConfig);
-
-          // Display the newly created dashboard in the working space
-          displayDashboard(name, userConfig);
+          
           hideModal();
           saveDashboardChanges(userConfig, uploadState);
           setUploadState(defaultDashboard);
+
+          // Display the newly created dashboard in the working space
+          displayDashboard(name, userConfig);
 
           //@ts-ignore
           (document.getElementsByClassName("upload-json") as HTMLInputElement)[0].value = null;

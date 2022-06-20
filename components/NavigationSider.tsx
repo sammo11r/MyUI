@@ -99,7 +99,6 @@ function NavigationSider({
   baseTableNames,
   dashboardNames,
   selectedKeys,
-  openKeys,
   baseTableOnClick,
   dashboardOnClick,
   t,
@@ -108,8 +107,7 @@ function NavigationSider({
     <Sider width={200} className="site-layout-background" data-testid="sider">
       <Menu
         mode="inline"
-        defaultSelectedKeys={selectedKeys}
-        defaultOpenKeys={openKeys}
+        selectedKeys={[selectedKeys]}
         style={{
           height: "100%",
           borderRight: 0,
