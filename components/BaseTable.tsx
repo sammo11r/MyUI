@@ -3,24 +3,25 @@ import { useQuery } from "react-query";
 
 import Loader from "../components/Loader";
 import TableData from "../components/TableData";
-import { columnStates } from "../consts/enum";
+import { loadingState } from "../consts/enum";
+import { BaseTableProps } from "../utils/customTypes";
 
 /**
- * @param {*} {
+ * @param {BaseTableProps} {
  *   hasuraProps,
  *   systemProps,
  *   name,
  *   userConfig,
  *   setUserConfigQueryInput,
  *   hasuraHeaders,
- *   encrypt
- *   gridViewToggle, 
+ *   encrypt,
+ *   gridViewToggle,
  *   setGridViewToggle,
  *   t,
+ *   mode
  * }
- * @return {*}  {*}
+ * @return {*}  {JSX.Element}
  */
-
 function BaseTable({
   hasuraProps,
   systemProps,
@@ -29,20 +30,20 @@ function BaseTable({
   setUserConfigQueryInput,
   hasuraHeaders,
   encrypt,
-  gridViewToggle, 
+  gridViewToggle,
   setGridViewToggle,
   t,
-  mode
-}: any): any {
+  mode,
+}: BaseTableProps): JSX.Element {
   // Add state deciding whether to show loader or table
   const [columnState, setColumnState] = useState({
     columns: [{}],
-    columnState: columnStates.LOADING,
+    columnState: loadingState.LOADING,
   });
 
   // Get the columns of the base table
   useQuery(["columnQuery", name], async () => {
-    setColumnState({ columns: [{}], columnState: columnStates.LOADING });
+    setColumnState({ columns: [{}], columnState: loadingState.LOADING });
     let result = await fetch(hasuraProps.hasuraEndpoint as RequestInfo, {
       method: "POST",
       headers: hasuraHeaders,
@@ -58,21 +59,21 @@ function BaseTable({
         );
       });
 
-    setColumnState({ columns: result, columnState: columnStates.READY });
+    setColumnState({ columns: result, columnState: loadingState.READY });
     setGridViewToggle(!gridViewToggle);
   });
 
   return (
     <>
-      {columnState.columnState == columnStates.READY ? (
+      {columnState.columnState == loadingState.READY ? (
         <TableData
           hasuraProps={hasuraProps}
           query={`{ ${name} { ${columnState.columns} }}`}
-          style={null}
+          style={undefined}
           systemProps={systemProps}
           userConfig={userConfig}
           setUserConfigQueryInput={setUserConfigQueryInput}
-          dashboardName={''}
+          dashboardName={""}
           hasuraHeaders={hasuraHeaders}
           encrypt={encrypt}
           t={t}

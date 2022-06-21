@@ -1,9 +1,10 @@
 import React from "react";
 import TableData from "../components/TableData";
+import { GridViewProps } from "../utils/customTypes";
 
 /**
- * @param {*} {
- *   gridViewToggle, 
+ * @param {GridViewProps} {
+ *   gridViewToggle,
  *   setGridViewToggle,
  *   hasuraProps,
  *   query,
@@ -16,11 +17,12 @@ import TableData from "../components/TableData";
  *   hasuraHeaders,
  *   mode,
  *   t,
+ *   encrypt
  * }
- * @return {*}  {*}
+ * @return {*}  {JSX.Element}
  */
-function GridView({
-  gridViewToggle, 
+export default function GridView({
+  gridViewToggle,
   setGridViewToggle,
   hasuraProps,
   query,
@@ -33,8 +35,8 @@ function GridView({
   hasuraHeaders,
   mode,
   t,
-  encrypt
-}: any): any {
+  encrypt,
+}: GridViewProps): JSX.Element {
   return (
     <TableData
       hasuraProps={hasuraProps}
@@ -55,5 +57,3 @@ function GridView({
     ></TableData>
   );
 }
-
-export default GridView;

@@ -1,21 +1,26 @@
-import React, { useState } from "react";
-import { Button, Layout, Popover, Form, Input } from "antd";
-import { TableOutlined, BorderOutlined, DownloadOutlined } from "@ant-design/icons";
+import React, { ReactNode } from "react";
+import { Button, Layout } from "antd";
+import {
+  TableOutlined,
+  BorderOutlined,
+  DownloadOutlined,
+} from "@ant-design/icons";
 
 import { elementType } from "../consts/enum";
+import { EditModeSiderProps } from "../utils/customTypes";
 
 const { Sider } = Layout;
 
 /**
  * @export
- * @param {*} {
+ * @param {EditModeSiderProps} {
  *   userConfig,
  *   dashboardState,
  *   loadings,
  *   saveDashboardChanges,
- *   t
+ *   t,
  * }
- * @return {*}  {*}
+ * @return {*}  {JSX.Element}
  */
 export default function EditModeSider({
   userConfig,
@@ -23,20 +28,19 @@ export default function EditModeSider({
   loadings,
   saveDashboardChanges,
   t,
-}: any): any {
-  
+}: EditModeSiderProps): JSX.Element {
   /**
    * Define a draggable element for the sider
    *
    * @param {elementType} type
    * @param {string} text
-   * @param {*} icon
+   * @param {ReactNode} icon
    * @return {*}  {JSX.Element}
    */
   const draggableElement = (
     type: elementType,
     text: string,
-    icon: any
+    icon: ReactNode
   ): JSX.Element => {
     return (
       <Button
@@ -45,15 +49,17 @@ export default function EditModeSider({
         onDragStart={(e) => {
           e.dataTransfer.setData("text/plain", elementType[type]);
         }}
+        icon={icon}
       >
-        {icon}
         {text}
       </Button>
     );
   };
 
-  // Download the dashboard configurationfile as a JSON
-  const downloadDashboard = () => {
+  /**
+   * Download the dashboard configurationfile as a JSON
+   */
+  const downloadDashboard = (): void => {
     // Format the data
     const fileData = JSON.stringify(dashboardState);
     const blob = new Blob([fileData], { type: "text/plain" });
@@ -64,7 +70,7 @@ export default function EditModeSider({
     link.download = "dashboardConfig-" + name + ".json";
     link.href = url;
     link.click();
-  }
+  };
 
   // Render the sider with the draggable elements
   return (
@@ -89,8 +95,8 @@ export default function EditModeSider({
         {t("dashboard.save")}
       </Button>
       {/* Add the download button */}
-      <Button 
-        style={{ width: "100%" }} 
+      <Button
+        style={{ width: "100%" }}
         onClick={() => downloadDashboard()}
         icon={<DownloadOutlined />}
       >

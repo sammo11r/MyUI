@@ -1,7 +1,6 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import "antd/dist/antd.css";
 import { Layout, Menu } from "antd";
-import { sideBarItemTypes } from "../consts/enum";
 import {
   TableOutlined,
   PicCenterOutlined,
@@ -9,27 +8,15 @@ import {
   MinusCircleOutlined,
 } from "@ant-design/icons";
 
+import { sideBarItemType } from "../consts/enum";
+import { NavigationSiderProps } from "../utils/customTypes";
+import { MenuItemType } from "rc-menu/lib/interface";
+
 const { Sider } = Layout;
 const dashboardAddKey = "dashboardAdd";
 const dashboardRemoveKey = "dashboardDelete";
 
-/**
- * @param {*} label
- * @param {*} key
- * @param {*} icon
- * @param {*} children
- * @return {*}
- */
-function getItem(label: any, key: any, icon: any, children: any) {
-  return {
-    key,
-    icon,
-    children,
-    label,
-  };
-}
-
-let storedSideBarItems: any;
+let storedSideBarItems: MenuItemType[];
 
 /**
  * @param {string[]} tableNames
@@ -40,43 +27,79 @@ let storedSideBarItems: any;
 function getSideBarItems(
   tableNames: string[],
   dashboardNames: string[],
-  t: any
+  t: (arg0: string) => string
 ) {
-  // Due to queries doing wonky stuff and executing 4 times,
-  // later calls to this function might end up with undefined names, hence save copy
   if (!tableNames) return storedSideBarItems;
+
+  /**
+   * @param {sideBarItemType} key
+   * @param {string} label
+   * @param {ReactNode} icon
+   * @param {string[]} children
+   * @return {*}  {({key: sideBarItemType, label: string, icon: ReactNode, children: { key: string; label: string; icon: JSX.Element|null; }[] })}
+   */
+  function getItem(
+    key: sideBarItemType,
+    label: string,
+    icon: ReactNode,
+    children: string[]
+  ): {
+    key: sideBarItemType;
+    label: string;
+    icon: ReactNode;
+    children: { key: string; label: string; icon: JSX.Element | null }[];
+  } {
+    return {
+      key: key,
+      label: label,
+      icon: icon,
+      children: children.map(getChildren),
+    };
+  }
+
+  /**
+   * @param {string} name
+   * @return {*}  {({ key: string; label: string; icon: JSX.Element|null; })}
+   */
+  function getChildren(name: string): {
+    key: string;
+    label: string;
+    icon: JSX.Element | null;
+  } {
+    switch (name) {
+      case dashboardAddKey:
+        return {
+          key: dashboardAddKey,
+          label: t("dashboard.new"),
+          icon: <PlusCircleOutlined />,
+        };
+      case dashboardRemoveKey:
+        return {
+          key: dashboardRemoveKey,
+          label: t("dashboard.delete"),
+          icon: <MinusCircleOutlined />,
+        };
+      default:
+        return {
+          key: name,
+          label: name,
+          icon: null,
+        };
+    }
+  }
 
   let dashboardItems = [
     getItem(
+      sideBarItemType.BASE_TABLE,
       t("basetable.sidebar"),
-      sideBarItemTypes.BASE_TABLE,
       <TableOutlined />,
-      tableNames.map((name: string) => getItem(name, `${name}`, null, null))
+      tableNames
     ),
     getItem(
+      sideBarItemType.DASHBOARD,
       t("dashboard.sidebar"),
-      sideBarItemTypes.DASHBOARD,
       <PicCenterOutlined />,
-      dashboardNames
-        .map((name: string) => getItem(name, `${name}`, null, null))
-        .concat([
-          {
-            ...getItem(
-              t("dashboard.new"),
-              dashboardAddKey,
-              <PlusCircleOutlined />,
-              null
-            ),
-          },
-          {
-            ...getItem(
-              t("dashboard.delete"),
-              dashboardRemoveKey,
-              <MinusCircleOutlined />,
-              null
-            ),
-          },
-        ])
+      dashboardNames.concat(dashboardAddKey, dashboardRemoveKey)
     ),
   ];
   storedSideBarItems = dashboardItems;
@@ -84,16 +107,15 @@ function getSideBarItems(
 }
 
 /**
- * @param {*} {
+ * @param {NavigationSiderProps} {
  *   baseTableNames,
  *   dashboardNames,
  *   selectedKeys,
- *   openKeys,
  *   baseTableOnClick,
  *   dashboardOnClick,
- *   t
+ *   t,
  * }
- * @return {*}
+ * @return {*}  {JSX.Element}
  */
 function NavigationSider({
   baseTableNames,
@@ -102,7 +124,7 @@ function NavigationSider({
   baseTableOnClick,
   dashboardOnClick,
   t,
-}: any): any {
+}: NavigationSiderProps): JSX.Element {
   return (
     <Sider width={200} className="site-layout-background" data-testid="sider">
       <Menu
@@ -118,10 +140,10 @@ function NavigationSider({
           const itemType: string = item.keyPath[1];
 
           switch (itemType) {
-            case sideBarItemTypes.BASE_TABLE.toString():
+            case sideBarItemType.BASE_TABLE.toString():
               baseTableOnClick(item.key);
               break;
-            case sideBarItemTypes.DASHBOARD.toString():
+            case sideBarItemType.DASHBOARD.toString():
               dashboardOnClick(item.key);
               break;
           }

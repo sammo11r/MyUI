@@ -3,14 +3,14 @@ import { Spin } from "antd";
 import "antd/dist/antd.css";
 
 /**
- * @return {*}  {*}
+ * The throbber used to represent loading
+ *
+ * @return {*}  {JSX.Element}
  */
-function Loader(): any {
+export default function Loader(): JSX.Element {
   return (
     <Spin
       style={{ margin: "auto", position: "relative", top: "50%", left: "50%" }}
     />
   );
 }
-
-export default Loader;

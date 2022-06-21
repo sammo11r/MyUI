@@ -1,20 +1,28 @@
-import React from "react";
-import { Modal } from "antd";
+import React, { BaseSyntheticEvent } from "react";
+import { Layout, Modal } from "antd";
 import GridLayout from "react-grid-layout";
 import { Responsive, WidthProvider } from "react-grid-layout";
 
-import { workspaceStates, elementType } from "../consts/enum";
+import { workspaceType, elementType } from "../consts/enum";
 import { DeleteOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
 import GridView from "./GridView";
 import StaticElement from "./StaticElement";
 import { parse, stringify } from "../consts/inputSanitizer";
+import {
+  DashboardElementType,
+  DashboardProps,
+  DashboardState,
+  HasuraProps,
+  SystemProps,
+  UserConfig,
+} from "../utils/customTypes";
 
 const { confirm } = Modal;
 const ResponsiveReactGridLayout = WidthProvider(Responsive);
 
 /**
  * @export
- * @param {*} {
+ * @param {DashboardProps} {
  *   hasuraProps,
  *   systemProps,
  *   mode,
@@ -24,7 +32,7 @@ const ResponsiveReactGridLayout = WidthProvider(Responsive);
  *   setEditElementModalState,
  *   setUserConfigQueryInput,
  *   hasuraHeaders,
- *   gridViewToggle, 
+ *   gridViewToggle,
  *   setGridViewToggle,
  *   t,
  *   encrypt
@@ -41,19 +49,19 @@ export default function Dashboard({
   setEditElementModalState,
   setUserConfigQueryInput,
   hasuraHeaders,
-  gridViewToggle, 
+  gridViewToggle,
   setGridViewToggle,
   t,
-  encrypt
-}: any): JSX.Element {
+  encrypt,
+}: DashboardProps): JSX.Element {
   /**
    * Edit an element on the dashboard
    *
-   * @param {*} event
+   * @param {BaseSyntheticEvent} event
    * @param {number} index
    */
-  const editElement = (event: any, index: number) => {
-    if (mode !== workspaceStates.EDIT_DASHBOARD) {
+  const editElement = (event: BaseSyntheticEvent, index: number) => {
+    if (mode !== workspaceType.EDIT_DASHBOARD) {
       return;
     }
     event.preventDefault();
@@ -94,30 +102,35 @@ export default function Dashboard({
   /**
    * Render dashboard elements
    *
-   * @param {*} element
-   * @param {*} hasuraProps
+   * @param {boolean} gridViewToggle
+   * @param {React.Dispatch<React.SetStateAction<boolean>>} setGridViewToggle
+   * @param {DashboardElementType} element
+   * @param {HasuraProps} hasuraProps
    * @param {number} index
-   * @param {*} systemProps
-   * @param {*} userConfig
-   * @param {*} setUserConfigQueryInput
-   * @param {*} dashboardState
-   * @param {*} mode
-   * @param {*} t
+   * @param {SystemProps} systemProps
+   * @param {UserConfig} userConfig
+   * @param {(React.Dispatch<React.SetStateAction<UserConfig | undefined>>)} setUserConfigQueryInput
+   * @param {DashboardState} dashboardState
+   * @param {workspaceType} mode
+   * @param {(arg0: string) => string} t
+   * @param {(password: string) => Promise<any>} encrypt
    * @return {*}  {JSX.Element}
    */
   function renderDashboardElement(
-    gridViewToggle: any, 
-    setGridViewToggle: any,
-    element: any,
-    hasuraProps: any,
+    gridViewToggle: boolean,
+    setGridViewToggle: React.Dispatch<React.SetStateAction<boolean>>,
+    element: DashboardElementType,
+    hasuraProps: HasuraProps,
     index: number,
-    systemProps: any,
-    userConfig: any,
-    setUserConfigQueryInput: any,
-    dashboardState: any,
-    mode: any,
-    t: any,
-    encrypt: any
+    systemProps: SystemProps,
+    userConfig: UserConfig,
+    setUserConfigQueryInput: React.Dispatch<
+      React.SetStateAction<UserConfig | undefined>
+    >,
+    dashboardState: DashboardState,
+    mode: workspaceType,
+    t: (arg0: string) => string,
+    encrypt: (password: { password: string }) => Promise<any>
   ): JSX.Element {
     let rendered_element = <p>{t("dashboard.element.unknown")}</p>;
     // Render element based on type
@@ -166,7 +179,7 @@ export default function Dashboard({
           h: element.h,
         }}
       >
-        {mode === workspaceStates.EDIT_DASHBOARD ? (
+        {mode === workspaceType.EDIT_DASHBOARD ? (
           <DeleteOutlined
             style={{
               position: "absolute",
@@ -175,7 +188,7 @@ export default function Dashboard({
               right: "5px",
               top: "5px",
             }}
-            onClick={(e) => showDeleteConfirm(index)}
+            onClick={() => showDeleteConfirm(index)}
           />
         ) : null}
         {rendered_element}
@@ -220,9 +233,10 @@ export default function Dashboard({
     }
 
     // Define the element
-    let element = {
+    let element: DashboardElementType = {
       // Give the element a unique name
       name: crypto.randomUUID(),
+      ordering: { by: undefined, direction: undefined },
       x: layoutItem["x"],
       y: layoutItem["y"],
       w: layoutItem["w"],
@@ -251,9 +265,9 @@ export default function Dashboard({
       compactType={null}
       preventCollision={true}
       isBounded={true}
-      isDroppable={mode === workspaceStates.EDIT_DASHBOARD}
-      isDraggable={mode === workspaceStates.EDIT_DASHBOARD}
-      isResizable={mode === workspaceStates.EDIT_DASHBOARD}
+      isDroppable={mode === workspaceType.EDIT_DASHBOARD}
+      isDraggable={mode === workspaceType.EDIT_DASHBOARD}
+      isResizable={mode === workspaceType.EDIT_DASHBOARD}
       onDrop={onDrop}
       onDragStop={saveChange}
       onResizeStop={saveChange}
@@ -262,7 +276,7 @@ export default function Dashboard({
       // the elements in the correct position after deleting
       layouts={{
         bp: dashboardState.dashboard.dashboardElements.map(
-          (element: any, index: number) => {
+          (element: DashboardElementType, index: number) => {
             return {
               i: index,
               x: element.x,
@@ -275,9 +289,9 @@ export default function Dashboard({
       }}
     >
       {dashboardState.dashboard.dashboardElements.map(
-        (element: any, index: number) =>
+        (element: DashboardElementType, index: number) =>
           renderDashboardElement(
-            gridViewToggle, 
+            gridViewToggle,
             setGridViewToggle,
             element,
             hasuraProps,

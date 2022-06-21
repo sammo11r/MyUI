@@ -1,12 +1,14 @@
 import { NextRouter } from "next/router";
 import { useQuery } from "react-query";
+import { loadingState } from "../consts/enum";
+import { DashboardType, HasuraProps, UserConfig } from "../utils/customTypes";
 import { getUserConfig } from "../utils/getUserConfig";
 import { introspect } from "../utils/introspectionQuery";
 
 // Define the default UI configuration
-const defaultConfiguration = {
+export const defaultConfiguration: UserConfig = {
   dashboards: [],
-  uiPreferences: { // @TODO this is hardcoded
+  uiPreferences: {
     language: "en",
   },
   baseTables: [],
@@ -16,21 +18,22 @@ const defaultConfiguration = {
  * Retrieve configuration file
  *
  * @export
- * @param {string} userId
- * @param {*} hasuraProps
- * @param {*} hasuraHeadersVersioning
- * @param {*} setUserConfigQueryInput
- * @param {*} setDashboardNames
- * @param {*} setUserConfig
- * @param {*} router
+ * @param {number} userId
+ * @param {HeadersInit} hasuraHeadersVersioning
+ * @param {(React.Dispatch<React.SetStateAction<UserConfig | undefined>>)} setUserConfigQueryInput
+ * @param {React.Dispatch<React.SetStateAction<string[]>>} setDashboardNames
+ * @param {React.Dispatch<React.SetStateAction<UserConfig>>} setUserConfig
+ * @param {NextRouter} router
  * @return {*}
  */
 export async function configurationQuery(
   userId: number,
   hasuraHeadersVersioning: HeadersInit,
-  setUserConfigQueryInput: React.Dispatch<React.SetStateAction<undefined>>,
+  setUserConfigQueryInput: React.Dispatch<
+    React.SetStateAction<UserConfig | undefined>
+  >,
   setDashboardNames: React.Dispatch<React.SetStateAction<string[]>>,
-  setUserConfig: React.Dispatch<React.SetStateAction<undefined>>,
+  setUserConfig: React.Dispatch<React.SetStateAction<UserConfig>>,
   router: NextRouter
 ) {
   // Get the router variables
@@ -51,7 +54,7 @@ export async function configurationQuery(
     // Get the dashboard names to display on the sidebar
     const dashboards = userConfig.dashboards;
     let dashboardNames = dashboards.map(
-      (dashboard: any) => dashboard.name
+      (dashboard: DashboardType) => dashboard.name
     );
     setDashboardNames(dashboardNames);
     setUserConfig(userConfig);
@@ -73,17 +76,19 @@ export async function configurationQuery(
  *
  * @export
  * @param {number} userId
- * @param {*} hasuraProps
- * @param {*} hasuraHeadersVersioning
- * @param {*} setUserConfigQueryInput
- * @param {*} userConfigQueryInput
+ * @param {HasuraProps} hasuraProps
+ * @param {HeadersInit} hasuraHeadersVersioning
+ * @param {(React.Dispatch<React.SetStateAction<UserConfig | undefined>>)} setUserConfigQueryInput
+ * @param {UserConfig} userConfigQueryInput
  */
 export function updateUserConfiguration(
   userId: number,
-  hasuraProps: any,
-  hasuraHeadersVersioning: any,
-  setUserConfigQueryInput: any,
-  userConfigQueryInput: any
+  hasuraProps: HasuraProps,
+  hasuraHeadersVersioning: HeadersInit,
+  setUserConfigQueryInput: React.Dispatch<
+    React.SetStateAction<UserConfig | undefined>
+  >,
+  userConfigQueryInput?: UserConfig
 ) {
   useQuery(
     ["updateUserConfiguration", userId, userConfigQueryInput],
@@ -96,7 +101,7 @@ export function updateUserConfiguration(
           '\\"'
         );
 
-        let result = await fetch(hasuraProps.hasuraEndpoint as RequestInfo, {
+        await fetch(hasuraProps.hasuraEndpoint as RequestInfo, {
           method: "POST",
           headers: hasuraHeadersVersioning,
           body: JSON.stringify({
@@ -115,22 +120,22 @@ export function updateUserConfiguration(
  * Retrieve table names the user has access to
  *
  * @export
- * @param {*} hasuraHeaders
- * @param {*} setSiderState
- * @param {*} siderMenuState
+ * @param {HeadersInit} hasuraHeaders
+ * @param {React.Dispatch<React.SetStateAction<{ tableNames: never[]; tableNamesState: loadingState; }>>} setSiderState
  * @return {*}
  */
 export async function tableQuery(
-  hasuraHeaders: any,
-  setSiderState: any,
-  siderMenuState: any
+  hasuraHeaders: HeadersInit,
+  setSiderState: React.Dispatch<
+    React.SetStateAction<{ tableNames: never[]; tableNamesState: loadingState }>
+  >
 ) {
   // Get the all base tables from backend API
   const instances = await introspect(hasuraHeaders);
   setSiderState({
     tableNames: instances,
-    tableNamesState: siderMenuState.READY,
+    tableNamesState: loadingState.READY,
   });
 
-  return { tableNames: instances }
+  return { tableNames: instances };
 }

@@ -1,22 +1,38 @@
 import bcrypt from "bcrypt";
 import { NextApiRequest, NextApiResponse } from "next";
-import { PasswordResponse, ErrorMessageResponse } from "../../../customTypes";
+import {
+  PasswordResponse,
+  ErrorMessageResponse,
+} from "../../../utils/customTypes";
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse<PasswordResponse | ErrorMessageResponse>) {
+/**
+ * @export
+ * @param {NextApiRequest} req
+ * @param {(NextApiResponse<PasswordResponse | ErrorMessageResponse>)} res
+ * @return {*}
+ */
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse<PasswordResponse | ErrorMessageResponse>
+) {
   return new Promise<void>((resolve, reject) => {
     try {
       // Create yaml document
       const encryptedPassword = bcrypt.hashSync(req.body.password, 10);
 
       // Send 200 response and resolve promise
-      res.status(200).json({ encryptedPassword: encryptedPassword } as PasswordResponse);
+      res
+        .status(200)
+        .json({ encryptedPassword: encryptedPassword } as PasswordResponse);
       resolve();
-    } catch (err) {
-      // Log error in the backend container
-      console.error(err);
+    } catch (error) {
+      // Log the error in the backend container
+      console.error(error);
 
-      // Send 500 response and resolve promise
-      res.status(500).json({ message: "Error encrypting password" } as ErrorMessageResponse);
+      // Resolve promise and send 500 response and 
+      res
+        .status(500)
+        .json({ message: "Error encrypting password" } as ErrorMessageResponse);
       resolve();
     }
   });
