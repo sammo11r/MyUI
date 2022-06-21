@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import React from "react";
 import "antd/dist/antd.css";
 import { Menu, Dropdown, Space, Radio } from "antd";
 import {
   UserOutlined,
   SettingFilled,
   ArrowRightOutlined,
-  ControlOutlined
+  ControlOutlined,
 } from "@ant-design/icons";
 import { Content, Header } from "antd/lib/layout/layout";
 import { signOut } from "next-auth/react";
@@ -13,10 +13,9 @@ import i18next from "i18next";
 import type { RadioChangeEvent } from "antd";
 import { useRouter } from "next/router";
 
-import { Image } from 'antd';
-
-import { workspaceStates } from "../consts/enum";
+import { workspaceType } from "../consts/enum";
 import { ItemType } from "antd/lib/menu/hooks/useItems";
+import { AppHeaderProps } from "../utils/customTypes";
 
 /**
  * Update the language in i18next
@@ -24,7 +23,7 @@ import { ItemType } from "antd/lib/menu/hooks/useItems";
  * @param {string} lan
  * @return {*}
  */
-function languageUpdate(lan: string) {
+function languageUpdate(lan: string): void {
   i18next.init();
   i18next.changeLanguage(lan, (err) => {
     if (err)
@@ -37,15 +36,15 @@ function languageUpdate(lan: string) {
 
 /**
  * @export
- * @param {*} {
+ * @param {AppHeaderProps} {
  *   userConfig,
- *   userRoles
+ *   userRoles,
  *   setUserConfig,
  *   setUserConfigQueryInput,
  *   setGlobalSettingsModalState,
  *   workspaceState,
  *   toggleEditMode,
- *   t
+ *   t,
  * }
  * @return {*}  {JSX.Element}
  */
@@ -58,7 +57,7 @@ export default function AppHeader({
   workspaceState,
   toggleEditMode,
   t,
-}: any): JSX.Element {
+}: AppHeaderProps): JSX.Element {
   const router = useRouter();
   const { pathname, asPath, query } = router;
 
@@ -92,16 +91,18 @@ export default function AppHeader({
           onClick: () => signOut({ callbackUrl: "/" }),
           key: 0,
         },
-        userRoles.includes("admin") ? {
-          label: (
-            <Space>
-              {t("globalSettings.modalTitle")}
-              <ControlOutlined />
-            </Space>
-          ),
-          onClick: () => setGlobalSettingsModalState(true),
-          key: 1,
-        } : null as ItemType,
+        userRoles.includes("admin")
+          ? {
+              label: (
+                <Space>
+                  {t("globalSettings.modalTitle")}
+                  <ControlOutlined />
+                </Space>
+              ),
+              onClick: () => setGlobalSettingsModalState(true),
+              key: 1,
+            }
+          : (null as ItemType),
         // Change language buttons
         {
           label: (
@@ -141,12 +142,12 @@ export default function AppHeader({
   /**
    * Display the gear if the user has a dashboard in the working area
    *
-   * @return {*}
+   * @return {*}  {boolean}
    */
-  const displayGear = () => {
+  const displayGear = (): boolean => {
     switch (workspaceState.displaying) {
-      case workspaceStates.DISPLAY_DASHBOARD:
-      case workspaceStates.EDIT_DASHBOARD:
+      case workspaceType.DISPLAY_DASHBOARD:
+      case workspaceType.EDIT_DASHBOARD:
         return true;
       default:
         return false;
@@ -156,10 +157,10 @@ export default function AppHeader({
   /**
    * Rotate the gear if the user is currently in edit mode
    *
-   * @return {*}
+   * @return {*}  {string}
    */
-  const rotateGear = () => {
-    if (workspaceState.displaying === workspaceStates.EDIT_DASHBOARD) {
+  const rotateGear = (): string => {
+    if (workspaceState.displaying === workspaceType.EDIT_DASHBOARD) {
       return "gear";
     }
     return "";
@@ -167,7 +168,13 @@ export default function AppHeader({
 
   return (
     <Header className="header">
-      <Content className="header-logo"><img src="https://media.discordapp.net/attachments/969210304007385098/985886674447917086/unknown2.png" alt="MyUI logo" className="logo"/></Content>
+      <Content className="header-logo">
+        <img
+          src="https://media.discordapp.net/attachments/969210304007385098/985886674447917086/unknown2.png"
+          alt="MyUI logo"
+          className="logo"
+        />
+      </Content>
       {displayGear() ? (
         <SettingFilled
           className={rotateGear()}

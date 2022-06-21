@@ -1,11 +1,12 @@
 import React from "react";
 
-import { workspaceStates } from "../consts/enum";
+import { workspaceType } from "../consts/enum";
+import { WorkspaceProps } from "../utils/customTypes";
 import BaseTable from "./BaseTable";
 import Dashboard from "./Dashboard";
 
 /**
- * @param {*} {
+ * @param {WorkspaceProps} {
  *   workspaceState,
  *   hasuraProps,
  *   systemProps,
@@ -17,37 +18,35 @@ import Dashboard from "./Dashboard";
  *   setEditElementModalState,
  *   hasuraHeaders,
  *   encrypt,
- *   gridViewToggle, 
+ *   gridViewToggle,
  *   setGridViewToggle,
  *   t,
  * }
- * @return {*}  {*}
+ * @return {JSX.Element} The displayed workspace
  */
-function Workspace({
+export default function Workspace({
   workspaceState,
   hasuraProps,
   systemProps,
   userConfig,
-  setUserConfig,
   setUserConfigQueryInput,
   dashboardState,
   setDashboardState,
   setEditElementModalState,
   hasuraHeaders,
   encrypt,
-  gridViewToggle, 
+  gridViewToggle,
   setGridViewToggle,
   t,
-}: any): any {
+}: WorkspaceProps): JSX.Element {
   switch (workspaceState.displaying) {
-    case workspaceStates.BASE_TABLE:
+    case workspaceType.BASE_TABLE:
       return (
         <BaseTable
           hasuraProps={hasuraProps}
           systemProps={systemProps}
           name={workspaceState.name}
           userConfig={userConfig}
-          setUserConfig={setUserConfig}
           setUserConfigQueryInput={setUserConfigQueryInput}
           hasuraHeaders={hasuraHeaders}
           encrypt={encrypt}
@@ -57,8 +56,8 @@ function Workspace({
           t={t}
         />
       );
-    case workspaceStates.DISPLAY_DASHBOARD:
-    case workspaceStates.EDIT_DASHBOARD:
+    case workspaceType.DISPLAY_DASHBOARD:
+    case workspaceType.EDIT_DASHBOARD:
       return (
         <Dashboard
           hasuraProps={hasuraProps}
@@ -72,15 +71,13 @@ function Workspace({
           hasuraHeaders={hasuraHeaders}
           gridViewToggle={gridViewToggle}
           setGridViewToggle={setGridViewToggle}
-          t={t}
           encrypt={encrypt}
+          t={t}
         />
       );
-    case workspaceStates.EMPTY:
+    case workspaceType.EMPTY:
       return <p>{t("workspace.welcome")}</p>;
     default:
-      return <p>Something!</p>;
+      return <p></p>;
   }
 }
-
-export default Workspace;

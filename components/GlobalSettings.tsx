@@ -1,4 +1,4 @@
-import React from "react";
+import React, { SyntheticEvent } from "react";
 import { Modal, Button } from "antd";
 import {
   DownOutlined,
@@ -7,26 +7,26 @@ import {
 } from "@ant-design/icons";
 import type { MenuProps } from "antd";
 import { Dropdown, Menu, message, Space } from "antd";
-import { UserConfigSetting } from "../customTypes";
+import { GlobalSettingsProps, UserConfigSetting } from "../utils/customTypes";
 
 /**
  * @export
- * @param {*} {
+ * @param {GlobalSettingsProps} {
  *   globalSettingsModalState,
  *   setGlobalSettingsModalState,
  *   updateUserConfig,
  *   systemProps,
  *   t
  * }
- * @returns {*} {JSX.Element}
+ * @return {*}  {JSX.Element}
  */
 export default function GlobalSettings({
   globalSettingsModalState,
   setGlobalSettingsModalState,
   updateUserConfig,
   systemProps,
-  t
-}: any): JSX.Element{
+  t,
+}: GlobalSettingsProps): JSX.Element {
   // JSON array with menu items with appropriate icons
   const menuItemsURL = [
     {
@@ -41,7 +41,14 @@ export default function GlobalSettings({
     },
   ];
 
-  const handleMenuClick: MenuProps["onClick"] = (e) => {
+  /**
+   * @param {{key: string, keyPath: string[], domEvent: SyntheticEvent}} e
+   */
+  const handleMenuClick: MenuProps["onClick"] = (e: {
+    key: string;
+    keyPath: string[];
+    domEvent: SyntheticEvent;
+  }) => {
     // Get selected setting from the dropdown menu
     const selectedSetting = menuItemsURL.filter((item) => {
       return item.key == e.keyPath[0];

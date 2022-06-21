@@ -1,10 +1,17 @@
 import { useQuery } from "react-query";
-import { resourceLimits } from "worker_threads";
-import { workspaceStates } from "../consts/enum";
+
+import { workspaceType } from "../consts/enum";
+import {
+  CheckPermissionsProps,
+  updateRowQueryProps,
+} from "../utils/customTypes";
 
 /**
+ * Check the user's permission for inserting, deleting, and editing
+ * If the user can modify at least one column, show the corresponding action button
+ *
  * @export
- * @param {*} {
+ * @param {CheckPermissionsProps} {
  *   isBaseTable,
  *   hasuraProps,
  *   hasuraHeaders,
@@ -12,7 +19,8 @@ import { workspaceStates } from "../consts/enum";
  *   setInsertable,
  *   setDeletable,
  *   tableName,
- *   mode
+ *   mode,
+ *   gridViewToggle,
  * }
  */
 export function checkPermissions({
@@ -25,7 +33,7 @@ export function checkPermissions({
   tableName,
   mode,
   gridViewToggle,
-}: any) {
+}: CheckPermissionsProps) {
   // Check if the base table is editable by the logged-in user
   useQuery(["accessQuery", tableName, gridViewToggle], async () => {
     await fetch(hasuraProps.hasuraEndpoint as RequestInfo, {
@@ -63,17 +71,17 @@ export function checkPermissions({
             setEditable(
               result.data.__type.fields.some(
                 (e: { name: string }) => e.name == "update_" + tableName
-              ) && mode != workspaceStates.EDIT_DASHBOARD
+              ) && mode != workspaceType.EDIT_DASHBOARD
             );
             setInsertable(
               result.data.__type.fields.some(
                 (e: { name: string }) => e.name == "insert_" + tableName
-              ) && mode != workspaceStates.EDIT_DASHBOARD
+              ) && mode != workspaceType.EDIT_DASHBOARD
             );
             setDeletable(
               result.data.__type.fields.some(
                 (e: { name: string }) => e.name == "delete_" + tableName
-              ) && mode != workspaceStates.EDIT_DASHBOARD
+              ) && mode != workspaceType.EDIT_DASHBOARD
             );
           }
         }
@@ -82,8 +90,10 @@ export function checkPermissions({
 }
 
 /**
+ * Update a row after a user's edit
+ *
  * @export
- * @param {*} {
+ * @param {updateRowQueryProps} {
  *   editRowQueryInput,
  *   hasuraProps,
  *   hasuraHeaders,
@@ -91,7 +101,11 @@ export function checkPermissions({
  *   setEditingKey,
  *   setTableNameState,
  *   setEditRowQueryInput,
- *   t
+ *   setAlert,
+ *   setAlertText,
+ *   gridViewToggle,
+ *   setGridViewToggle,
+ *   t,
  * }
  */
 export function updateRowQuery({
@@ -104,28 +118,28 @@ export function updateRowQuery({
   setEditRowQueryInput,
   setAlert,
   setAlertText,
-  gridViewToggle, 
+  gridViewToggle,
   setGridViewToggle,
   t,
-}: any) {
+}: updateRowQueryProps) {
   useQuery(["updateRowQuery", editRowQueryInput], async () => {
     // Only execute the query if it is defined
     if (editRowQueryInput !== undefined) {
-      let result = await fetch(hasuraProps.hasuraEndpoint as RequestInfo, {
+      await fetch(hasuraProps.hasuraEndpoint as RequestInfo, {
         method: "POST",
         headers: hasuraHeaders,
         body: JSON.stringify({
           query: editRowQueryInput,
         }),
       })
-        .then((res) => res.json())
-        .then((res) => {
+        .then((updateResponse) => updateResponse.json())
+        .then((updateResponse) => {
           // Check if there are errors thrown by Hasura
-          if (res.errors) {
+          if (updateResponse.errors) {
             // Get the error message
-            let errorMessage: string = res.errors[0].message;
-            let column = "";
-            let error = ["Error"];
+            let errorMessage: string = updateResponse.errors[0].message;
+            let column: string = "";
+            let error: string[] = ["Error"];
             if (errorMessage.includes("not found in type")) {
               // User was not allowed to edit this column, show error
               column = errorMessage.substring(

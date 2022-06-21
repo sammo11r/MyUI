@@ -4,19 +4,24 @@ import { InfoCircleOutlined } from "@ant-design/icons";
 
 import { elementType } from "../consts/enum";
 import { isAllowed, parse, stringify } from "../consts/inputSanitizer";
+import { EditElementModalProps } from "../utils/customTypes";
+import { emptyElement } from "./StaticElement";
+import { Rule } from "antd/lib/form";
 
 /**
- *
- *
  * @export
- * @param {*} {state, setState, t}
+ * @param {EditElementModalProps} {
+ *   state,
+ *   setState,
+ *   t,
+ * }
  * @return {*}  {JSX.Element}
  */
 export default function EditElementModal({
   state,
   setState,
   t,
-}: any): JSX.Element {
+}: EditElementModalProps): JSX.Element {
   const { TextArea } = Input;
   const [editElementForm] = Form.useForm();
 
@@ -24,11 +29,11 @@ export default function EditElementModal({
     switch (state.element.type) {
       case elementType.GRIDVIEW:
         // Stringify the query input, so it can be saved in the configuration
-        state.element.query = stringify(values.field)
+        state.element.query = stringify(values.field);
         break;
       case elementType.STATIC:
         // Stringify the text input, so it can be saved in the configuration
-        state.element.text = stringify(values.field)
+        state.element.text = stringify(values.field);
         break;
     }
 
@@ -37,32 +42,33 @@ export default function EditElementModal({
 
   /**
    * Hide the modal by setting the visible state to false
-   *
    */
   const hideModal = () => {
-    setState({ visible: false, element: {} });
+    setState({ visible: false, element: emptyElement });
   };
 
   /**
    * Define the content of the element
    *
-   * @return {*}
+   * @return {*}  {string}
    */
-  const elementContent = () => {
+  const elementContent = (): string => {
     switch (state.element.type) {
       case elementType.GRIDVIEW:
-        return parse(state.element.query)
+        return parse(state.element.query);
       case elementType.STATIC:
-        return parse(state.element.text)
+        return parse(state.element.text);
+      default:
+        return "";
     }
   };
 
   /**
    * Define which text type the element holds
    *
-   * @return {*}
+   * @return {*}  {string}
    */
-  const elementTypeTextRef = () => {
+  const elementTypeTextRef = (): string => {
     switch (state.element.type) {
       case elementType.GRIDVIEW:
         return "gridview";
@@ -76,11 +82,11 @@ export default function EditElementModal({
   /**
    * Validate the gridview input format on change
    *
-   * @param {*} _
+   * @param {Rule} _
    * @param {string} value
-   * @return {*}
+   * @return {*}  {Promise<any>}
    */
-  const checkFormat = (_: any, value: string) => {
+  const checkFormat = (_: Rule, value: string): Promise<any> => {
     if (elementTypeTextRef() == "gridview") {
       // Validate the input for a gridview
       if (value == "") {

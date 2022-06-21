@@ -4,7 +4,7 @@ import { Button, Layout, Modal, notification } from "antd";
 import { QuestionCircleOutlined } from "@ant-design/icons";
 import "antd/dist/antd.css";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
-import { i18n, useTranslation } from "next-i18next";
+import { useTranslation } from "next-i18next";
 import { useRouter } from "next/router";
 import jwtDecode from "jwt-decode";
 import yaml from "js-yaml";
@@ -18,77 +18,99 @@ import {
 import EditElementModal from "../components/EditElementModal";
 import EditModeSider from "../components/EditModeSider";
 import Loader from "../components/Loader";
-import ManageDashboardsModal, {
-  modalTypes,
-} from "../components/ManageDashboardsModal";
+import ManageDashboardsModal from "../components/ManageDashboardsModal";
 import NavigationSider from "../components/NavigationSider";
 import Workspace from "../components/Workspace";
 import {
   configurationQuery,
   updateUserConfiguration,
   tableQuery,
+  defaultConfiguration,
 } from "../components/BaseQueries";
 import GlobalSettings from "../components/GlobalSettings";
-import { siderMenuState, workspaceStates } from "../consts/enum";
+import { loadingState, modalType, workspaceType } from "../consts/enum";
+import {
+  AppProps,
+  DashboardElementType,
+  DashboardState,
+  DashboardType,
+  EditElementModalState,
+  JWTHasura,
+  UserConfig,
+  WorkspaceState,
+} from "../utils/customTypes";
 import { encrypt } from "../utils/encryption";
 import { updateUserConfig } from "../utils/updateUserConfig";
-import { JWTHasura } from "../customTypes";
+import { emptyElement } from "../components/StaticElement";
 
-const { Content, Sider } = Layout;
+const { Content } = Layout;
 const { confirm } = Modal;
 
 /**
- * @param {*} { hasuraProps, systemProps }
- * @return {*}
+ * @export
+ * @param {AppProps} { hasuraProps, systemProps }
+ * @return {*}  {JSX.Element}
  */
-export default function App({ hasuraProps, systemProps }: any): any {
+export default function App({
+  hasuraProps,
+  systemProps,
+}: AppProps): JSX.Element {
   const { t } = useTranslation();
   const [manageDashboardsModalState, setManageDashboardsModalState] = useState({
     visible: false,
-    type: modalTypes.ADD,
+    type: modalType.ADD,
   });
 
   const [globalSettingsModalState, setGlobalSettingsModalState] =
-    useState(false);
-
-  const [editElementModalState, setEditElementModalState] = useState({
-    visible: false,
-    element: {},
-  });
+    useState<boolean>(false);
+  const [editElementModalState, setEditElementModalState] =
+    useState<EditElementModalState>({
+      visible: false,
+      element: emptyElement,
+    });
 
   const router = useRouter();
 
   // Define state variables for the user configuration
-  const [userConfig, setUserConfig] = useState();
+  const [userConfig, setUserConfig] =
+    useState<UserConfig>(defaultConfiguration);
 
   // Define state variables that, once set, update the user configuration file
-  const [userConfigQueryInput, setUserConfigQueryInput] = useState();
+  const [userConfigQueryInput, setUserConfigQueryInput] =
+    useState<UserConfig>();
 
-  const [gridViewToggle, setGridViewToggle] = useState(false);
-
+  // State variable used to toggle a gridview
+  // Setting this value forces all gridviews to fetch their data again
+  const [gridViewToggle, setGridViewToggle] = useState<boolean>(false);
+  
   const [dashboardNames, setDashboardNames] = useState<string[]>([]);
-
-  const [tableNames, setTableNames] = useState([]);
-
+  const [tableNames, setTableNames] = useState<string[]>([]);
   const [isSuccessConfig, setIsSuccessConfig] = useState(false);
-
   const [isIntrospectionSuccess, setIsIntrospectionSuccess] = useState(false);
 
-  const showModal = (type: modalTypes) => {
+  /**
+   * @param {modalType} type
+   */
+  const showModal = (type: modalType) => {
     setManageDashboardsModalState({ visible: true, type: type });
   };
 
+  // State for the sider menu
   const [siderState, setSiderState] = useState({
     tableNames: [],
-    tableNamesState: siderMenuState.LOADING,
+    tableNamesState: loadingState.LOADING,
   });
 
-  const [workspaceState, setWorkspaceState] = useState({
-    displaying: workspaceStates.EMPTY,
+  // State for the workspace
+  const [workspaceState, setWorkspaceState] = useState<WorkspaceState>({
+    displaying: workspaceType.EMPTY,
     name: "none",
   });
 
-  const [dashboardState, setDashboardState] = useState({ dashboard: {} });
+  // State for the currently active dashboard
+  const [dashboardState, setDashboardState] = useState<DashboardState>({
+    dashboard: { name: "", dashboardElements: [] },
+  });
 
   // True iff in the process of saving a dashboard
   const [loadings, setLoadings] = useState(false);
@@ -104,7 +126,7 @@ export default function App({ hasuraProps, systemProps }: any): any {
 
   const hasuraHeadersVersioning = {
     "Content-Type": "application/json",
-    "x-hasura-admin-secret": hasuraProps.hasuraSecret, // Adding auth header instead of using the admin secret
+    "x-hasura-admin-secret": hasuraProps.hasuraSecret,
   } as HeadersInit;
 
   const jwtTokenDecoded = jwtDecode<JWTHasura>(jwt);
@@ -138,14 +160,11 @@ export default function App({ hasuraProps, systemProps }: any): any {
 
   // Get the all base tables from hasura
   if (isIntrospectionSuccess === false) {
-    const tableQueryResult = tableQuery(
-      hasuraHeaders,
-      setSiderState,
-      siderMenuState
-    );
+    const tableQueryResult = tableQuery(hasuraHeaders, setSiderState);
 
     tableQueryResult.then((res) => {
-      setTableNames(res.tableNames);
+      let tableNames: string[] = res.tableNames;
+      setTableNames(tableNames);
       setIsIntrospectionSuccess(true);
     });
   }
@@ -156,30 +175,30 @@ export default function App({ hasuraProps, systemProps }: any): any {
    * @param {string} name
    */
   const displayBaseTable = (name: string) => {
-    setWorkspaceState({ displaying: workspaceStates.BASE_TABLE, name: name });
+    setWorkspaceState({ displaying: workspaceType.BASE_TABLE, name: name });
   };
 
   /**
    * Display a dashboard in the workspace
    *
    * @param {string} name
-   * @param {*} userConfig
+   * @param {UserConfig} userConfig
    */
-  const displayDashboard = (name: string, userConfig: any) => {
+  const displayDashboard = (name: string, userConfig: UserConfig) => {
     if (name == dashboardAddKey) {
-      showModal(modalTypes.ADD);
+      showModal(modalType.ADD);
     } else if (name == dashboardRemoveKey) {
-      showModal(modalTypes.REMOVE);
+      showModal(modalType.REMOVE);
     } else {
       setWorkspaceState({
-        displaying: workspaceStates.DISPLAY_DASHBOARD,
+        displaying: workspaceType.DISPLAY_DASHBOARD,
         name: name,
       });
       // Get dashboard configuration by name,
       // needs to be deep copy to prevent dashboardstate becoming a reference to the dashboard stored in userConfig
       const currentDashboard = structuredClone(
         userConfig.dashboards.filter(
-          (dashboard: any) => dashboard.name == name
+          (dashboard: DashboardType) => dashboard.name == name
         )[0]
       );
       setDashboardState({ dashboard: currentDashboard });
@@ -190,26 +209,28 @@ export default function App({ hasuraProps, systemProps }: any): any {
    * Enable the edit mode on a dashboard
    */
   const toggleEditMode = () => {
+    // Toggle the grid views to refresh their data
     setGridViewToggle(!gridViewToggle);
 
     const newState =
-      workspaceState.displaying === workspaceStates.DISPLAY_DASHBOARD
-        ? workspaceStates.EDIT_DASHBOARD
-        : workspaceStates.DISPLAY_DASHBOARD;
+      workspaceState.displaying === workspaceType.DISPLAY_DASHBOARD
+        ? workspaceType.EDIT_DASHBOARD
+        : workspaceType.DISPLAY_DASHBOARD;
 
     setWorkspaceState({ displaying: newState, name: workspaceState.name });
 
     // Auxiliary function used to check if to dashboards are equal
     const unsavedChanges = (
-      dashboardState: any,
-      userConfig: any,
+      dashboardState: DashboardState,
+      userConfig: UserConfig,
       name: string
     ) => {
-      const editedDashboardElements =
+      const editedDashboardElements: DashboardElementType[] =
         dashboardState.dashboard.dashboardElements;
-      const savedDashboardElements = userConfig.dashboards.filter(
-        (dashboard: any) => dashboard.name == name
-      )[0].dashboardElements;
+      const savedDashboardElements: DashboardElementType[] =
+        userConfig.dashboards.filter(
+          (dashboard: DashboardType) => dashboard.name == name
+        )[0].dashboardElements;
 
       // Check if length equal
       if (savedDashboardElements.length !== editedDashboardElements.length)
@@ -217,8 +238,10 @@ export default function App({ hasuraProps, systemProps }: any): any {
       // Check if values are equal, keys are assumed to be equivalent
       for (let i = 0; i < savedDashboardElements.length; i++) {
         for (const key of Object.keys(savedDashboardElements[i])) {
+          // If there are elements that are not equal, there are unsaved changes
           if (
-            savedDashboardElements[i][key] !== editedDashboardElements[i][key]
+            savedDashboardElements[i][key as keyof DashboardElementType] !==
+            editedDashboardElements[i][key as keyof DashboardElementType]
           ) {
             return true;
           }
@@ -230,7 +253,7 @@ export default function App({ hasuraProps, systemProps }: any): any {
     // If leaving edit mode while there are unsaved changes,
     // ask user if they want to save changes
     if (
-      newState === workspaceStates.DISPLAY_DASHBOARD &&
+      newState === workspaceType.DISPLAY_DASHBOARD &&
       unsavedChanges(dashboardState, userConfig, workspaceState.name)
     ) {
       confirm({
@@ -242,7 +265,7 @@ export default function App({ hasuraProps, systemProps }: any): any {
             <Button
               onClick={() => {
                 setWorkspaceState({
-                  displaying: workspaceStates.EDIT_DASHBOARD,
+                  displaying: workspaceType.EDIT_DASHBOARD,
                   name: workspaceState.name,
                 });
                 Modal.destroyAll();
@@ -268,11 +291,19 @@ export default function App({ hasuraProps, systemProps }: any): any {
   /**
    * Save the dashboard changes to the user's configuration file
    */
-  const saveDashboardChanges = (userConfig: any, dashboardState: any) => {
+  const saveDashboardChanges = (
+    userConfig: UserConfig,
+    dashboardState: DashboardState
+  ) => {
     setLoadings(true);
     // Get the current table configuration
-    let currentDashboardConfig = userConfig.dashboards.filter((dashboard: any) => dashboard.name == dashboardState.dashboard.name)[0];
-    let indexOfDashboard = userConfig.dashboards.indexOf(currentDashboardConfig);
+    let currentDashboardConfig = userConfig.dashboards.filter(
+      (dashboard: DashboardType) =>
+        dashboard.name == dashboardState.dashboard.name
+    )[0];
+    let indexOfDashboard = userConfig.dashboards.indexOf(
+      currentDashboardConfig
+    );
     // Update the grid view configuration
     userConfig.dashboards[indexOfDashboard] = dashboardState.dashboard;
 
@@ -288,10 +319,10 @@ export default function App({ hasuraProps, systemProps }: any): any {
   /**
    * Display the sider
    *
-   * @return {*}
+   * @return {JSX.Element} The navigation or edit mode sider
    */
-  const displaySider = (): any => {
-    if (workspaceState.displaying === workspaceStates.EDIT_DASHBOARD) {
+  const displaySider = (): JSX.Element => {
+    if (workspaceState.displaying === workspaceType.EDIT_DASHBOARD) {
       return (
         <EditModeSider
           userConfig={userConfig}
@@ -304,7 +335,6 @@ export default function App({ hasuraProps, systemProps }: any): any {
     }
     return (
       <NavigationSider
-        key={"sideBar"}
         baseTableNames={tableNames}
         dashboardNames={dashboardNames}
         baseTableOnClick={(name: string) => {
@@ -313,7 +343,7 @@ export default function App({ hasuraProps, systemProps }: any): any {
         dashboardOnClick={(name: string) => {
           displayDashboard(name, userConfig);
         }}
-        selectedKeys={dashboardState.dashboard.name}
+        selectedKeys={workspaceState.name}
         t={t}
       />
     );
@@ -345,14 +375,12 @@ export default function App({ hasuraProps, systemProps }: any): any {
             dashboardAddKey={dashboardAddKey}
             dashboardRemoveKey={dashboardRemoveKey}
             setDashboardNames={setDashboardNames}
-            tableNames={tableNames}
-            modalType={manageDashboardsModalState.type}
+            type={manageDashboardsModalState.type}
             userConfig={userConfig}
             setUserConfigQueryInput={setUserConfigQueryInput}
             displayDashboard={displayDashboard}
             setWorkspaceState={setWorkspaceState}
             workspaceState={workspaceState}
-            workspaceStates={workspaceStates}
             t={t}
             saveDashboardChanges={saveDashboardChanges}
           />
@@ -367,7 +395,7 @@ export default function App({ hasuraProps, systemProps }: any): any {
           )}
 
           <Layout>
-            {siderState.tableNamesState == siderMenuState.LOADING ? (
+            {siderState.tableNamesState == loadingState.LOADING ? (
               <Loader />
             ) : (
               displaySider()
@@ -382,12 +410,10 @@ export default function App({ hasuraProps, systemProps }: any): any {
                 }}
               >
                 <Workspace
-                  key={"workspace"}
                   workspaceState={workspaceState}
                   hasuraProps={hasuraProps}
                   systemProps={systemProps}
                   userConfig={userConfig}
-                  setUserConfig={setUserConfig}
                   dashboardState={dashboardState}
                   setDashboardState={setDashboardState}
                   setEditElementModalState={setEditElementModalState}

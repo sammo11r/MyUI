@@ -4,9 +4,7 @@
  * @returns Whether the input is allowed
  */
 export function isAllowed(str: string): boolean {
-  return str !== undefined
-    && str.indexOf(`"`) < 0 
-    && str.indexOf(`\\`) < 0
+  return str !== undefined && str.indexOf(`"`) < 0 && str.indexOf(`\\`) < 0;
 }
 
 /**
@@ -15,7 +13,7 @@ export function isAllowed(str: string): boolean {
  * @returns The string with all escape characters converted
  */
 export function stringify(str: string): string {
-  return str.replaceAll("\n", "[ENTER]")
+  return str.replaceAll("\n", "[ENTER]");
 }
 
 /**
@@ -24,5 +22,5 @@ export function stringify(str: string): string {
  * @returns The string with all escape characters converted
  */
 export function parse(str: string): string {
-  return str.replaceAll("[ENTER]", "\n")
+  return str.replaceAll("[ENTER]", "\n");
 }

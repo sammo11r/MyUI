@@ -2,9 +2,11 @@ import React from "react";
 import { Form, Input, InputNumber } from "antd";
 import { useTranslation } from "react-i18next";
 
+import { EditableCellType } from "../utils/customTypes";
+
 /**
  * @export
- * @param {*} {
+ * @param {EditableCellType} {
  *   editing,
  *   dataIndex,
  *   title,
@@ -14,7 +16,7 @@ import { useTranslation } from "react-i18next";
  *   children,
  *   ...restProps
  * }
- * @return {*}
+ * @return {*}  {JSX.Element}
  */
 export default function EditableCell({
   editing,
@@ -25,7 +27,7 @@ export default function EditableCell({
   index,
   children,
   ...restProps
-}: any): any {
+}: EditableCellType): JSX.Element {
   const { t } = useTranslation();
   const inputNode = inputType === "number" ? <InputNumber /> : <Input />;
   return (

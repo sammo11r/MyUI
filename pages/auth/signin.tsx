@@ -6,8 +6,6 @@ import { useTranslation } from "next-i18next";
 import "antd/dist/antd.css";
 import React from "react";
 
-import { Image } from 'antd';
-
 /**
  * Export sign in
  *
@@ -17,12 +15,22 @@ import { Image } from 'antd';
 export default function SignIn() {
   const { t } = useTranslation();
 
+  /**
+   * Define an interface of the signin values
+   *
+   * @interface values
+   */
   interface values {
     username: string;
     password: number;
     remember: boolean;
   }
 
+  /**
+   * On signin, check the credentials
+   *
+   * @param {values} values
+   */
   const onFinish = async (values: values) => {
     await signIn("login-credentials", {
       username: values.username,
@@ -55,12 +63,17 @@ export default function SignIn() {
             textAlign: "center",
           }}
           wrapperCol={{
-            span: 24, 
+            span: 24,
           }}
         >
-          <img src="https://media.discordapp.net/attachments/967745638047580184/984971934582321262/unknown.png" alt="MyUI logo" />
+          {/* Display the MyUI logo */}
+          <img
+            src="https://media.discordapp.net/attachments/967745638047580184/984971934582321262/unknown.png"
+            alt="MyUI logo"
+          />
         </Form.Item>
 
+        {/* Form item for the username */}
         <Form.Item
           label={t("login.username")}
           name="username"
@@ -75,6 +88,7 @@ export default function SignIn() {
           <Input />
         </Form.Item>
 
+        {/* Form item for the password */}
         <Form.Item
           label={t("login.password")}
           name="password"
@@ -109,13 +123,17 @@ export default function SignIn() {
 }
 
 /**
+ * Get the server side props
+ *
+ * @export
  * @param {*} context
- * @return {*}
+ * @return {*} 
  */
 export async function getServerSideProps(context: any) {
   const { req } = context;
   const session = await getSession({ req });
 
+  // If the user is authenticated, redirect them to the homepage
   if (session) {
     return {
       redirect: { destination: "/" },

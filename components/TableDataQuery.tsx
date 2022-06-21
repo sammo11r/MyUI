@@ -1,16 +1,28 @@
 import React from "react";
 import moment from "moment";
 import { useQuery } from "react-query";
+import {
+  BaseTableType,
+  DashboardElementType,
+  DashboardType,
+  QueryTableDataProps,
+} from "../utils/customTypes";
+import { loadingState } from "../consts/enum";
+import { ColumnGroupType, ColumnType } from "rc-table/lib/interface";
 
 /**
  * Replace null values by a replacement string
  *
- * @param {string} columnA
- * @param {string} columnB
- * @param {string} replacement
- * @return {*}
+ * @param {string|number} columnA
+ * @param {string|number} columnB
+ * @param {string|number} replacement
+ * @return {*}  {{}}
  */
-function replaceNull(columnA: any, columnB: any, replacement: any): any {
+function replaceNull(
+  columnA: string | number,
+  columnB: string | number,
+  replacement: string | number
+): { columnA: string | number; columnB: string | number } {
   if (columnA == null) {
     columnA = replacement;
   }
@@ -25,10 +37,10 @@ function replaceNull(columnA: any, columnB: any, replacement: any): any {
 /**
  * Alert the user of ways to prevent timeout errors when one occurs
  *
- * @param {Array} errors
- * @return {*}
+ * @param {Array<any>} errors
+ * @param {(arg0: string) => string} t
  */
-const timeLimit = (errors: Array<any>, t: any): any => {
+const timeLimit = (errors: Array<any>, t: (arg0: string) => string): void => {
   errors.forEach(function (error) {
     if (
       error.message &&
@@ -42,20 +54,21 @@ const timeLimit = (errors: Array<any>, t: any): any => {
 
 /**
  * @export
- * @param {*} {
+ * @param {QueryTableDataProps} {
  *   query,
  *   tableNameState,
  *   hasuraProps,
  *   hasuraHeaders,
  *   setTableState,
- *   columnStates,
  *   isBaseTable,
  *   tableName,
  *   dashboardName,
  *   userConfig,
  *   setUserConfigQueryInput,
  *   mediaDisplaySetting,
- *   t
+ *   gridViewToggle,
+ *   t,
+ *   elementName
  * }
  */
 export function queryTableData({
@@ -64,24 +77,24 @@ export function queryTableData({
   hasuraProps,
   hasuraHeaders,
   setTableState,
-  columnStates,
   isBaseTable,
   tableName,
   dashboardName,
   userConfig,
   setUserConfigQueryInput,
   mediaDisplaySetting,
-  gridViewToggle, 
+  gridViewToggle,
   t,
-}: any) {
+  elementName,
+}: QueryTableDataProps) {
   // Query the table data
   useQuery(["tableQuery", query, tableNameState, gridViewToggle], async () => {
-    let result = await fetch(hasuraProps.hasuraEndpoint as RequestInfo, {
+    let response = await fetch(hasuraProps.hasuraEndpoint as RequestInfo, {
       method: "POST",
-      headers: hasuraHeaders,
       body: JSON.stringify({
         query: query,
       }),
+      headers: hasuraHeaders,
     })
       .then((res) => res.json())
       .then((res) => {
@@ -92,7 +105,7 @@ export function queryTableData({
             data: res.errors,
             columns: [],
             columnsReady: true,
-            dataState: columnStates.READY,
+            dataState: loadingState.READY,
           });
           // Inform the user of ways to prevent timeout errors if applicable
           if (res && res.errors) {
@@ -102,7 +115,7 @@ export function queryTableData({
         }
         // If the table is not a base table, get the table name from the data and return the reponse
         if (!isBaseTable) {
-          return res.data[Object.keys(res.data)[0]]; // TODO: how do we handle multiple tables?
+          return res.data[Object.keys(res.data)[0]];
         }
         // Return query data
         return res.data[tableName];
@@ -110,15 +123,15 @@ export function queryTableData({
       .then((res) => {
         if (res && res.length != 0) {
           let columnNames: string[] = [];
-          let orderedColumn: string | null = null;
-          let orderDirection: string | null = null;
+          let orderedColumn: string | undefined = undefined;
+          let orderDirection: string | undefined = undefined;
           let tableConfig;
-          let dashboardConfig;
+          let dashboardConfig: DashboardType;
 
           if (isBaseTable) {
             // If the query is called for a basetable, search for the basetable configuration
             tableConfig = userConfig.baseTables.filter(
-              (baseTable: any) => baseTable.name == tableName
+              (baseTable: BaseTableType) => baseTable.name == tableName
             )[0];
 
             if (tableConfig !== undefined) {
@@ -140,12 +153,12 @@ export function queryTableData({
           } else {
             // If the query is called for a dashboard element, search for the dashboard grid view element configuration
             dashboardConfig = userConfig.dashboards.filter(
-              (dashboard: any) => dashboard.name == dashboardName
+              (dashboard: DashboardType) => dashboard.name == dashboardName
             )[0];
             let indexOfDashboard =
               userConfig.dashboards.indexOf(dashboardConfig);
             tableConfig = dashboardConfig.dashboardElements.filter(
-              (element: any) => element.name == tableName
+              (element: DashboardElementType) => element.name == elementName
             )[0];
             let indexOfElement =
               dashboardConfig.dashboardElements.indexOf(tableConfig);
@@ -154,8 +167,8 @@ export function queryTableData({
               if (tableConfig.ordering == undefined) {
                 // If the table did not have an ordering yet, set the default ordering
                 tableConfig["ordering"] = {
-                  by: "",
-                  direction: "",
+                  by: undefined,
+                  direction: undefined,
                 };
                 // Update the user configuration state variable
                 userConfig.dashboards[indexOfDashboard].dashboardElements[
@@ -177,7 +190,7 @@ export function queryTableData({
                 title: columnName,
                 dataIndex: columnName,
                 key: columnName + index, // Make sure the key is unique
-                editable: true, // @TODO,
+                editable: true,
                 sorter: (a: any, b: any) => {
                   // Define possible date formats
                   var formats = [moment.ISO_8601, "MM/DD/YYYY  :)  HH*mm*ss"];
@@ -194,7 +207,7 @@ export function queryTableData({
                       999999
                     );
                     // Order numbers in numerical order
-                    return columnA - columnB;
+                    return (columnA as number) - (columnB as number);
                   } else if (moment(a[columnName], formats, true).isValid()) {
                     // Replace null date columns by a future date to make ordering possible
                     const { columnA, columnB } = replaceNull(
@@ -214,14 +227,14 @@ export function queryTableData({
                       "z"
                     );
                     // Order text in alphabetical order
-                    return columnA.localeCompare(columnB);
+                    return (columnA as string).localeCompare(columnB as string);
                   }
                 },
                 showSorterTooltip: false,
                 // Set the default sorting according to the configuration
                 defaultSortOrder:
                   columnName == orderedColumn ? orderDirection : null,
-                render: (row: any) => {
+                render: (row: string) => {
                   // Check if the row contains an image
                   if (
                     typeof row == "string" &&
@@ -254,31 +267,34 @@ export function queryTableData({
           );
 
           // Give every row a unique key
-          res.forEach(function (row: any, index: number) {
+          res.forEach(function (row: { key: string }, index: number) {
             row.key = index.toString();
           });
 
           setTableState({
             data: res,
-            columns: extractedColumns,
+            columns: extractedColumns as (
+              | ColumnGroupType<{ key: string }>
+              | ColumnType<{ key: string }>
+            )[],
             columnsReady: true,
-            dataState: columnStates.READY,
+            dataState: loadingState.READY,
           });
         } else {
-          let columns: any = [];
-          
+          let columns: {}[] = [];
+
           if (res != null) {
             // Queried data is empty, show empty tamble with the column headers
             // Retrieve the column names from the query
             let columNames = query.slice(
-              query.lastIndexOf('{') + 1,
-              query.indexOf('}'),
+              query.lastIndexOf("{") + 1,
+              query.indexOf("}")
             );
             // Put the names in an array
-            columNames = columNames.split(',');
+            let columNamesArray = columNames.split(",");
 
-            columNames.forEach(function(name: string) {
-              columns.push({title: name, dataIndex: name, key: name})
+            columNamesArray.forEach(function (name: string) {
+              columns.push({ title: name, dataIndex: name, key: name });
             });
           }
 
@@ -286,7 +302,7 @@ export function queryTableData({
             data: undefined,
             columns: columns,
             columnsReady: true,
-            dataState: columnStates.READY,
+            dataState: loadingState.READY,
           });
           return null;
         }

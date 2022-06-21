@@ -118,5 +118,4 @@
     "foreignKey": "Foreign key violation",
     "empty": "can not be empty"
   }
-
 }

@@ -23,11 +23,15 @@ export default NextAuth({
         },
       },
       /**
-       * @param {*} credentials
-       * @param {*} req
+       * @param {(Record<"username" | "password", string> | undefined)} credentials
        * @return {*}
        */
-      async authorize(credentials: any, req: any) {
+      async authorize(
+        credentials: Record<"username" | "password", string> | undefined
+      ) {
+        if (credentials == undefined) {
+          return null;
+        }
         // Initialize hasura credentials in order to make API call
         const hasuraProps = {
           hasuraSecret: process.env
@@ -62,8 +66,12 @@ export default NextAuth({
         // Filter through users to find matching username
         // @ts-ignore: Object is possibly 'null'. eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const user = usersData.users.filter(
-          (user: { id: number; name: string; password: string; role: string }) =>
-            user.name === credentials.username
+          (user: {
+            id: number;
+            name: string;
+            password: string;
+            role: string;
+          }) => user.name === credentials.username
         );
 
         // If user is not found, credentials are invalid
