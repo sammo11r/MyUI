@@ -369,6 +369,7 @@ export default function TableData({
                 rowClassName="editable-row"
                 pagination={{
                   onChange: cancelEdit,
+                  showSizeChanger: true
                 }}
                 onChange={function (
                   pagination,
