@@ -17,4 +17,18 @@ const nextConfig = {
 module.exports = {
   i18n,
   nextConfig,
+  async redirects() {
+    return [
+      {
+        source: '/dashboards/:slug', 
+        destination: '/', // Redirect to home
+        permanent: true, // Make sure to cache the redirect
+      },
+      {
+        source: '/basetables/:slug',
+        destination: '/', // Redirect to the home page
+        permanent: true,
+      },
+    ]
+  },
 };
