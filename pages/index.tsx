@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useSession } from "next-auth/react";
-import { Button, Layout, Modal, notification } from "antd";
+import { Breadcrumb, Button, Layout, Modal, notification } from "antd";
 import { QuestionCircleOutlined } from "@ant-design/icons";
 import "antd/dist/antd.css";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
@@ -176,6 +176,7 @@ export default function App({
    */
   const displayBaseTable = (name: string) => {
     setWorkspaceState({ displaying: workspaceType.BASE_TABLE, name: name });
+    window.history.replaceState(null, name, `/basetables/${name.toLowerCase()}`)
   };
 
   /**
@@ -202,6 +203,7 @@ export default function App({
         )[0]
       );
       setDashboardState({ dashboard: currentDashboard });
+      window.history.replaceState(null, name, `/dashboards/${name.toLowerCase()}`)
     }
   };
 
@@ -409,6 +411,16 @@ export default function App({
                   minHeight: 280,
                 }}
               >
+                {workspaceState.name != 'none' ? (
+                  <Breadcrumb>
+                  {workspaceState.displaying == workspaceType.BASE_TABLE ? (
+                    <Breadcrumb.Item>{t("basetable.sidebar")}</Breadcrumb.Item>
+                  ) : (
+                    <Breadcrumb.Item>{t("dashboard.sidebar")}</Breadcrumb.Item>
+                  )}
+                    <Breadcrumb.Item>{workspaceState.name}</Breadcrumb.Item>
+                  </Breadcrumb>
+                ) : (<></>)}
                 <Workspace
                   workspaceState={workspaceState}
                   hasuraProps={hasuraProps}

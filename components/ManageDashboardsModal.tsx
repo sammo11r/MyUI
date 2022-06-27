@@ -148,6 +148,7 @@ export default function ManageDashboardsModal({
             displaying: workspaceType.EMPTY,
             name: "none",
           });
+          window.history.replaceState(null, "", "/")
         }
 
         hideModal();
