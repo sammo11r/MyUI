@@ -37,8 +37,10 @@ export default function GridView({
   t,
   encrypt,
 }: GridViewProps): JSX.Element {
+  const testID = "gridview-" + `${name}`;
   return (
     <TableData
+      data-testid={testID}
       hasuraProps={hasuraProps}
       query={query}
       style={style}

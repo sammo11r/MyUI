@@ -84,7 +84,7 @@ function BaseTable({
           mode={mode}
         ></TableData>
       ) : (
-        <Loader />
+        <Loader testid="baseTable-loader"/>
       )}
     </>
   );

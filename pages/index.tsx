@@ -398,7 +398,7 @@ export default function App({
 
           <Layout>
             {siderState.tableNamesState == loadingState.LOADING ? (
-              <Loader />
+              <Loader testid="index-loader"/>
             ) : (
               displaySider()
             )}

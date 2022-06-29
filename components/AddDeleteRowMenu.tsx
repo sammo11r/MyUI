@@ -280,17 +280,17 @@ function AddDeleteRowMenu({
                         key={column}
                         name={column}
                       >
-                        <Input placeholder={column} />
+                        <Input placeholder={column} data-testid={`${column}-input`}/>
                       </Form.Item>
                     ))}
                   </>
                 )}
               </Form.List>
               <Form.Item>
-                <Button type="primary" htmlType="submit">
+                <Button type="primary" htmlType="submit" data-testid="add-confirm-button">
                   {t("table.submit")}
                 </Button>
-                <Button htmlType="button" onClick={onReset}>
+                <Button htmlType="button" onClick={onReset} data-testid="delete-cancel-button">
                   {t("table.discard")}
                 </Button>
               </Form.Item>
@@ -302,7 +302,7 @@ function AddDeleteRowMenu({
           onVisibleChange={handleClickChangeAdd}
         >
           <Button>
-            <PlusCircleOutlined />
+            <PlusCircleOutlined data-testid = "add-row-button" />
           </Button>
         </Popover>
       ) : (
@@ -318,10 +318,15 @@ function AddDeleteRowMenu({
                 type="primary"
                 htmlType="submit"
                 onClick={() => confirmDelete()}
+                data-testid="delete-confirm-button"
               >
                 {t("table.deleteYes")}
               </Button>
-              <Button htmlType="button" onClick={closeDelete}>
+              <Button 
+                htmlType="button" 
+                onClick={closeDelete}
+                data-testid="delete-cancel-button"
+              >
                 {t("table.deleteNo")}
               </Button>
             </>
@@ -332,7 +337,7 @@ function AddDeleteRowMenu({
           onVisibleChange={handleClickChangeDelete}
         >
           <Button disabled={selectedRow.length == 0}>
-            <MinusCircleOutlined />
+            <MinusCircleOutlined data-testid = "delete-row-button" />
           </Button>
         </Popover>
       ) : (

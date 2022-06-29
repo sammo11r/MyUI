@@ -1,0 +1,89 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Snapshot tests for static element adapts to content Renders gif correctly 1`] = `
+<div
+  data-testid="static-element"
+>
+  <img
+    height="100%"
+    src="Some_img_url.gif"
+    width="100%"
+  />
+</div>
+`;
+
+exports[`Snapshot tests for static element adapts to content Renders jpeg image correctly 1`] = `
+<div
+  data-testid="static-element"
+>
+  <img
+    height="100%"
+    src="Some_img_url.jpeg"
+    width="100%"
+  />
+</div>
+`;
+
+exports[`Snapshot tests for static element adapts to content Renders jpg image correctly 1`] = `
+<div
+  data-testid="static-element"
+>
+  <img
+    height="100%"
+    src="Some_img_url.jpg"
+    width="100%"
+  />
+</div>
+`;
+
+exports[`Snapshot tests for static element adapts to content Renders mp3 correctly 1`] = `
+<div
+  data-testid="static-element"
+>
+  <video
+    controls={true}
+    controlsList="nofullscreen"
+    height="100%"
+    src="Some_img_url.mp3"
+    width="100%"
+  />
+</div>
+`;
+
+exports[`Snapshot tests for static element adapts to content Renders mp4 correctly 1`] = `
+<div
+  data-testid="static-element"
+>
+  <video
+    controls={true}
+    controlsList="nofullscreen"
+    height="100%"
+    src="Some_img_url.mp4"
+    width="100%"
+  />
+</div>
+`;
+
+exports[`Snapshot tests for static element adapts to content Renders png image correctly 1`] = `
+<div
+  data-testid="static-element"
+>
+  <img
+    height="100%"
+    src="Some_img_url.png"
+    width="100%"
+  />
+</div>
+`;
+
+exports[`Snapshot tests for static element adapts to content Renders text correctly 1`] = `
+<div
+  data-testid="static-element"
+>
+  <p
+    className="dashboard-text"
+  >
+    Some test text!
+  </p>
+</div>
+`;

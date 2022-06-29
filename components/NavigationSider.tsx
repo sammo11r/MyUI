@@ -71,13 +71,13 @@ function getSideBarItems(
         return {
           key: dashboardAddKey,
           label: t("dashboard.new"),
-          icon: <PlusCircleOutlined />,
+          icon: <PlusCircleOutlined data-testid="dash-plus"/>,
         };
       case dashboardRemoveKey:
         return {
           key: dashboardRemoveKey,
           label: t("dashboard.delete"),
-          icon: <MinusCircleOutlined />,
+          icon: <MinusCircleOutlined data-testid="dash-minus"/>,
         };
       default:
         return {

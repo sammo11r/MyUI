@@ -53,7 +53,7 @@ export default function StaticElement({
   style,
   mediaDisplaySetting,
 }: StaticElementProps): JSX.Element {
-  return <div style={style}>{convertText(text, mediaDisplaySetting)}</div>;
+  return <div style={style} data-testid="static-element">{convertText(text, mediaDisplaySetting)}</div>;
 }
 
 /**

@@ -42,9 +42,13 @@ export default function EditModeSider({
     text: string,
     icon: ReactNode
   ): JSX.Element => {
+
+    const testID = "sider-button-" + (type == 0 ? "gridview" : "static")
+
     return (
       <Button
         className="droppable-element"
+        data-testid={testID}
         draggable={true}
         onDragStart={(e) => {
           e.dataTransfer.setData("text/plain", elementType[type]);
@@ -74,7 +78,7 @@ export default function EditModeSider({
 
   // Render the sider with the draggable elements
   return (
-    <Sider theme="light">
+    <Sider data-testid="edit-sider" theme="light">
       {draggableElement(
         elementType.STATIC,
         t("dashboard.element.static.type"),
@@ -91,6 +95,7 @@ export default function EditModeSider({
         loading={loadings}
         onClick={() => saveDashboardChanges(userConfig, dashboardState)}
         style={{ width: "100%" }}
+        data-testid="edit-save"
       >
         {t("dashboard.save")}
       </Button>
@@ -99,6 +104,7 @@ export default function EditModeSider({
         style={{ width: "100%" }}
         onClick={() => downloadDashboard()}
         icon={<DownloadOutlined />}
+        data-testid="edit-download"
       >
         {t("dashboard.downloadDashboard")}
       </Button>

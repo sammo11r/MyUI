@@ -276,14 +276,14 @@ export default function TableData({
                 marginRight: 8,
               }}
             >
-              <SaveOutlined />
+              <SaveOutlined data-testid="TableData-Save" />
             </Typography.Link>
             <Popconfirm
               title={t(`table.cancelConfirmation`)}
               cancelText={t(`table.cancel`)}
               onConfirm={cancelEdit}
             >
-              <CloseOutlined />
+              <CloseOutlined data-testid="TableData-Cancel" />
             </Popconfirm>
           </span>
         ) : (
@@ -291,7 +291,7 @@ export default function TableData({
             disabled={editingKey !== ""}
             onClick={() => edit(record)}
           >
-            <EditOutlined />
+            <EditOutlined data-testid={"TableData-Edit"} />
           </Typography.Link>
         );
       },
@@ -347,6 +347,7 @@ export default function TableData({
           <>
             <Form form={editRowForm} component={false}>
               <Table
+                data-testid={`table-${tableName}`}
                 rowSelection={{
                   type: selectionType,
                   ...rowSelection,
@@ -468,7 +469,7 @@ export default function TableData({
         )
       ) : (
         //If data is still loading, display throbber
-        <Loader />
+        <Loader testid="tableData-loader" />
       )}
     </div>
   );

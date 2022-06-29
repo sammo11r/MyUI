@@ -79,6 +79,7 @@ export default function AppHeader({
   // Define the default user menu configuration
   const userMenu = (
     <Menu
+      data-testid="header-profile-menu"
       items={[
         // Logout button
         {
@@ -94,7 +95,7 @@ export default function AppHeader({
         userRoles.includes("admin")
           ? {
               label: (
-                <Space>
+                <Space data-testid="global-settings">
                   {t("globalSettings.modalTitle")}
                   <ControlOutlined />
                 </Space>
@@ -116,13 +117,19 @@ export default function AppHeader({
                   onChange={changeLocale}
                 >
                   <Space direction="vertical">
-                    <Radio.Button value="en">
+                    <Radio.Button 
+                      value="en" 
+                      data-testid="header-profile-menu-english-button"
+                    >
                       {t("logout.english")}{" "}
                       <span role="img" aria-label="enFlag">
                         🇺🇸
                       </span>
                     </Radio.Button>
-                    <Radio.Button value="nl">
+                    <Radio.Button 
+                      value="nl"
+                      data-testid="header-profile-menu-dutch-button"
+                    >
                       {t("logout.dutch")}{" "}
                       <span role="img" aria-label="nlFLag">
                         🇳🇱
@@ -178,7 +185,7 @@ export default function AppHeader({
       {displayGear() ? (
         <SettingFilled
           className={rotateGear()}
-          data-testid="header-settings-element"
+          data-testid="header-editmode-element"
           onClick={toggleEditMode}
           style={{
             position: "absolute",

@@ -45,7 +45,7 @@ const timeLimit = (errors: Array<any>, t: (arg0: string) => string): void => {
     if (
       error.message &&
       error.message ==
-        "The operation exceeded the time limit allowed for this project"
+      "The operation exceeded the time limit allowed for this project"
     ) {
       alert(t(`dashboard.queryerror.timelimit`));
     }

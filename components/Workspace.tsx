@@ -43,6 +43,7 @@ export default function Workspace({
     case workspaceType.BASE_TABLE:
       return (
         <BaseTable
+          data-testid="workspace-base"
           hasuraProps={hasuraProps}
           systemProps={systemProps}
           name={workspaceState.name}
@@ -60,6 +61,7 @@ export default function Workspace({
     case workspaceType.EDIT_DASHBOARD:
       return (
         <Dashboard
+          data-testid="workspace-dashboard"
           hasuraProps={hasuraProps}
           systemProps={systemProps}
           dashboardState={dashboardState}
@@ -76,8 +78,8 @@ export default function Workspace({
         />
       );
     case workspaceType.EMPTY:
-      return <p>{t("workspace.welcome")}</p>;
+      return <p data-testid="workspace-empty">{t("workspace.welcome")}</p>;
     default:
-      return <p></p>;
+      return <p data-testid="workspace-default"></p>;
   }
 }

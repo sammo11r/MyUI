@@ -1,48 +1,78 @@
 import React from "react";
-import AppHeader from "../components/AppHeader";
-import AppSider from "../components/AppSider";
-import user from "@testing-library/user-event";
+import BaseTable from "../components/BaseTable";
 import {
   render,
   screen,
   waitFor,
-  fireEvent,
-  cleanup,
 } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { Menu } from "antd";
+import { workspaceType as workspaceStates } from "../consts/enum";
+import { userConfig } from "../consts/demoUserConfig";
+import { hasuraProps } from "../consts/hasuraProps";
+import { QueryClient, QueryClientProvider } from "react-query";
 
-describe("loadsBaseTable", () => {
-  it("loads a base table on click of the item", async () => {
-    const tableTestItems = ["Customer", "Inventory"];
-    const dashboardTestItems = ["testDashboard1", "testDashboard2"];
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+    },
+  }
+});
 
-    const mockDisplayBaseTable = jest.fn();
-    const mockDisplayDashboard = jest.fn();
+global.fetch = jest.fn(() => Promise.resolve({
+  json: () => Promise.resolve({
+    data: {
+      __type: {
+        fields: [
+          { name: "Mockname1" },
+          { name: "Mockname2" },
+          { name: "Mockname3" },
+        ]
+      }
+    }
+  })
+})) as jest.Mock;
 
+const systemProps = {
+  "mediaDisplaySetting": "MEDIA"
+};
+
+const hasuraHeaders = {
+  "Content-Type": "application/json",
+  "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2IiwibmFtZSI6ImFkbWluIiwiYWRtaW4iOnRydWUsImlhdCI6MTY1NTA2MDUwOS4xNTEsImh0dHBzOi8vaGFzdXJhLmlvL2p3dC9jbGFpbXMiOnsieC1oYXN1cmEtYWxsb3dlZC1yb2xlcyI6WyJhZG1pbiIsImVkaXRvciIsInVzZXIiXSwieC1oYXN1cmEtZGVmYXVsdC1yb2xlIjoiYWRtaW4ifSwiZXhwIjoxNjU1MTAzNzA5fQ.rYzY6y1smWPyeSoEbcOHeqNB0XHimWgDKHVjZC1Tf6Q"
+};
+
+const setUserConfigQueryInput = jest.fn();
+const encrypt = jest.fn((s) => s);
+const setGridViewToggle = jest.fn();
+const t = jest.fn((s) => s);
+
+jest.createMockFromModule("../components/TableData");
+
+describe("it loads a basetable", () => {
+  it("Renders basetable successfully", async () => {
     render(
-      <AppSider
-        baseTableNames={tableTestItems}
-        dashboardNames={dashboardTestItems}
-        selectedKeys={null}
-        openKeys={null}
-        baseTableOnClick={mockDisplayBaseTable}
-        dashboardOnClick={mockDisplayDashboard}
-      />
-    );
+      <QueryClientProvider client={queryClient}>
+        <BaseTable
+          hasuraProps={hasuraProps}
+          systemProps={systemProps}
+          name={"mockName"}
+          userConfig={userConfig}
+          setUserConfigQueryInput={setUserConfigQueryInput}
+          hasuraHeaders={hasuraHeaders}
+          encrypt={encrypt}
+          gridViewToggle={true}
+          setGridViewToggle={setGridViewToggle}
+          t={t}
+          mode={workspaceStates.BASE_TABLE}
+          data-testid={"mock-basetable"}
+        />
+      </QueryClientProvider>
+    )
 
-    const mySelectComponent = screen.getByTestId("sider");
-
-    expect(mySelectComponent).toBeDefined();
-    expect(mySelectComponent).not.toBeNull();
-    expect(mockDisplayBaseTable).toHaveBeenCalledTimes(0);
-
-    const baseTableSidebarButton = screen.getByText("basetable.sidebar");
-    await user.click(baseTableSidebarButton);
-
-    const baseTableItem = screen.getByText("Customer");
-    await user.click(baseTableItem);
-
-    waitFor(() => expect(mockDisplayBaseTable).toHaveBeenCalledTimes(1));
-  });
+    await waitFor(() => {
+      expect(screen.queryByTestId("baseTable-loader")).toBeNull();
+      screen.debug();
+    })
+  })
 });

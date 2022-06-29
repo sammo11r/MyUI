@@ -65,7 +65,7 @@ function Auth({ children }: Props): JSX.Element {
   if (status === "loading") {
     return (
       <div style={{ width: "100vw", height: "100vh" }}>
-        <Loader />
+        <Loader testid="app-loader"/>
       </div>
     );
   }
