@@ -119,6 +119,14 @@ export interface CheckPermissionsProps {
 
 /**
  * @export
+ * @interface LoaderProps
+ */
+export interface LoaderProps {
+  testid: string;
+}
+
+/**
+ * @export
  * @interface DashboardType
  */
 export interface DashboardType {

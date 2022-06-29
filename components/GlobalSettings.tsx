@@ -76,7 +76,7 @@ export default function GlobalSettings({
         {t("globalSettings.header")}:
         <Dropdown overlay={menu}>
           <Button>
-            <Space>
+            <Space data-testid="global-settings-dropdown">
               {systemProps.mediaDisplaySetting}
               <DownOutlined />
             </Space>

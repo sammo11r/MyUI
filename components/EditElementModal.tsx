@@ -117,6 +117,7 @@ export default function EditElementModal({
 
   return (
     <Modal
+      data-testid="edit-element-modal"
       title={t(`dashboard.element.${elementTypeTextRef()}.type`)}
       visible={state.visible}
       onOk={editElementForm.submit}
@@ -137,7 +138,7 @@ export default function EditElementModal({
             },
           ]}
         >
-          <TextArea rows={10} />
+          <TextArea rows={10} data-testid="edit-element-modal-input-field"/>
         </Form.Item>
       </Form>
     </Modal>

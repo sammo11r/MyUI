@@ -29,9 +29,15 @@ export default function EditableCell({
   ...restProps
 }: EditableCellType): JSX.Element {
   const { t } = useTranslation();
-  const inputNode = inputType === "number" ? <InputNumber /> : <Input />;
+
+  const column = title ? title : "NoData"
+  const cellTestID = "Cell-" + `${column}`
+  const editTestID = editing ? "EditCell-input-" + `${column}` : ""
+
+  const inputNode = inputType === "number" ? <InputNumber data-testid={editTestID} /> : <Input data-testid={editTestID} />;
+
   return (
-    <td {...restProps}>
+    <td data-testid={cellTestID} {...restProps}>
       {/* If the user is editing, show the form items */}
       {editing ? (
         <Form.Item

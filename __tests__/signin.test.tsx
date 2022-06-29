@@ -4,14 +4,21 @@ import { render, screen, waitFor } from "@testing-library/react";
 import user from "@testing-library/user-event";
 import "@testing-library/jest-dom";
 import * as nextAuth from "next-auth/react";
-import { signIn } from "next-auth/react";
+import { signIn, SignInResponse } from "next-auth/react";
 
 const signInFn = jest.spyOn(nextAuth, "signIn");
 
 const onFinish = jest.fn();
-onFinish.mockReturnValue({
-  signIn,
-});
+
+jest.mock("next-i18next", () => ({
+  __esModule: true,
+  useTranslation: jest.fn().mockImplementation(() => {
+    return {
+      t: jest.fn(),
+    }
+  }
+  )
+}))
 
 describe("Signin", () => {
   it("renders a signin form", () => {
@@ -39,11 +46,18 @@ describe("Signin", () => {
     const validPassword = "testPassword";
     const authConfig = { callbackUrl: undefined, redirect: false };
 
+    onFinish.mockReturnValue(() => {
+      signIn("login-credentials", {
+        username: validEmail,
+        password: validPassword,
+      });
+    });
+
     render(<Signin />);
 
     const emailInput = screen.getByTestId(/username-input/i);
     const passwordInput = screen.getByTestId(/password-input/i);
-    const signInButton = screen.getByText(/submit/i);
+    const signInButton = screen.getByTestId(/submit-button/i);
 
     user.type(emailInput, validEmail);
     user.type(passwordInput, validPassword);
@@ -59,5 +73,40 @@ describe("Signin", () => {
       )
     );
     waitFor(() => expect(signInFn).toHaveBeenCalledTimes(1));
+    waitFor(() => expect(signInFn).toReturnWith(Promise.resolve(true)));
+  });
+
+  it("does not sign in with empty credentials", async () => {
+    const validEmail = "validemail@test.com";
+    const authConfig = { callbackUrl: undefined, redirect: false };
+
+    onFinish.mockReturnValue(() => {
+      signIn("login-credentials", {
+        username: validEmail,
+        password: "",
+      });
+    });
+
+    render(<Signin />);
+
+    const emailInput = screen.getByTestId(/username-input/i);
+    const signInButton = screen.getByTestId(/submit-button/i);
+
+    user.type(emailInput, validEmail);
+
+    await user.click(signInButton);
+
+    waitFor(() => expect(onFinish).toHaveBeenCalledTimes(1));
+    waitFor(() =>
+      expect(signInFn).toHaveBeenCalledWith(
+        validEmail,
+        "",
+        authConfig
+      )
+    );
+    waitFor(() => expect(signInFn).toHaveBeenCalledTimes(1));
+    waitFor(() => expect(signInFn).toReturnWith({
+      error: "Password is required",
+    } as SignInResponse));
   });
 });

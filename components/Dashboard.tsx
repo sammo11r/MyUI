@@ -189,6 +189,7 @@ export default function Dashboard({
               top: "5px",
             }}
             onClick={() => showDeleteConfirm(index)}
+            data-testid={`delete-button-${element.name}`}
           />
         ) : null}
         {rendered_element}
@@ -257,6 +258,7 @@ export default function Dashboard({
 
   return (
     <ResponsiveReactGridLayout
+      data-testid="dashboard-layout"
       className="layout"
       // Number of collumns needs to be consistent such that elements are always in the same place
       breakpoints={{ bp: 0 }}
@@ -275,6 +277,7 @@ export default function Dashboard({
       // Setting the layout prop is necessary in order to rerender
       // the elements in the correct position after deleting
       layouts={{
+        // @ts-ignore
         bp: dashboardState.dashboard.dashboardElements.map(
           (element: DashboardElementType, index: number) => {
             return {

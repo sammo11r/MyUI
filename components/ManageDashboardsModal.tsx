@@ -129,7 +129,7 @@ export default function ManageDashboardsModal({
   ) => {
     confirm({
       title: t("dashboard.modal.removewarning.title"),
-      icon: <ExclamationCircleOutlined />,
+      icon: <ExclamationCircleOutlined data-testid="exclamation" />,
       content: t("dashboard.modal.removewarning.description"),
       okText: t("dashboard.modal.removewarning.confirmText"),
       okType: "danger",
@@ -218,10 +218,11 @@ export default function ManageDashboardsModal({
           // Display the newly created dashboard in the working space
           displayDashboard(name, userConfig);
 
-          //@ts-ignore
           (
-            document.getElementsByClassName("upload-json") as HTMLInputElement
-          )[0].value = null;
+            document.getElementsByClassName("upload-json") as HTMLCollectionOf<Element>
+          )[0]
+          //@ts-ignore
+          .value = null;
           break;
         case modalType.REMOVE:
           newDashboardNames = removeDashboard(name, dashboardNames);
@@ -253,6 +254,7 @@ export default function ManageDashboardsModal({
       visible={isVisible}
       onOk={manageDashboardForm.submit}
       onCancel={hideModal}
+      data-testid="modal"
     >
       <Form form={manageDashboardForm} layout="vertical" onFinish={onFinish}>
         <Form.Item
@@ -266,7 +268,7 @@ export default function ManageDashboardsModal({
           hasFeedback
           help={hasError ? t(`dashboard.modal.${modalTypeTextRef}.error`) : ""}
         >
-          <Input />
+          <Input data-testid="modal-input" />
         </Form.Item>
         {modalTypeTextRef == "add" ? (
           <Form.Item
@@ -277,6 +279,7 @@ export default function ManageDashboardsModal({
             }}
           >
             <input
+              data-testid="json-input"
               type="file"
               accept=".json"
               onChange={handleChange}
