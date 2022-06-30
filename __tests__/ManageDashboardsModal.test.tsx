@@ -391,7 +391,7 @@ describe("renders ManageDashboardModal correctly", () => {
     })
   });
 
-  it("removes a dashboard name from dashboardNames and userConfig and calls" +
+  it("removes a dashboard name from dashboardNames and userConfig and calls " +
     "setWorkspaceState when deleting the dashboard currently displayed in the workspace",
     async () => {
       jest.clearAllMocks();

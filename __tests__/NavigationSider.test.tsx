@@ -13,7 +13,7 @@ const t = jest.fn((s) => s);
 const baseTableOnClick = jest.fn();
 const dashboardOnClick = jest.fn();
 
-describe("renderHeader", () => {
+describe("Testcases for NavigationSider", () => {
   it("renders NavigationSider correctly", () => {
     render(
     <NavigationSider

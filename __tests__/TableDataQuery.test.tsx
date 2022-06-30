@@ -110,7 +110,7 @@ describe("Tests for TableDataQuery", () => {
     })
   })
 
-  it("BaseTable Query returns a non-empty table", async () => {
+  it("BaseTable query returns a non-empty table", async () => {
     const query = "query mockQuery { mockTableName { mockAttr1, mockAttr2 } }";
     const tableNameState = "mockTableName";
     const setTableState = jest.fn();

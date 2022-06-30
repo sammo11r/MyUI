@@ -237,42 +237,6 @@ describe("Static edit modal tests", () => {
     })
   })
 
-  it("Input and submit text", (done) => {
-    const textString = "someTestString";
-
-    render(<EditElementModal
-      state={editElementModalState}
-      setState={setEditElementModalState}
-      t={t}
-    />);
-    
-    const textInput = screen.getByTestId("edit-element-modal-input-field");
-    const submitButton = screen.getByText(/ok/i);
-    
-    fireEvent.change(textInput, {target: {value: textString}});
-    fireEvent.click(submitButton);
-
-    setTimeout(() => {
-      expect(setEditElementModalState).toHaveBeenCalledTimes(1);
-      expect(setEditElementModalState).toHaveBeenCalledWith({visible: false, element: {
-        "h": 0,
-        "name": "",
-        "ordering": {
-          "by": undefined,
-          "direction": undefined,
-        },
-        "query": "",
-        "text": "",
-        "type": 1,
-        "w": 0,
-        "x": 0,
-        "y": 0,
-      }});
-      expect(editElementModalState.element.text).toBe(textString);
-      done();
-    })
-  })
-
   it("Input and fail to submit illegal text", (done) => {
     const textString = "veryi\\ega\"";
     editElementModalState.element.text = "";
