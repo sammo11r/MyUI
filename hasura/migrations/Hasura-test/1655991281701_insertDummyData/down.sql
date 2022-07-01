@@ -71,9 +71,6 @@ DELETE FROM "public"."Inventory" WHERE "id" = 7;
 
 DELETE FROM "public"."Inventory" WHERE "id" = 6;
 
-DELETE FROM "public"."Inventory" WHERE "id" = 5;
-
-
 DELETE FROM "public"."Purchase" WHERE "id" = 41;
 
 DELETE FROM "public"."Purchase" WHERE "id" = 40;
@@ -219,12 +216,9 @@ DELETE FROM "public"."Product" WHERE "id" = 8;
 
 DELETE FROM "public"."Product" WHERE "id" = 7;
 
-DELETE FROM "public"."Product" WHERE "id" = 5;
-
 DELETE FROM "public"."Store" WHERE "id" = 41;
 
 DELETE FROM "public"."Customer" WHERE "id" = 41;
-
 
 DELETE FROM "public"."Store" WHERE "id" = 40;
 
