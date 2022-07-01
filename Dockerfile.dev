@@ -2,9 +2,9 @@ FROM node
 RUN useradd -ms /bin/bash admin
 WORKDIR /app
 COPY package.json .
-RUN chown -R admin:admin /app
 RUN npm install --force
 COPY . .
+RUN chown -R admin:admin /app
 RUN chmod 755 /app
 USER admin
 EXPOSE 3000
