@@ -23,7 +23,7 @@ help: ## This help.
 .DEFAULT_GOAL := help
 
 # DOCKER TASKS
-setup:
+setup: ## This will setup the docker environment, install dependencies as well as setup Hasura.
 	@echo "Creating application and setting up database ..."
 	docker-compose -f docker-compose.yml -f docker-compose-dev.yml up -d --build \
 	&& npm i --force --silent \
@@ -32,29 +32,29 @@ setup:
 	&& hasura migrate apply --up all --all-databases \
 	&& hasura metadata reload
 
-run-dev:
+run-dev: ## This will run the development environment.
 	@echo "Starting development environment ..."
 	docker-compose -f docker-compose.yml -f docker-compose-dev.yml up -d
 
-run-prod: ## Run container in development mode
+run-prod: ## This will run the production environment.
 	@echo "Starting production environment ..."
 	docker-compose -f docker-compose.yml -f docker-compose-prod.yml up -d
 
-build-dev:
+build-dev: ## This will build the development environment.
 	@echo "Creating development environment ..."
 	docker-compose -f docker-compose.yml -f docker-compose-dev.yml up -d --build
 
-build-prod: ## Run container in development mode
+build-prod: ## This will build the production environment.
 	@echo "Creating production environment ..."
 	docker-compose -f docker-compose.yml -f docker-compose-prod.yml up -d --build
 
-rebuild: 
+rebuild: ## This will rebuild the application.
 	@echo "Restarting environment ..."
 	docker-compose down --remove-orphans \
 	&& sleep 2 \
 	&& docker-compose -f docker-compose.yml -f docker-compose-dev.yml up -d --build
 
-restart: 
+restart: ## This will restart the application.
 	@echo "Restarting environment ..."
 	docker-compose restart
 
@@ -66,18 +66,18 @@ down: ## Stop and remove running containers
 	@echo "Stopping and removing containers ..."
 	docker-compose down
 
-test: ## Stop and remove running containers
+test: ## This will run the tests.
 	@echo "Running all unit tests ..."
 	yarn jest --passWithNoTests --silent
 
-console:
+console: ## This will run the Hasura console.
 	@echo "Starting hasura console..." 
 	cd hasura && npx hasura-cli console --admin-secret "myadminsecretkey"
 
-run-migrations:
+run-migrations: ## This will run the database migrations.
 	@echo "Running all database migrations..."
 	cd hasura && hasura migrate apply --up all
 	
-squash-migrations:
+squash-migrations: ## This will squash the database migrations.
 	@echo "Squashing migrations..."
 	cd hasura && npx hasura-cli migrate squash --admin-secret myadminsecretkey --name "$(name)" --from $(from) --database-name Hasura-test
