@@ -19,7 +19,6 @@
     "@types/react-test-renderer": "^18.0.0",
     "antd": "^4.20.5",
     "axios": "^0.27.2",
-    "bcrypt": "^5.0.1",
     "docker-ip-get": "^1.1.5",
     "fs": "^0.0.1-security",
     "ip": "^1.1.8",
