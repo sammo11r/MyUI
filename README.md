@@ -2,7 +2,7 @@
 
 This is the project for MyUI - a contextual UI generation tool. This is part of the Software Engineering Project for BCS students 2021-22 at the Eindhoven University of Technology.
 
-Boilerplate author: Nishad Guha (n.guha1@student.tue.nl)
+The documentation for MyUI can be found under the folder `Documents`.
 
 ## Automated Project Setup
 
